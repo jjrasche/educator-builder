@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educator + 3CS Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; }
+        .chat-bubble { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .swipe-card { transition: transform 0.3s, opacity 0.3s; }
+        .swipe-left { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
+        .swipe-right { transform: translateX(100%) rotate(10deg); opacity: 0; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-50 min-h-screen">
+    <div id="app" class="max-w-2xl mx-auto p-4">
+
+        <!-- Stage indicator -->
+        <div class="flex justify-center gap-2 mb-8 pt-4">
+            <div id="dot-chat" class="w-3 h-3 rounded-full bg-blue-500"></div>
+            <div id="dot-projects" class="w-2 h-2 rounded-full bg-slate-600 mt-0.5"></div>
+            <div id="dot-commit" class="w-2 h-2 rounded-full bg-slate-600 mt-0.5"></div>
+            <div id="dot-schedule" class="w-2 h-2 rounded-full bg-slate-600 mt-0.5"></div>
+        </div>
+
+        <!-- STAGE 1: Chat -->
+        <div id="stage-chat" class="space-y-4">
+            <div class="text-center mb-8">
+                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 1</p>
+                <h1 class="text-2xl font-bold">Let's talk</h1>
+                <p class="text-slate-400 text-sm mt-2">Ask me anything. When you're ready, we'll move forward.</p>
+            </div>
+
+            <!-- Chat messages -->
+            <div id="chat-messages" class="space-y-4 min-h-[300px] max-h-[400px] overflow-y-auto p-4">
+                <div class="chat-bubble flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs">AI</div>
+                    <div class="bg-slate-800 rounded-lg p-4 max-w-[80%]">
+                        <p class="text-sm">Hey! I'm here to help you figure out if this is a fit.</p>
+                        <p class="text-sm mt-2">This is a live-in builder role in West Michigan. You'd work 10-60 hrs/month on real projects—AI tools, coordination software, food systems.</p>
+                        <p class="text-sm mt-2 text-slate-400">What are you curious about?</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat input -->
+            <div class="flex gap-2">
+                <input type="text" id="chat-input" placeholder="Ask anything..."
+                    class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+                <button onclick="sendMessage()" class="bg-blue-500 hover:bg-blue-600 px-4 py-3 rounded-lg text-sm font-semibold">Send</button>
+            </div>
+
+            <!-- Ready button -->
+            <div class="text-center pt-4">
+                <p class="text-xs text-slate-500 mb-2" id="exchange-count">0 exchanges</p>
+                <button onclick="goToProjects()" id="ready-btn" class="bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm transition-all opacity-50 cursor-not-allowed" disabled>
+                    I'm ready to see the projects →
+                </button>
+            </div>
+        </div>
+
+        <!-- STAGE 2: Projects -->
+        <div id="stage-projects" class="hidden">
+            <div class="text-center mb-8">
+                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 2</p>
+                <h1 class="text-2xl font-bold">Pick your projects</h1>
+                <p class="text-slate-400 text-sm mt-2">Swipe right on what interests you</p>
+            </div>
+
+            <!-- Project cards -->
+            <div id="project-stack" class="relative h-80 mb-8">
+                <!-- Cards inserted by JS -->
+            </div>
+
+            <!-- Swipe buttons -->
+            <div id="swipe-controls" class="flex justify-center gap-8 mb-8">
+                <button onclick="swipeProject('left')" class="w-16 h-16 rounded-full bg-slate-800 hover:bg-red-500/20 border-2 border-slate-600 hover:border-red-500 flex items-center justify-center text-2xl transition-all">✕</button>
+                <button onclick="swipeProject('right')" class="w-16 h-16 rounded-full bg-slate-800 hover:bg-emerald-500/20 border-2 border-slate-600 hover:border-emerald-500 flex items-center justify-center text-2xl transition-all">✓</button>
+            </div>
+
+            <!-- Selected projects -->
+            <div id="selected-projects" class="hidden bg-slate-900 border border-slate-700 rounded-lg p-4 mb-4">
+                <p class="text-sm text-slate-400 mb-2">You're interested in:</p>
+                <div id="selected-list" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <button onclick="goToCommit()" id="to-commit-btn" class="hidden w-full bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                Continue →
+            </button>
+        </div>
+
+        <!-- STAGE 3: Commitment -->
+        <div id="stage-commit" class="hidden">
+            <div class="text-center mb-8">
+                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 3</p>
+                <h1 class="text-2xl font-bold">Your commitment</h1>
+                <p class="text-slate-400 text-sm mt-2">How much time can you give?</p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
+                <p class="text-sm text-slate-400 mb-4">Hours per month (10-60)</p>
+                <input type="range" id="hours-slider" min="10" max="60" value="20" class="w-full mb-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">10 hrs</span>
+                    <span id="hours-value" class="text-2xl font-bold text-emerald-400">20 hrs/month</span>
+                    <span class="text-slate-500">60 hrs</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
+                <p class="text-sm text-slate-400 mb-2">Your name</p>
+                <input type="text" id="name-input" placeholder="First name"
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 mb-4">
+                <p class="text-sm text-slate-400 mb-2">Email</p>
+                <input type="email" id="email-input" placeholder="you@email.com"
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="bg-slate-800 border border-blue-500/30 rounded-lg p-4 mb-6">
+                <p class="text-sm text-blue-300 font-semibold mb-1">What happens next</p>
+                <p class="text-xs text-slate-400">You'll schedule a paid working session ($50). If we both agree, you start a 2-week trial.</p>
+            </div>
+
+            <button onclick="goToSchedule()" class="w-full bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                Schedule Paid Session →
+            </button>
+        </div>
+
+        <!-- STAGE 4: Schedule -->
+        <div id="stage-schedule" class="hidden">
+            <div class="text-center mb-8">
+                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 4</p>
+                <h1 class="text-2xl font-bold">Pick a time</h1>
+                <p class="text-slate-400 text-sm mt-2">2-4 hour paid working session • $50</p>
+            </div>
+
+            <!-- Summary -->
+            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
+                <p class="text-sm text-slate-400 mb-4">Your commitment</p>
+                <div class="space-y-2 text-sm">
+                    <p><span class="text-slate-500">Name:</span> <span id="summary-name" class="text-white">—</span></p>
+                    <p><span class="text-slate-500">Projects:</span> <span id="summary-projects" class="text-white">—</span></p>
+                    <p><span class="text-slate-500">Hours:</span> <span id="summary-hours" class="text-white">—</span></p>
+                </div>
+            </div>
+
+            <!-- Mock calendar -->
+            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
+                <p class="text-sm text-slate-400 mb-4">Available slots this week</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectSlot(this)" class="slot-btn bg-slate-800 hover:bg-blue-500/20 border border-slate-600 hover:border-blue-500 rounded-lg p-3 text-sm text-left transition-all">
+                        <p class="font-semibold">Mon, Jan 6</p>
+                        <p class="text-slate-400 text-xs">9:00 AM - 1:00 PM</p>
+                    </button>
+                    <button onclick="selectSlot(this)" class="slot-btn bg-slate-800 hover:bg-blue-500/20 border border-slate-600 hover:border-blue-500 rounded-lg p-3 text-sm text-left transition-all">
+                        <p class="font-semibold">Tue, Jan 7</p>
+                        <p class="text-slate-400 text-xs">2:00 PM - 6:00 PM</p>
+                    </button>
+                    <button onclick="selectSlot(this)" class="slot-btn bg-slate-800 hover:bg-blue-500/20 border border-slate-600 hover:border-blue-500 rounded-lg p-3 text-sm text-left transition-all">
+                        <p class="font-semibold">Thu, Jan 9</p>
+                        <p class="text-slate-400 text-xs">10:00 AM - 2:00 PM</p>
+                    </button>
+                    <button onclick="selectSlot(this)" class="slot-btn bg-slate-800 hover:bg-blue-500/20 border border-slate-600 hover:border-blue-500 rounded-lg p-3 text-sm text-left transition-all">
+                        <p class="font-semibold">Fri, Jan 10</p>
+                        <p class="text-slate-400 text-xs">9:00 AM - 1:00 PM</p>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="confirmBooking()" id="confirm-btn" class="w-full bg-slate-700 px-6 py-3 rounded-lg text-sm font-semibold cursor-not-allowed opacity-50" disabled>
+                Select a time slot
+            </button>
+        </div>
+
+        <!-- STAGE 5: Confirmed -->
+        <div id="stage-confirmed" class="hidden">
+            <div class="text-center py-16">
+                <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-4xl mx-auto mb-6">✓</div>
+                <h1 class="text-2xl font-bold mb-2">You're booked</h1>
+                <p class="text-slate-400 mb-8">Check your email for details</p>
+
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 text-left max-w-sm mx-auto">
+                    <p class="text-xs font-mono text-slate-500 mb-4">THE PATH</p>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-xs">✓</div>
+                            <div>
+                                <p class="font-semibold">Paid working session</p>
+                                <p class="text-slate-400 text-xs">$50 • 2-4 hours</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs">2</div>
+                            <div>
+                                <p class="font-semibold text-slate-400">2-week trial</p>
+                                <p class="text-slate-500 text-xs">If we both agree</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs">3</div>
+                            <div>
+                                <p class="font-semibold text-slate-400">3-month contract</p>
+                                <p class="text-slate-500 text-xs">Full commitment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let exchanges = 0;
+        let selectedProjects = [];
+        let currentProjectIndex = 0;
+        let selectedSlot = null;
+
+        const projects = [
+            { id: '3cs', name: '3Cs Coordination Software', desc: 'Platform for distributed communities. Connect, reach consensus, coordinate action.', color: 'blue' },
+            { id: 'everything', name: 'Everything Stack', desc: 'AI-native framework. Voice interfaces, workflow orchestration, ambient AI.', color: 'emerald' },
+            { id: 'food', name: 'Food Forest', desc: 'Regenerative food systems. Permaculture design, sustainable living.', color: 'green' }
+        ];
+
+        const aiResponses = [
+            "Good question. The housing is a room in our family home—you'd be part of daily life here, not isolated in a separate unit. Meals together, sometimes helping with the kids, that kind of thing.",
+            "The $300/month is spending money on top of room and board. When you factor in rent, food, and utilities you're not paying, the effective comp is closer to $2000-2500/month depending on your area's cost of living.",
+            "Totally flexible. Some people are morning workers, some night owls. The 10-60 hours is per month, and you decide when. We just care that the work ships.",
+            "The projects are real—we're actively building them. The 3Cs software is furthest along, Everything Stack is in early development, and the food forest is seasonal work.",
+            "No specific tech requirements. What matters is: can you figure things out? Do you reach for AI tools naturally? Are you curious?",
+            "The 2-week notice to leave is real. No guilt, no strings. We'll even help you find your next place. We've been burned by ambiguous arrangements before—that's why everything is written down.",
+            "The kids are 7 and 10. They're part of the vibe check, honestly. If they don't like you, it won't work. Not in a weird way—they just have good instincts.",
+        ];
+
+        // Initialize
+        function init() {
+            renderProjects();
+            document.getElementById('chat-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            document.getElementById('hours-slider').addEventListener('input', updateHours);
+        }
+
+        // Chat
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addChatMessage(message, 'user');
+            input.value = '';
+            exchanges++;
+            updateExchangeCount();
+
+            // AI response after delay
+            setTimeout(() => {
+                const response = aiResponses[Math.min(exchanges - 1, aiResponses.length - 1)];
+                addChatMessage(response, 'ai');
+            }, 800);
+        }
+
+        function addChatMessage(text, sender) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'chat-bubble flex gap-3' + (sender === 'user' ? ' flex-row-reverse' : '');
+
+            const avatar = sender === 'user'
+                ? '<div class="w-8 h-8 rounded-full bg-emerald-500 flex-shrink-0 flex items-center justify-center text-xs">You</div>'
+                : '<div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs">AI</div>';
+
+            const bgColor = sender === 'user' ? 'bg-emerald-500/20' : 'bg-slate-800';
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="${bgColor} rounded-lg p-4 max-w-[80%]">
+                    <p class="text-sm">${text}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateExchangeCount() {
+            document.getElementById('exchange-count').textContent = `${exchanges} exchanges`;
+            const btn = document.getElementById('ready-btn');
+            if (exchanges >= 3) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('bg-emerald-500', 'hover:bg-emerald-400');
+            }
+        }
+
+        // Projects
+        function renderProjects() {
+            const stack = document.getElementById('project-stack');
+            stack.innerHTML = '';
+
+            projects.forEach((p, i) => {
+                const card = document.createElement('div');
+                card.className = `swipe-card absolute inset-0 bg-slate-900 border border-slate-700 rounded-lg p-8 flex flex-col justify-between ${i === 0 ? '' : 'hidden'}`;
+                card.id = `project-${i}`;
+                card.innerHTML = `
+                    <div>
+                        <p class="text-${p.color}-300 text-sm font-mono mb-2">PROJECT ${i + 1}/${projects.length}</p>
+                        <h3 class="text-2xl font-bold mb-4">${p.name}</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">${p.desc}</p>
+                    </div>
+                    <div class="text-center text-slate-500 text-sm">
+                        ← Pass · Interested →
+                    </div>
+                `;
+                stack.appendChild(card);
+            });
+        }
+
+        function swipeProject(direction) {
+            const card = document.getElementById(`project-${currentProjectIndex}`);
+            if (!card) return;
+
+            if (direction === 'right') {
+                selectedProjects.push(projects[currentProjectIndex]);
+            }
+
+            card.classList.add(direction === 'left' ? 'swipe-left' : 'swipe-right');
+
+            setTimeout(() => {
+                card.classList.add('hidden');
+                currentProjectIndex++;
+
+                if (currentProjectIndex < projects.length) {
+                    document.getElementById(`project-${currentProjectIndex}`).classList.remove('hidden');
+                } else {
+                    showProjectResults();
+                }
+            }, 300);
+        }
+
+        function showProjectResults() {
+            document.getElementById('swipe-controls').classList.add('hidden');
+            document.getElementById('project-stack').innerHTML = `
+                <div class="text-center py-16">
+                    <p class="text-slate-400">You've seen all projects</p>
+                </div>
+            `;
+
+            if (selectedProjects.length > 0) {
+                const selected = document.getElementById('selected-projects');
+                const list = document.getElementById('selected-list');
+                selected.classList.remove('hidden');
+                list.innerHTML = selectedProjects.map(p =>
+                    `<span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-sm">${p.name}</span>`
+                ).join('');
+                document.getElementById('to-commit-btn').classList.remove('hidden');
+            }
+        }
+
+        // Commit
+        function updateHours() {
+            const value = document.getElementById('hours-slider').value;
+            document.getElementById('hours-value').textContent = `${value} hrs/month`;
+        }
+
+        // Schedule
+        function selectSlot(btn) {
+            document.querySelectorAll('.slot-btn').forEach(b => {
+                b.classList.remove('border-blue-500', 'bg-blue-500/20');
+                b.classList.add('border-slate-600');
+            });
+            btn.classList.remove('border-slate-600');
+            btn.classList.add('border-blue-500', 'bg-blue-500/20');
+            selectedSlot = btn.querySelector('p').textContent;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove('bg-slate-700', 'cursor-not-allowed', 'opacity-50');
+            confirmBtn.classList.add('bg-emerald-500', 'hover:bg-emerald-400');
+            confirmBtn.textContent = 'Confirm Booking';
+        }
+
+        function confirmBooking() {
+            if (!selectedSlot) return;
+            showStage('confirmed');
+            updateDots('schedule');
+        }
+
+        // Navigation
+        function goToProjects() {
+            showStage('projects');
+            updateDots('projects');
+        }
+
+        function goToCommit() {
+            showStage('commit');
+            updateDots('commit');
+        }
+
+        function goToSchedule() {
+            const name = document.getElementById('name-input').value || 'Anonymous';
+            const hours = document.getElementById('hours-slider').value;
+
+            document.getElementById('summary-name').textContent = name;
+            document.getElementById('summary-projects').textContent = selectedProjects.map(p => p.name).join(', ');
+            document.getElementById('summary-hours').textContent = `${hours} hrs/month`;
+
+            showStage('schedule');
+            updateDots('schedule');
+        }
+
+        function showStage(stage) {
+            ['chat', 'projects', 'commit', 'schedule', 'confirmed'].forEach(s => {
+                document.getElementById(`stage-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`stage-${stage}`).classList.remove('hidden');
+        }
+
+        function updateDots(current) {
+            const stages = ['chat', 'projects', 'commit', 'schedule'];
+            const currentIdx = stages.indexOf(current);
+
+            stages.forEach((s, i) => {
+                const dot = document.getElementById(`dot-${s}`);
+                if (i <= currentIdx) {
+                    dot.classList.remove('w-2', 'h-2', 'bg-slate-600', 'mt-0.5');
+                    dot.classList.add('w-3', 'h-3', 'bg-emerald-500');
+                } else {
+                    dot.classList.remove('w-3', 'h-3', 'bg-blue-500', 'bg-emerald-500');
+                    dot.classList.add('w-2', 'h-2', 'bg-slate-600', 'mt-0.5');
+                }
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

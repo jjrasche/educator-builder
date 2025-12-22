@@ -1,0 +1,9 @@
+{
+  "name": "educator-builder",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "openai": "^4.77.0",
+    "resend": "^4.0.1"
+  }
+}

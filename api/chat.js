@@ -68,6 +68,17 @@ Keep responses concise (2-3 sentences). After 3-4 good exchanges, you can sugges
 
   } catch (error) {
     console.error('Groq API error:', error);
-    res.status(500).json({ error: 'Failed to get response from Groq', details: error.message });
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause,
+      status: error.status,
+      response: error.response
+    });
+    res.status(500).json({
+      error: 'Failed to get response from Groq',
+      details: error.message,
+      stack: error.stack?.split('\n')[0]
+    });
   }
 }

@@ -214,10 +214,14 @@
                 </div>
             </div>
 
-            <!-- Calendly embed -->
-            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
-                <div id="calendly-container" class="min-h-[500px]"></div>
+            <!-- Google Calendar embed -->
+            <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden mb-6">
+                <iframe src="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ09rD-oZ5R5xg89_mnm7AP0tBpNOB9zNF7euG6T7luGJMJ4RRLO8-SFSzHFb87yR_ZqjGmngEjO" width="100%" height="600" frameborder="0" style="border:0" scrolling="yes"></iframe>
             </div>
+
+
+
+
 
             <div class="flex gap-3">
                 <button onclick="goBack('commit')" class="bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">← Back</button>
@@ -258,9 +262,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-    </div>
 
     <!-- Calendly widget -->
     <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
@@ -553,15 +554,6 @@
             document.getElementById('summary-projects').textContent = selectedProjects.map(p => p.name).join(', ');
             document.getElementById('summary-hours').textContent = `${hours} hrs/month`;
 
-            // Load Calendly
-            Calendly.initInlineWidget({
-                url: 'https://calendly.com/your-username/educator-builder?hide_event_type_details=1&hide_gdpr_banner=1',
-                parentElement: document.getElementById('calendly-container'),
-                prefill: {
-                    name,
-                    email
-                }
-            });
 
             showStage('schedule');
             updateDots('schedule');

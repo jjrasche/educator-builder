@@ -1,6 +1,6 @@
 # Educator + 3CS Builder
 
-AI-powered hiring funnel with Grok chat, project selection, and Calendly scheduling.
+AI-powered hiring funnel with Grok chat, project selection, and Google Calendar scheduling.
 
 ## What's Built
 
@@ -8,7 +8,7 @@ AI-powered hiring funnel with Grok chat, project selection, and Calendly schedul
 - **Email gate** - requires email after 5 exchanges
 - **Transcript delivery** - sends full conversation to both parties
 - **Project swipe** - Tinder-style project selection
-- **Calendly embed** - real scheduling
+- **Google Calendar embed** - real scheduling
 
 ## Stack
 
@@ -16,7 +16,7 @@ AI-powered hiring funnel with Grok chat, project selection, and Calendly schedul
 - Backend: Vercel serverless functions
 - AI: Groq (Llama 3.1 70B)
 - Email: Resend
-- Scheduling: Calendly
+- Scheduling: Google Calendar
 
 ## Deploy to Vercel
 
@@ -34,7 +34,7 @@ vercel
 # - GROQ_API_KEY (get from https://console.groq.com)
 # - RESEND_API_KEY (get from https://resend.com)
 # - ADMIN_EMAIL (your email for transcripts)
-# - CALENDLY_URL (your Calendly link)
+# 
 ```
 
 ## Environment Variables
@@ -45,7 +45,7 @@ Create these in Vercel dashboard (not in code):
 GROQ_API_KEY=gsk_...
 RESEND_API_KEY=re_...
 ADMIN_EMAIL=jim@jimr.fyi
-CALENDLY_URL=https://calendly.com/your-username/educator-builder
+
 ```
 
 ## How It Works
@@ -65,7 +65,7 @@ CALENDLY_URL=https://calendly.com/your-username/educator-builder
 
 ### Stage 4: Schedule
 - Sends transcript to both parties
-- Loads Calendly widget
+- Loads Google Calendar widget
 
 ## Local Development
 
@@ -86,11 +86,11 @@ Track these manually (no analytics yet):
 - Total visitors (GitHub Pages analytics)
 - Email submissions (count emails)
 - Project preferences (read transcripts)
-- Calendly bookings (Calendly dashboard)
+- Google Calendar bookings (Google Calendar dashboard)
 
 ## Next Steps
 
-- [ ] Update Calendly URL in `app/index.html` (line 558)
+- [ ] Update Google Calendar URL in `app/index.html` (line 558)
 - [ ] Get Groq API key from https://console.groq.com
 - [ ] Get Resend API key from https://resend.com
 - [ ] Deploy to Vercel
@@ -116,6 +116,6 @@ Track these manually (no analytics yet):
 - Groq API: ~$0.10/conversation (100 turns) - Free tier available
 - Resend: Free (100 emails/day)
 - Vercel: Free tier
-- Calendly: Free tier
+- Google Calendar: Free tier
 
 **Total:** ~$0.10 per applicant (or free on Groq free tier)

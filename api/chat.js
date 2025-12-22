@@ -44,7 +44,7 @@ Keep responses concise (2-3 sentences). After 3-4 good exchanges, you can sugges
     };
 
     const stream = await client.chat.completions.create({
-      model: 'llama-3.1-70b-versatile',
+      model: 'llama-3.3-70b-versatile',
       messages: [systemMessage, ...messages],
       stream: true,
       temperature: 0.8,

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educator + 3CS Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        h1, h2 { font-family: 'Georgia', serif; letter-spacing: -0.02em; }
+        body { background-color: #0f172a; }
+        /* Custom focus ring offset for dark backgrounds */
+        .focus-ring {
+            @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-50">
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-500 focus:text-white focus:px-4 focus:py-2 focus:rounded">
+        Skip to main content
+    </a>
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Hero + Everything -->
+        <main id="main-content" class="flex-1">
+            <!-- Hero -->
+            <div class="min-h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 relative">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 30% 30%, #3b82f6, transparent 50%), radial-gradient(circle at 70% 70%, #10b981, transparent 50%);"></div>
+
+                <div class="relative z-10 max-w-4xl">
+                    <div class="mb-8">
+                        <p class="text-sm font-mono text-blue-300 tracking-wider">EDUCATOR + 3CS BUILDER</p>
+                    </div>
+
+                    <h1 class="text-7xl md:text-8xl font-bold leading-snug mb-6">
+                        Be part of it.
+                    </h1>
+
+                    <div class="grid md:grid-cols-2 gap-8 md:gap-12 mb-12">
+                        <div>
+                            <p class="text-2xl text-slate-200 leading-relaxed mb-8">
+                                Live with us. Learn together. Build infrastructure for communities that actually work.
+                            </p>
+
+                            <div class="space-y-3 text-sm">
+                                <div class="flex gap-3">
+                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
+                                    <span class="text-slate-300">Work you care about</span>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
+                                    <span class="text-slate-300">Family setting + community</span>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
+                                    <span class="text-slate-300">Flexibility + freedom from debt</span>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
+                                    <span class="text-slate-300">Commitment to mutual success</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/50 border border-slate-700 p-8 rounded-lg">
+                            <h3 class="text-sm font-mono text-blue-300 mb-6 tracking-wider">THE AGREEMENT</h3>
+                            <div class="space-y-4 text-sm">
+                                <div>
+                                    <p class="text-blue-300 font-semibold mb-1">Honest about power</p>
+                                    <p class="text-slate-300">Housing = leverage. We say it. Structure around it.</p>
+                                </div>
+                                <div>
+                                    <p class="text-emerald-300 font-semibold mb-1">Freedom to leave</p>
+                                    <p class="text-slate-300">2 weeks notice. No guilt. Safe transition.</p>
+                                </div>
+                                <div>
+                                    <p class="text-blue-300 font-semibold mb-1">Written + clear</p>
+                                    <p class="text-slate-300">Hours, boundaries, goals. Signed. No ambiguity.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})" class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">
+                        See the Work →
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3Cs -->
+            <section class="bg-slate-900/50 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="framework-heading">
+                <div class="max-w-6xl mx-auto">
+                    <h2 id="framework-heading" class="text-sm font-mono text-blue-300 mb-8 tracking-wider">3CS FRAMEWORK</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div>
+                            <p class="font-bold text-lg mb-2">Connect</p>
+                            <p class="text-slate-300 text-sm">Find people. Build the group.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-lg mb-2">Consensus</p>
+                            <p class="text-slate-300 text-sm">Define boundaries, goals, shared responsibility.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-lg mb-2">Coordinate</p>
+                            <p class="text-slate-300 text-sm">Optimize distributed action. Ship real work.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Carousel -->
+            <section id="projects" class="bg-slate-950 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="work-heading">
+                <div class="max-w-6xl mx-auto">
+                    <h2 id="work-heading" class="text-sm font-mono text-emerald-300 mb-12 tracking-wider">THE WORK</h2>
+
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <!-- Carousel -->
+                        <div role="region" aria-label="Project carousel" aria-live="polite">
+                            <div class="bg-slate-900 border border-slate-700 rounded-lg p-8 min-h-80 flex flex-col justify-between" id="projectCard">
+                                <div>
+                                    <p class="text-blue-300 text-sm font-mono mb-2" id="projectCounter">PROJECT 01/03</p>
+                                    <h3 class="text-2xl font-bold mb-4" id="projectTitle">3Cs Coordination Software</h3>
+                                    <p class="text-slate-300 text-sm leading-relaxed mb-6" id="projectDesc">Platform for managing distributed communities. Connect groups, reach consensus on decisions, coordinate distributed action across networks.</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 mb-3">Time allocation this year:</p>
+                                    <div class="flex gap-2 items-center">
+                                        <div class="flex-1 bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Project time allocation" id="projectProgressBar">
+                                            <div class="bg-blue-500 h-2 rounded transition-all duration-300" id="projectBar" style="width: 35%;"></div>
+                                        </div>
+                                        <span class="text-slate-300 text-sm font-mono" id="projectPercent">35%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pagination Dots -->
+                            <div class="flex gap-2 mt-6 justify-center" role="tablist" aria-label="Project slides">
+                                <button onclick="goToProject(0)" class="w-2 h-2 rounded-full bg-blue-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" id="dot0" role="tab" aria-selected="true" aria-label="Project 1"></button>
+                                <button onclick="goToProject(1)" class="w-2 h-2 rounded-full bg-slate-600 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" id="dot1" role="tab" aria-selected="false" aria-label="Project 2"></button>
+                                <button onclick="goToProject(2)" class="w-2 h-2 rounded-full bg-slate-600 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" id="dot2" role="tab" aria-selected="false" aria-label="Project 3"></button>
+                            </div>
+
+                            <!-- Navigation -->
+                            <div class="flex gap-4 mt-4 justify-center">
+                                <button onclick="prevProject()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" aria-label="Previous project">← Previous</button>
+                                <button onclick="nextProject()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" aria-label="Next project">Next →</button>
+                            </div>
+                        </div>
+
+                        <!-- Time Breakdown -->
+                        <div>
+                            <h3 class="text-lg font-bold mb-8">This Year's Priorities</h3>
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="font-semibold">3Cs Software</p>
+                                        <span class="text-blue-400 text-sm">35%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="3Cs Software allocation">
+                                        <div class="bg-blue-500 h-2 rounded" style="width: 35%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="font-semibold">Everything Stack</p>
+                                        <span class="text-emerald-400 text-sm">40%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Everything Stack allocation">
+                                        <div class="bg-emerald-500 h-2 rounded" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="font-semibold">Food Forest</p>
+                                        <span class="text-emerald-300 text-sm">15%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Food Forest allocation">
+                                        <div class="bg-emerald-400 h-2 rounded" style="width: 15%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="font-semibold">Outreach + Community</p>
+                                        <span class="text-blue-300 text-sm">10%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" aria-label="Outreach and Community allocation">
+                                        <div class="bg-blue-400 h-2 rounded" style="width: 10%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 p-4 bg-slate-900 border border-slate-700 rounded">
+                                <p class="text-sm text-slate-300">You contribute based on interest + skill. Some work solo, some collaborative. All tied to shipping real things.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Time & Requirements -->
+            <section class="bg-slate-900 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="time-heading">
+                <div class="max-w-6xl mx-auto">
+                    <h2 id="time-heading" class="text-sm font-mono text-slate-300 mb-8 tracking-wider">TIME & COMMITMENT</h2>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-emerald-400 font-semibold mb-2">Minimum 10 hrs/week</p>
+                                <p class="text-slate-300 text-sm">Family + kids. Mornings, some evenings. Flexible within a week.</p>
+                            </div>
+                            <div>
+                                <p class="text-blue-400 font-semibold mb-2">Up to 60 hrs/month</p>
+                                <p class="text-slate-300 text-sm">Real work on projects. Actual development + design + coordination.</p>
+                            </div>
+                            <div>
+                                <p class="text-emerald-400 font-semibold mb-2">1 week off/quarter</p>
+                                <p class="text-slate-300 text-sm">+ 1 week/year. Planned. We're structured about it.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-blue-400 font-semibold mb-2">What you get</p>
+                                <ul class="text-slate-300 text-sm space-y-2">
+                                    <li><span aria-hidden="true">✓</span> <span>Room + board + meals</span></li>
+                                    <li><span aria-hidden="true">✓</span> <span>$300/month</span></li>
+                                    <li><span aria-hidden="true">✓</span> <span>Work you care about</span></li>
+                                    <li><span aria-hidden="true">✓</span> <span>Mentorship + network</span></li>
+                                    <li><span aria-hidden="true">✓</span> <span>First month's rent when you leave</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The Deal -->
+            <section class="bg-slate-950 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="deal-heading">
+                <div class="max-w-6xl mx-auto">
+                    <h2 id="deal-heading" class="text-sm font-mono text-slate-300 mb-8 tracking-wider">THE DEAL (WRITTEN, SIGNED)</h2>
+
+                    <div class="grid md:grid-cols-3 gap-6 text-sm">
+                        <div>
+                            <p class="text-blue-400 font-semibold mb-2">Hours & Boundaries</p>
+                            <p class="text-slate-300">10–60/month, when, where, what. All documented.</p>
+                        </div>
+                        <div class="bg-slate-900/50 border border-emerald-500/30 rounded-lg p-4">
+                            <p class="text-emerald-400 font-semibold mb-2">Honest Power Dynamic</p>
+                            <p class="text-slate-300">We provide housing. That matters. We acknowledge it and protect against it.</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-400 font-semibold mb-2">Freedom to Leave</p>
+                            <p class="text-slate-300">2 weeks notice. Safe exit. We help you move forward.</p>
+                        </div>
+                        <div>
+                            <p class="text-emerald-400 font-semibold mb-2">No Power Dynamics</p>
+                            <p class="text-slate-300">We all feel comfortable. You're not a tenant. Not an employee. Family.</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-400 font-semibold mb-2">Mutual Success</p>
+                            <p class="text-slate-300">We're committed to your growth, your projects, your transition.</p>
+                        </div>
+                        <div>
+                            <p class="text-emerald-400 font-semibold mb-2">Kids Have to Like You</p>
+                            <p class="text-slate-300">And you need to like them. Vibe first. Everything else flows from that.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="bg-slate-900 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="cta-heading">
+                <div class="max-w-6xl mx-auto flex md:flex-row flex-col gap-12 items-start justify-between">
+                    <div>
+                        <h3 id="cta-heading" class="text-sm font-mono text-slate-300 mb-4 tracking-wider">LOCATION</h3>
+                        <p class="text-2xl font-bold mb-2">West Michigan</p>
+                        <p class="text-slate-300">30 min from downtown GR. Highway. Room to build.</p>
+                    </div>
+
+                    <div class="md:text-right">
+                        <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg px-4 py-2 mb-6 inline-block">
+                            <p class="text-sm text-blue-300 font-mono">Applications open January 5</p>
+                        </div>
+                        <div>
+                            <button class="bg-emerald-500 hover:bg-emerald-400 px-10 py-4 rounded-lg text-lg font-bold transition-all shadow-lg shadow-emerald-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900">
+                                Apply Now
+                            </button>
+                        </div>
+                        <p class="text-sm text-slate-400 mt-4 font-mono">jim@example.com</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const projects = [
+            {
+                title: "3Cs Coordination Software",
+                desc: "Platform for managing distributed communities. Connect groups, reach consensus on decisions, coordinate distributed action across networks.",
+                percent: 35,
+                color: "bg-blue-500"
+            },
+            {
+                title: "Everything Stack",
+                desc: "AI-native application framework. Voice-first interfaces, workflow orchestration, ambient AI assistants, conversational systems with on-device inference.",
+                percent: 40,
+                color: "bg-emerald-500"
+            },
+            {
+                title: "Food Forest",
+                desc: "Regenerative food systems on our property. Permaculture design, sustainable living, hands-on learning. Work with the land.",
+                percent: 15,
+                color: "bg-emerald-400"
+            }
+        ];
+
+        let currentProject = 0;
+
+        function updateProject() {
+            const p = projects[currentProject];
+            document.getElementById("projectTitle").textContent = p.title;
+            document.getElementById("projectDesc").textContent = p.desc;
+            document.getElementById("projectPercent").textContent = p.percent + "%";
+            document.getElementById("projectBar").style.width = p.percent + "%";
+            document.getElementById("projectBar").className = p.color + " h-2 rounded transition-all duration-300";
+            document.getElementById("projectCounter").textContent = `PROJECT 0${currentProject + 1}/0${projects.length}`;
+            document.getElementById("projectProgressBar").setAttribute("aria-valuenow", p.percent);
+
+            // Update pagination dots
+            for (let i = 0; i < projects.length; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i === currentProject) {
+                    dot.className = "w-3 h-3 rounded-full bg-blue-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
+                    dot.setAttribute("aria-selected", "true");
+                } else {
+                    dot.className = "w-2 h-2 rounded-full bg-slate-600 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
+                    dot.setAttribute("aria-selected", "false");
+                }
+            }
+        }
+
+        function nextProject() {
+            currentProject = (currentProject + 1) % projects.length;
+            updateProject();
+        }
+
+        function prevProject() {
+            currentProject = (currentProject - 1 + projects.length) % projects.length;
+            updateProject();
+        }
+
+        function goToProject(index) {
+            currentProject = index;
+            updateProject();
+        }
+
+        updateProject();
+    </script>
+</body>
+</html>

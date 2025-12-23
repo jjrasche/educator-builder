@@ -60,13 +60,13 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     console.warn('  ⚠ API timeout');
   }
 
-  // Extract guide response
-  await page.waitForTimeout(2000);
-  const allMessages1 = await page.locator('div').allTextContents();
-  const guideResponse1 = allMessages1
-    .map(t => t.trim())
-    .filter(t => t.length > 100 && !t.match(/^(Send|Start|Ask|AI|You)$/i) && t.replace(/\s+/g, '').length > 100)
-    .pop() || '';
+  // Extract guide response - use specific container for speed
+  await page.waitForTimeout(1500);
+  const chatContainer = page.locator('#chat-messages');
+  const allText = await chatContainer.innerText().catch(() => '');
+  // Split by multiple newlines to separate messages, then find the longest substantial one
+  const messages = allText.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
+  const guideResponse1 = messages[messages.length - 1] || '';
 
   console.log(`\n[Guide]: "${guideResponse1.substring(0, 150)}..."`);
   console.log(`  → Response length: ${guideResponse1.length} chars`);
@@ -116,12 +116,10 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
   }
 
   // Extract guide response
-  await page.waitForTimeout(2000);
-  const allMessages2 = await page.locator('div').allTextContents();
-  const guideResponse2 = allMessages2
-    .map(t => t.trim())
-    .filter(t => t.length > 100 && !t.match(/^(Send|Start|Ask|AI|You)$/i) && t.replace(/\s+/g, '').length > 100)
-    .pop() || '';
+  await page.waitForTimeout(1500);
+  const allText2 = await page.locator('#chat-messages').innerText().catch(() => '');
+  const messages2 = allText2.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
+  const guideResponse2 = messages2[messages2.length - 1] || '';
 
   console.log(`\n[Guide]: "${guideResponse2.substring(0, 150)}..."`);
   console.log(`  → Response length: ${guideResponse2.length} chars`);
@@ -171,12 +169,10 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
   }
 
   // Extract guide response
-  await page.waitForTimeout(2000);
-  const allMessages3 = await page.locator('div').allTextContents();
-  const guideResponse3 = allMessages3
-    .map(t => t.trim())
-    .filter(t => t.length > 100 && !t.match(/^(Send|Start|Ask|AI|You)$/i) && t.replace(/\s+/g, '').length > 100)
-    .pop() || '';
+  await page.waitForTimeout(1500);
+  const allText3 = await page.locator('#chat-messages').innerText().catch(() => '');
+  const messages3 = allText3.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
+  const guideResponse3 = messages3[messages3.length - 1] || '';
 
   console.log(`\n[Guide]: "${guideResponse3.substring(0, 150)}..."`);
   console.log(`  → Response length: ${guideResponse3.length} chars`);

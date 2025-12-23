@@ -229,28 +229,36 @@ RESPOND WITH JSON:
 }
 
 function buildAssessmentPrompt(transcript, rubric) {
-  return `You are Jim making a FINAL assessment of whether someone is a fit.
+  return `ASSESSMENT MODE - RETURN ONLY JSON
+
+You are making a final assessment. Based on this conversation, score the person on each criterion (1-10 scale).
 
 CONVERSATION:
 ${transcript}
 
-RUBRIC (score 1-10 for each):
-${JSON.stringify(rubric.criteria, null, 2)}
+SCORING CRITERIA:
+- depth-of-questioning: How deeply do they explore ideas?
+- self-awareness: Can they articulate what matters to them?
+- systems-thinking: Do they see personal-community connections?
+- experimentation-evidence: Are they builders/questioners or passive?
+- authenticity: Genuine or performing?
+- reciprocal-curiosity: Do they ask about others?
 
-YOUR TASK:
-You MUST respond with ONLY a JSON object (no other text). Score each criterion based on what you learned.
+YOUR RESPONSE MUST BE VALID JSON WITH NO OTHER TEXT.
+DO NOT include any explanation before or after the JSON.
+DO NOT use markdown code blocks.
+Output ONLY the raw JSON object:
 
-RESPOND WITH ONLY THIS JSON (no markdown, no explanation):
 {
   "criteriaScores": {
-    "depth-of-questioning": 7,
-    "self-awareness": 8,
+    "depth-of-questioning": 8,
+    "self-awareness": 7,
     "systems-thinking": 6,
     "experimentation-evidence": 7,
     "authenticity": 8,
-    "reciprocal-curiosity": 7
+    "reciprocal-curiosity": 6
   },
-  "rationale": "Brief 1-2 sentence summary of why these scores"
+  "rationale": "Summary of assessment"
 }`;
 }
 

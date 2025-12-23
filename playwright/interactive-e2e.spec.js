@@ -58,11 +58,19 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     // Response might have already arrived, that's OK
   }
 
-  // Extract guide response - use specific container for speed
-  await page.waitForTimeout(1500);
+  // Extract guide response - wait for actual response to appear
+  try {
+    // Wait for new message to appear in chat (more reactive than fixed timeout)
+    await page.waitForFunction(() => {
+      const chatDiv = document.getElementById('chat-messages');
+      return chatDiv && chatDiv.querySelectorAll('div').length > 2;  // At least user + guide messages
+    }, { timeout: 10000 });
+  } catch (e) {
+    console.warn('  ⚠ Timeout waiting for response DOM');
+  }
+
   const chatContainer = page.locator('#chat-messages');
   const allText = await chatContainer.innerText().catch(() => '');
-  // Split by multiple newlines to separate messages, then find the longest substantial one
   const messages = allText.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
   const guideResponse1 = messages[messages.length - 1] || '';
 
@@ -122,8 +130,16 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     // Response might have already arrived, that's OK
   }
 
-  // Extract guide response
-  await page.waitForTimeout(1500);
+  // Extract guide response - wait for actual response
+  try {
+    await page.waitForFunction(() => {
+      const chatDiv = document.getElementById('chat-messages');
+      return chatDiv && chatDiv.querySelectorAll('div').length > 4;  // Multiple messages now
+    }, { timeout: 10000 });
+  } catch (e) {
+    console.warn('  ⚠ Timeout waiting for response DOM');
+  }
+
   const allText2 = await page.locator('#chat-messages').innerText().catch(() => '');
   const messages2 = allText2.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
   const guideResponse2 = messages2[messages2.length - 1] || '';
@@ -173,8 +189,16 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     // Response might have already arrived, that's OK
   }
 
-  // Extract guide response
-  await page.waitForTimeout(1500);
+  // Extract guide response - wait for actual response
+  try {
+    await page.waitForFunction(() => {
+      const chatDiv = document.getElementById('chat-messages');
+      return chatDiv && chatDiv.querySelectorAll('div').length > 6;  // Even more messages
+    }, { timeout: 10000 });
+  } catch (e) {
+    console.warn('  ⚠ Timeout waiting for response DOM');
+  }
+
   const allText3 = await page.locator('#chat-messages').innerText().catch(() => '');
   const messages3 = allText3.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
   const guideResponse3 = messages3[messages3.length - 1] || '';

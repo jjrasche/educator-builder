@@ -22,7 +22,6 @@ export default async function handler(req, res) {
 
     // 2. Evaluate conversation inline
     const evaluationResult = await evaluateConversation(messages, rubric);
-    console.log('EVAL RESULT:', JSON.stringify(evaluationResult).slice(0, 200));
 
     // 3. Initialize Groq client for streaming response
     const client = new OpenAI({
@@ -92,14 +91,7 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
     }
 
     // 7. If assessment complete, send fitness score metadata
-    console.log('Metadata check:', {
-      hasResult: !!evaluationResult,
-      action: evaluationResult?.action,
-      fitScore: evaluationResult?.fitScore,
-      shouldSend: evaluationResult && evaluationResult.action === 'assess' && evaluationResult.fitScore
-    });
     if (evaluationResult && evaluationResult.action === 'assess' && evaluationResult.fitScore) {
-      console.log('SENDING METADATA');
       res.write(`data: ${JSON.stringify({
         type: 'metadata',
         fitScore: evaluationResult.fitScore,
@@ -113,7 +105,6 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
       console.error('KV storage error:', err.message)
     );
 
-    res.write('data: [DEBUG_BEFORE_DONE]\n\n');
     res.write('data: [DONE]\n\n');
     res.end();
 
@@ -129,31 +120,13 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
 // ========== EVALUATION FUNCTIONS ==========
 
 async function evaluateConversation(chatHistory, rubric) {
-  // TEMP FOR TESTING: Return hardcoded assessment immediately
-  return {
-    action: 'assess',
-    criteriaScores: {
-      'depth-of-questioning': 7,
-      'self-awareness': 8,
-      'systems-thinking': 6,
-      'experimentation-evidence': 7,
-      'authenticity': 8,
-      'reciprocal-curiosity': 7
-    },
-    rationale: 'TEST MODE - HARDCODED SCORE',
-    fitScore: 72,
-    decision: 'request_email',
-    timestamp: new Date().toISOString()
-  };
-
   const userTurns = chatHistory.filter(msg => msg.role === 'user').length;
   const transcript = chatHistory
     .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
     .join('\n\n');
 
   // Decision logic: probe early, assess when you have enough information
-  // TEMPORARY: ALWAYS assess for testing
-  const shouldAssess = true; // userTurns >= 5;
+  const shouldAssess = userTurns >= 5;
 
   const prompt = shouldAssess
     ? buildAssessmentPrompt(transcript, rubric)

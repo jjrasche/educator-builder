@@ -141,8 +141,8 @@ async function evaluateConversation(chatHistory, rubric) {
     const response = await client.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-      max_tokens: 700
+      temperature: shouldAssess ? 0.1 : 0.3,
+      max_tokens: shouldAssess ? 500 : 700
     });
 
     const responseText = response.choices[0]?.message?.content;
@@ -223,28 +223,28 @@ RESPOND WITH JSON:
 }
 
 function buildAssessmentPrompt(transcript, rubric) {
-  return `You are Jim, assessing whether someone is a fit for a live-in collaboration role focused on freedom, community, and alternative living.
-
-RUBRIC:
-${JSON.stringify(rubric.criteria, null, 2)}
+  return `You are Jim making a FINAL assessment of whether someone is a fit.
 
 CONVERSATION:
 ${transcript}
 
-ASSESSMENT TASK:
-Based on everything you've learned across this conversation, score each rubric criterion (1-10). Then provide brief rationale.
+RUBRIC (score 1-10 for each):
+${JSON.stringify(rubric.criteria, null, 2)}
 
-RESPOND WITH JSON:
+YOUR TASK:
+You MUST respond with ONLY a JSON object (no other text). Score each criterion based on what you learned.
+
+RESPOND WITH ONLY THIS JSON (no markdown, no explanation):
 {
   "criteriaScores": {
-    "depth-of-questioning": score,
-    "self-awareness": score,
-    "systems-thinking": score,
-    "experimentation-evidence": score,
-    "authenticity": score,
-    "reciprocal-curiosity": score
+    "depth-of-questioning": 7,
+    "self-awareness": 8,
+    "systems-thinking": 6,
+    "experimentation-evidence": 7,
+    "authenticity": 8,
+    "reciprocal-curiosity": 7
   },
-  "rationale": "Brief assessment based on conversation"
+  "rationale": "Brief 1-2 sentence summary of why these scores"
 }`;
 }
 

@@ -55,7 +55,7 @@ export default async function handler(req, res) {
     }
 
     // 5. Parse JSON response to extract structured data
-    const evaluation = parseEvaluationResponse(responseText);
+    const evaluation = parseEvaluationResponse(responseText, rubric);
 
     // 6. Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream');
@@ -77,7 +77,8 @@ export default async function handler(req, res) {
       rubricScores: evaluation.rubricScores,
       fitScore: evaluation.fitScore,
       rationale: evaluation.rationale,
-      canUnlockEmail: evaluation.fitScore !== null && evaluation.fitScore >= 60
+      allFloorsPass: evaluation.allFloorsPass,
+      canUnlockEmail: evaluation.fitScore !== null && evaluation.fitScore >= 60 && evaluation.allFloorsPass
     })}\n\n`);
 
     // 9. Store conversation to KV (fire and forget)
@@ -126,10 +127,28 @@ This isn't a job interview. This is a conversation about freedom.
 - Live-in position: private suite in family home
 - 10-60 hrs/month flexible work
 - Housing + meals (~$1,300/month value) + optional $300/month cash
-- Work: 3Cs coordination software, Everything Stack AI framework, food forest
+- Work:
+  - 3Cs: Coordination (organizing people/systems), Cultivation (growing food/culture), Creation (building tools/software)
+  - Everything Stack: Modern AI tools integrated as a unified learning system
+  - Food forest: Permaculture food system combining autonomy + abundance
 - 2-week notice to leave anytime
 - Everything documented in writing
 - Next step: Paid working interview ($50/hr, 2-4 hours)
+
+**IMPORTANT - What you're NOT evaluating:**
+- Credentials, experience, or resume
+- Technical skills (we teach those)
+- Current income or financial status
+- Educational pedigree
+
+**What you ARE evaluating:**
+- Mindset: Do they think about how to actually live, not just how to survive/extract?
+- Experimentalism: Have they tried building or questioning different ways?
+- Authenticity: Can they be genuine, not perform?
+- Systems awareness: Do they see personal + community as linked?
+- Reciprocal curiosity: Are they interested in mutual exploration?
+
+This is a lifestyle experiment, not a job application.
 
 Be conversational. Keep responses 2-3 sentences unless deep exploration is happening.
 
@@ -159,12 +178,12 @@ RESPOND WITH ONLY THIS JSON STRUCTURE (no markdown, no extra text):
 KEY DEFINITIONS:
 - Speech acts (Searle): assertive (stating facts), directive (requesting action), expressive (emotional), commissive (making promise), declarative (changing state)
 - Dialogue acts: open_with_question (starting), probe_deeper (exploring further), ask_for_concrete (requesting examples), validate_genuine (confirming authenticity), redirect_from_surface (moving past abstractions), reflect_understanding (mirroring), affirm_commitment (supporting decision)
-- Rubric scores: How well does YOUR RESPONSE help evaluate the person on each criterion? (You're scoring your own effectiveness as the guide, not the person.)
+- Rubric scores: Score the applicant on each criterion (1-10). How well do they demonstrate depth-of-questioning, self-awareness, systems thinking, etc.?
 - Fit score: 0-100 overall quality of this turn
 - Rationale: Why did you score this way?`;
 }
 
-function parseEvaluationResponse(responseText) {
+function parseEvaluationResponse(responseText, rubric) {
   try {
     // Extract JSON from response
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -174,22 +193,38 @@ function parseEvaluationResponse(responseText) {
 
     const parsed = JSON.parse(jsonMatch[0]);
 
+    // Build rubricScores object with defaults
+    const rubricScores = parsed.rubricScores || {
+      'depth-of-questioning': null,
+      'self-awareness': null,
+      'systems-thinking': null,
+      'experimentation-evidence': null,
+      'authenticity': null,
+      'reciprocal-curiosity': null
+    };
+
+    // Calculate allFloorsPass: check if all criteria meet their floor
+    let allFloorsPass = true;
+    if (rubric && rubric.criteria) {
+      for (const criterion of rubric.criteria) {
+        const score = rubricScores[criterion.id];
+        if (score === null || score === undefined || score < criterion.floor) {
+          allFloorsPass = false;
+          break;
+        }
+      }
+    }
+
     // Validate required fields and provide defaults
     return {
       response: parsed.response || responseText,
       speechAct: parsed.speechAct || 'directive',
       dialogueAct: parsed.dialogueAct || 'probe_deeper',
       criteria: Array.isArray(parsed.criteria) ? parsed.criteria : [],
-      rubricScores: parsed.rubricScores || {
-        'depth-of-questioning': null,
-        'self-awareness': null,
-        'systems-thinking': null,
-        'experimentation-evidence': null,
-        'authenticity': null,
-        'reciprocal-curiosity': null
-      },
+      rubricScores,
       fitScore: typeof parsed.fitScore === 'number' ? parsed.fitScore : null,
-      rationale: parsed.rationale || ''
+      rationale: parsed.rationale || '',
+      allFloorsPass
     };
   } catch (error) {
     console.warn('[EVAL] Failed to parse response, using fallback:', error.message);
@@ -208,7 +243,8 @@ function parseEvaluationResponse(responseText) {
         'reciprocal-curiosity': null
       },
       fitScore: null,
-      rationale: 'Fallback evaluation'
+      rationale: 'Fallback evaluation',
+      allFloorsPass: false
     };
   }
 }
@@ -233,6 +269,7 @@ async function storeConversation(sessionId, email, messages, aiMessage, evaluati
       criteria: evaluation.criteria,
       rubricScores: evaluation.rubricScores,
       fitScore: evaluation.fitScore,
+      allFloorsPass: evaluation.allFloorsPass,
       rationale: evaluation.rationale,
       timestamp: new Date().toISOString()
     };
@@ -253,12 +290,14 @@ async function storeConversation(sessionId, email, messages, aiMessage, evaluati
 
     // Also store metadata for this session
     const metadataKey = `metadata:${sessionId}`;
+    const existingMetadata = await kv.get(metadataKey) || {};
     const metadata = {
       email: email || null,
       turnCount: updated.length,
       lastFitScore: evaluation.fitScore,
+      lastAllFloorsPass: evaluation.allFloorsPass,
       lastEvaluated: new Date().toISOString(),
-      startedAt: (await kv.get(metadataKey))?.startedAt || new Date().toISOString()
+      startedAt: existingMetadata.startedAt || new Date().toISOString()
     };
     await kv.set(metadataKey, metadata);
 

@@ -1,6 +1,4 @@
 {
-  "buildCommand": "npm run build",
-  "framework": "other",
   "cleanUrls": true,
   "rewrites": [
     {
@@ -10,12 +8,6 @@
     {
       "source": "/((?!api/.*).*)",
       "destination": "/app/index.html"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/.*",
-      "dest": "/api/.*"
     }
   ]
 }

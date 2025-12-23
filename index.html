@@ -109,9 +109,22 @@
             </div>
 
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Ask anything..."
+                <input type="text" id="chat-input" data-testid="chat-input" placeholder="Ask anything..."
                     class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                 <button onclick="sendMessage()" id="send-btn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">Send</button>
+            </div>
+
+            <!-- Fit Score Display (for visual feedback) -->
+            <div class="p-3 border-t border-slate-700 bg-slate-900">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Fit Score</span>
+                    <div id="fit-score-display" class="flex items-center gap-2">
+                        <span id="fit-score-value" class="text-slate-400">—</span>
+                        <div id="fit-score-bar" class="h-2 w-24 bg-slate-700 rounded-full overflow-hidden">
+                            <div id="fit-score-fill" class="h-full bg-emerald-500 transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -236,7 +249,15 @@
         let isStreaming = false;
         let fitScore = 0;
         let canUnlockEmail = false;
+        let lastMetadata = null; // Store full metadata for Playwright access
         const API_BASE = location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
+        // Generate session ID for KV storage
+        let sessionId = localStorage.getItem('sessionId');
+        if (!sessionId) {
+          sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem('sessionId', sessionId);
+        }
 
         // Initialize
         async function init() {
@@ -282,7 +303,7 @@
                 const response = await fetch(`${API_BASE}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: chatHistory })
+                    body: JSON.stringify({ messages: chatHistory, sessionId, email: userEmail })
                 });
 
                 if (!response.ok) throw new Error('API error');
@@ -318,6 +339,23 @@
                                     }
                                 }
                                 if (parsed.type === 'metadata') {
+                                    // Store full metadata for Playwright access
+                                    lastMetadata = {
+                                        speechAct: parsed.speechAct,
+                                        dialogueAct: parsed.dialogueAct,
+                                        criteria: parsed.criteria,
+                                        rubricScores: parsed.rubricScores,
+                                        fitScore: parsed.fitScore,
+                                        rationale: parsed.rationale,
+                                        canUnlockEmail: parsed.canUnlockEmail
+                                    };
+
+                                    // Expose metadata in message element for Playwright
+                                    if (messageDiv) {
+                                        messageDiv.setAttribute('data-metadata', JSON.stringify(lastMetadata));
+                                        messageDiv.setAttribute('data-role', 'assistant');
+                                    }
+
                                     fitScore = parsed.fitScore;
                                     canUnlockEmail = parsed.canUnlockEmail;
                                     updateFitDisplay();
@@ -395,6 +433,22 @@
 
         function updateExchangeCount() {
             document.getElementById('exchange-count').textContent = `${exchanges} exchanges`;
+        }
+
+        function updateFitDisplay() {
+            // Update fit score display
+            const scoreValue = document.getElementById('fit-score-value');
+            const scoreFill = document.getElementById('fit-score-fill');
+
+            if (fitScore !== null && fitScore !== undefined) {
+                scoreValue.textContent = `${fitScore}%`;
+                scoreValue.className = fitScore >= 60 ? 'text-emerald-400 font-semibold' : 'text-slate-400';
+                scoreFill.style.width = `${Math.min(fitScore, 100)}%`;
+            } else {
+                scoreValue.textContent = '—';
+                scoreValue.className = 'text-slate-400';
+                scoreFill.style.width = '0%';
+            }
         }
 
         function logMessage(content, role) {

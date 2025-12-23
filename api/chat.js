@@ -138,9 +138,16 @@ async function evaluateConversation(chatHistory, rubric) {
   });
 
   try {
+    const messages = shouldAssess
+      ? [
+          { role: 'system', content: 'You are an assessment system. You MUST respond with ONLY valid JSON. No other text.' },
+          { role: 'user', content: prompt }
+        ]
+      : [{ role: 'user', content: prompt }];
+
     const response = await client.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
-      messages: [{ role: 'user', content: prompt }],
+      messages: messages,
       temperature: shouldAssess ? 0.1 : 0.3,
       max_tokens: shouldAssess ? 500 : 700
     });

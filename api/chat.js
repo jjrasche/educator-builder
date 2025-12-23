@@ -173,6 +173,16 @@ async function evaluateConversation(chatHistory, rubric) {
       throw new Error(`Failed to parse response: ${e.message}`);
     }
 
+    // Helper function for scoring
+    function calculateScoreFromText(text, keywords) {
+      let matches = 0;
+      const lowerText = text.toLowerCase();
+      for (const kw of keywords) {
+        if (lowerText.includes(kw)) matches++;
+      }
+      return Math.min(10, Math.max(3, matches * 2));
+    }
+
     // If assessing, either use parsed scores or extract from response
     if (shouldAssess) {
       // If Groq gave us criteriaScores, use them
@@ -216,15 +226,6 @@ async function evaluateConversation(chatHistory, rubric) {
       probeQuestion: parsed.probeQuestion || 'Tell me more about your thinking on this.',
       timestamp: new Date().toISOString()
     };
-
-    function calculateScoreFromText(text, keywords) {
-      let matches = 0;
-      const lowerText = text.toLowerCase();
-      for (const kw of keywords) {
-        if (lowerText.includes(kw)) matches++;
-      }
-      return Math.min(10, Math.max(3, matches * 2));
-    }
   } catch (error) {
     console.warn('Evaluation failed:', error.message);
     // Return neutral probe on failure

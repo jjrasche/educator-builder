@@ -113,6 +113,13 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
       console.error('KV storage error:', err.message)
     );
 
+    // DEBUG: Include eval result in done message
+    res.write(`data: ${JSON.stringify({
+      debug: 'DONE',
+      hasEval: !!evaluationResult,
+      evalAction: evaluationResult?.action,
+      evalScore: evaluationResult?.fitScore
+    })}\n\n`);
     res.write('data: [DONE]\n\n');
     res.end();
 

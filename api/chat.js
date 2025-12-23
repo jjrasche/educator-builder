@@ -264,12 +264,46 @@ function calculateFitScore(criteriaScores, rubric) {
 // ========== KV STORAGE FUNCTIONS ==========
 
 async function storeConversation(sessionId, email, messages, aiMessage, evaluationResult) {
-  // TODO: Implement Vercel KV storage
-  // For now, log to console
-  console.log('Store conversation:', {
-    sessionId,
-    email,
-    messageCount: messages.length,
-    evaluation: evaluationResult?.action
-  });
+  try {
+    // Import Vercel KV dynamically (only available in Vercel environment)
+    const { kv } = await import('@vercel/kv');
+
+    // Build conversation record with this exchange
+    const conversationRecord = {
+      messages: messages,
+      aiMessage: aiMessage,
+      evaluation: evaluationResult ? {
+        action: evaluationResult.action,
+        ...(evaluationResult.action === 'assess' && {
+          criteriaScores: evaluationResult.criteriaScores,
+          fitScore: evaluationResult.fitScore,
+          decision: evaluationResult.decision,
+          rationale: evaluationResult.rationale
+        }),
+        ...(evaluationResult.action === 'probe' && {
+          probeQuestion: evaluationResult.probeQuestion
+        })
+      } : null,
+      timestamp: new Date().toISOString()
+    };
+
+    // Store by sessionId (primary key)
+    // KV structure: conversation:{sessionId} = array of exchanges
+    const kvKey = `conversation:${sessionId}`;
+    const existing = await kv.get(kvKey) || [];
+    const updated = Array.isArray(existing) ? existing : [existing];
+    updated.push(conversationRecord);
+    await kv.set(kvKey, updated);
+
+    // If email provided, create link: email:{email} -> sessionId
+    // This allows querying by email later
+    if (email) {
+      await kv.set(`email:${email}`, sessionId);
+    }
+
+    console.log(`KV stored: ${kvKey} (${updated.length} exchanges)`);
+  } catch (error) {
+    // Silently fail - chat should never break because of logging
+    console.warn('KV storage failed:', error.message);
+  }
 }

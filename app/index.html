@@ -232,14 +232,29 @@
         let selectedProjects = [];
         let chatHistory = [];
         let userEmail = '';
+        let sessionId = '';
         let projects = [];
         let isStreaming = false;
         let fitScore = 0;
         let canUnlockEmail = false;
         const API_BASE = location.hostname === 'localhost' ? 'http://localhost:3000' : '';
 
+        // Generate or retrieve sessionId from localStorage
+        function getOrCreateSessionId() {
+            let id = localStorage.getItem('sessionId');
+            if (!id) {
+                id = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('sessionId', id);
+            }
+            return id;
+        }
+
         // Initialize
         async function init() {
+            // Generate/retrieve sessionId
+            sessionId = getOrCreateSessionId();
+            console.log('Session ID:', sessionId);
+
             // Load projects
             try {
                 const response = await fetch('/data/projects.json');
@@ -282,7 +297,11 @@
                 const response = await fetch(`${API_BASE}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: chatHistory })
+                    body: JSON.stringify({
+                        messages: chatHistory,
+                        sessionId: sessionId,
+                        email: userEmail || null
+                    })
                 });
 
                 if (!response.ok) throw new Error('API error');

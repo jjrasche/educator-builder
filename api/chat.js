@@ -1,4 +1,4 @@
-// Vercel serverless function - orchestrates judge + fit + streaming
+// Vercel serverless function - orchestrates unified /api/evaluate + streaming
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
@@ -15,10 +15,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Judge the conversation (async, can happen while response prepares)
-    const judgePromise = callJudge(messages);
+    // 1. Evaluate conversation (async - probes or assesses based on turn count)
+    const evaluationPromise = callEvaluate(messages);
 
-    // 2. Initialize Groq client
+    // 2. Initialize Groq client for streaming response
     const client = new OpenAI({
       apiKey: process.env.GROQ_API_KEY,
       baseURL: 'https://api.groq.com/openai/v1',
@@ -56,15 +56,13 @@ This isn't a job interview. This is a conversation about freedom.
 
 Be conversational. Keep responses 2-3 sentences unless deep exploration is happening.`;
 
-    // 4. Wait for judge result and decide: probe or respond naturally
+    // 4. Wait for evaluation and integrate guidance
     let systemPrompt = basePrompt;
-    const judgeResult = await judgePromise;
+    const evaluationResult = await evaluationPromise;
 
-    // If judge has a probe question and conversation is early, use it
-    let probeGuidance = '';
-    if (judgeResult && judgeResult.action === 'probe' && judgeResult.probeQuestion) {
-      probeGuidance = `\n\nNext question to ask: ${judgeResult.probeQuestion}`;
-      systemPrompt += probeGuidance;
+    // If evaluator suggests a probe, add it to system prompt
+    if (evaluationResult && evaluationResult.action === 'probe' && evaluationResult.probeQuestion) {
+      systemPrompt += `\n\nGuidance: Consider asking about: ${evaluationResult.probeQuestion}`;
     }
 
     // 5. Stream Groq response
@@ -90,18 +88,17 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
       }
     }
 
-    // 6. Calculate fit and send metadata
-    if (judgeResult && judgeResult.criteriaScores) {
-      const fitResult = await callCalculateFit(judgeResult.criteriaScores);
-
+    // 6. If assessment complete, send fitness score metadata
+    if (evaluationResult && evaluationResult.action === 'assess' && evaluationResult.fitScore) {
       res.write(`data: ${JSON.stringify({
         type: 'metadata',
-        fitScore: fitResult.fitScore,
-        canUnlockEmail: fitResult.canUnlockEmail
+        fitScore: evaluationResult.fitScore,
+        decision: evaluationResult.decision,
+        canUnlockEmail: evaluationResult.decision === 'request_email'
       })}\n\n`);
 
-      // 7. Log evaluation (fire and forget)
-      logEvaluation(judgeResult, fitResult).catch(err =>
+      // Log evaluation (fire and forget)
+      logEvaluation(evaluationResult).catch(err =>
         console.error('Logging error:', err.message)
       );
     }
@@ -118,69 +115,34 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
   }
 }
 
-async function callJudge(messages) {
+async function callEvaluate(messages) {
   try {
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000';
 
-    const response = await fetch(`${baseUrl}/api/judge`, {
+    const response = await fetch(`${baseUrl}/api/evaluate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chatHistory: messages })
     });
 
     if (!response.ok) {
-      throw new Error(`Judge failed: ${response.statusText}`);
+      throw new Error(`Evaluation failed: ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.warn('Judge call failed:', error.message);
-    // Return neutral result on failure
+    console.warn('Evaluation call failed:', error.message);
+    // Return neutral probe on failure
     return {
-      criteriaScores: {
-        'depth-of-questioning': 5,
-        'self-awareness': 5,
-        'systems-thinking': 5,
-        'experimentation-evidence': 5,
-        'authenticity': 5,
-        'reciprocal-curiosity': 5
-      },
-      coachingQuestion: null
+      action: 'probe',
+      probeQuestion: 'Can you tell me more about what draws you to this?'
     };
   }
 }
 
-async function callCalculateFit(criteriaScores) {
-  try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
-
-    const response = await fetch(`${baseUrl}/api/calculate-fit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ criteriaScores })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Fit calculation failed: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.warn('Fit calculation failed:', error.message);
-    // Return default on failure
-    return {
-      fitScore: 0,
-      floorsPass: false,
-      canUnlockEmail: false
-    };
-  }
-}
-
-async function logEvaluation(judgeResult, fitResult) {
+async function logEvaluation(evaluationResult) {
   try {
     // Create logs directory if it doesn't exist
     const logsDir = path.join(process.cwd(), 'logs');
@@ -191,10 +153,11 @@ async function logEvaluation(judgeResult, fitResult) {
     // Append to evaluations.jsonl
     const logFile = path.join(logsDir, 'evaluations.jsonl');
     const logEntry = {
-      timestamp: new Date().toISOString(),
-      criteriaScores: judgeResult.criteriaScores,
-      fitScore: fitResult.fitScore,
-      rationale: judgeResult.rationale
+      timestamp: evaluationResult.timestamp || new Date().toISOString(),
+      criteriaScores: evaluationResult.criteriaScores,
+      fitScore: evaluationResult.fitScore,
+      decision: evaluationResult.decision,
+      rationale: evaluationResult.rationale
     };
 
     fs.appendFileSync(logFile, JSON.stringify(logEntry) + '\n');

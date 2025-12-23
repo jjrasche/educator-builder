@@ -6,408 +6,571 @@
     <title>Educator + 3CS Builder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        h1, h2 { font-family: 'Georgia', serif; letter-spacing: -0.02em; }
         body { background-color: #0f172a; }
-        /* Custom focus ring offset for dark backgrounds */
-        .focus-ring {
-            @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+        .chat-bubble { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .typing-indicator { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+        /* Range slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-track {
+            background: #1e293b;
+            height: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: #10b981;
+            border: 3px solid #0f172a;
+            cursor: pointer;
+            margin-top: -0.5rem;
+        }
+
+        /* Two-column layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            height: 100vh;
+            padding: 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+        }
+
+        .chat-panel {
+            display: flex;
+            flex-direction: column;
+            background: #1e293b;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        .content-panel {
+            display: flex;
+            flex-direction: column;
+            background: #0f172a;
+            overflow-y: auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            space-y: 1rem;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input-area input {
+            flex: 1;
         }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-50">
-    <!-- Skip Link for Accessibility -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-500 focus:text-white focus:px-4 focus:py-2 focus:rounded">
-        Skip to main content
-    </a>
+    <div class="main-container">
+        <!-- PERSISTENT CHAT (Left side) -->
+        <div class="chat-panel">
+            <div class="p-4 border-b border-slate-700">
+                <p class="text-xs font-mono text-slate-500 mb-2">CHAT</p>
+                <h2 class="text-lg font-bold">Let's talk</h2>
+                <p class="text-xs text-slate-400 mt-1" id="exchange-count">0 exchanges</p>
+            </div>
 
-    <div class="min-h-screen flex flex-col">
-        <!-- Hero + Everything -->
-        <main id="main-content" class="flex-1">
-            <!-- Hero -->
-            <div class="min-h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 relative">
-                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 30% 30%, #3b82f6, transparent 50%), radial-gradient(circle at 70% 70%, #10b981, transparent 50%);"></div>
-
-                <div class="relative z-10 max-w-4xl">
-                    <div class="mb-8">
-                        <p class="text-sm font-mono text-blue-300 tracking-wider">EDUCATOR + 3CS BUILDER</p>
+            <div id="chat-messages" class="chat-messages" role="log" aria-live="polite">
+                <div class="chat-bubble flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>
+                    <div class="bg-slate-700 rounded-lg p-3 max-w-[80%]">
+                        <p class="text-sm">Hey! I'm here to help you figure out if this is a fit.</p>
+                        <p class="text-sm mt-2">This is a live-in builder role in West Michigan. You'd work 10-60 hrs/month on real projects—AI tools, coordination software, food systems.</p>
+                        <p class="text-sm mt-2 text-slate-400">What are you curious about?</p>
                     </div>
+                </div>
+            </div>
 
-                    <h1 class="text-7xl md:text-8xl font-bold leading-snug mb-6">
-                        Be part of it.
-                    </h1>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask anything..."
+                    class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                <button onclick="sendMessage()" id="send-btn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">Send</button>
+            </div>
+        </div>
 
-                    <div class="grid md:grid-cols-2 gap-8 md:gap-12 mb-12">
-                        <div>
-                            <p class="text-2xl text-slate-200 leading-relaxed mb-8">
-                                Live with us. Learn together. Build infrastructure for communities that actually work.
-                            </p>
-
-                            <div class="space-y-3 text-sm">
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
-                                    <span class="text-slate-300">Work you care about</span>
-                                </div>
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
-                                    <span class="text-slate-300">Family setting + community</span>
-                                </div>
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
-                                    <span class="text-slate-300">Flexibility + freedom from debt</span>
-                                </div>
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">→</span>
-                                    <span class="text-slate-300">Commitment to mutual success</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-900/50 border border-slate-700 p-8 rounded-lg">
-                            <h3 class="text-sm font-mono text-blue-300 mb-6 tracking-wider">THE AGREEMENT</h3>
-                            <div class="space-y-4 text-sm">
-                                <div>
-                                    <p class="text-blue-300 font-semibold mb-1">Honest about power</p>
-                                    <p class="text-slate-300">Housing = leverage. We say it. Structure around it.</p>
-                                </div>
-                                <div>
-                                    <p class="text-emerald-300 font-semibold mb-1">Freedom to leave</p>
-                                    <p class="text-slate-300">2 weeks notice. No guilt. Safe transition.</p>
-                                </div>
-                                <div>
-                                    <p class="text-blue-300 font-semibold mb-1">Written + clear</p>
-                                    <p class="text-slate-300">Hours, boundaries, goals. Signed. No ambiguity.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button onclick="document.getElementById('projects').scrollIntoView({behavior: 'smooth'})" class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">
-                        See the Work →
+        <!-- DYNAMIC CONTENT (Right side) -->
+        <div class="content-panel">
+            <!-- Stage: Initial (prompt to start chat) -->
+            <div id="stage-initial" class="p-8 text-center max-w-2xl mx-auto">
+                <div class="mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">START HERE</p>
+                    <h1 class="text-3xl font-bold mb-4">Educator + 3CS Builder</h1>
+                    <p class="text-slate-400 mb-8">Live-in role. Real work. Genuine conversation.</p>
+                    <button onclick="focusChat()" class="bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                        Start the conversation →
                     </button>
                 </div>
             </div>
 
-            <!-- 3Cs -->
-            <section class="bg-slate-900/50 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="framework-heading">
-                <div class="max-w-6xl mx-auto">
-                    <h2 id="framework-heading" class="text-sm font-mono text-blue-300 mb-8 tracking-wider">3CS FRAMEWORK</h2>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div>
-                            <p class="font-bold text-lg mb-2">Connect</p>
-                            <p class="text-slate-300 text-sm">Find people. Build the group.</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-lg mb-2">Consensus</p>
-                            <p class="text-slate-300 text-sm">Define boundaries, goals, shared responsibility.</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-lg mb-2">Coordinate</p>
-                            <p class="text-slate-300 text-sm">Optimize distributed action. Ship real work.</p>
-                        </div>
+            <!-- Stage: Projects (unlocks after ~15 exchanges) -->
+            <div id="stage-projects" class="hidden p-8">
+                <div class="text-center mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">STAGE 1</p>
+                    <h2 class="text-2xl font-bold">What interests you?</h2>
+                    <p class="text-slate-400 text-sm mt-2">Based on our chat, here's what I think might fit...</p>
+                </div>
+
+                <div id="projects-container" class="space-y-4 mb-8">
+                    <!-- Projects rendered here -->
+                </div>
+
+                <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-slate-400 mb-2">Selected projects:</p>
+                    <div id="selected-projects-list" class="flex flex-wrap gap-2">
+                        <span class="text-xs text-slate-500">None yet</span>
                     </div>
                 </div>
-            </section>
 
-            <!-- Projects Carousel -->
-            <section id="projects" class="bg-slate-950 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="work-heading">
-                <div class="max-w-6xl mx-auto">
-                    <h2 id="work-heading" class="text-sm font-mono text-emerald-300 mb-12 tracking-wider">THE WORK</h2>
+                <button onclick="goToCommit()" id="to-commit-btn" class="hidden w-full bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                    Next: Your commitment →
+                </button>
+            </div>
 
-                    <div class="grid md:grid-cols-2 gap-12">
-                        <!-- Carousel -->
-                        <div role="region" aria-label="Project carousel" aria-live="polite">
-                            <div class="bg-slate-900 border border-slate-700 rounded-lg p-8 min-h-80 flex flex-col justify-between" id="projectCard">
-                                <div>
-                                    <p class="text-blue-300 text-sm font-mono mb-2" id="projectCounter">PROJECT 01/03</p>
-                                    <h3 class="text-2xl font-bold mb-4" id="projectTitle">3Cs Coordination Software</h3>
-                                    <p class="text-slate-300 text-sm leading-relaxed mb-6" id="projectDesc">Platform for managing distributed communities. Connect groups, reach consensus on decisions, coordinate distributed action across networks.</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-slate-400 mb-3">Time allocation this year:</p>
-                                    <div class="flex gap-2 items-center">
-                                        <div class="flex-1 bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="Project time allocation" id="projectProgressBar">
-                                            <div class="bg-blue-500 h-2 rounded transition-all duration-300" id="projectBar" style="width: 35%;"></div>
-                                        </div>
-                                        <span class="text-slate-300 text-sm font-mono" id="projectPercent">35%</span>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Stage: Commitment -->
+            <div id="stage-commit" class="hidden p-8">
+                <div class="text-center mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">STAGE 2</p>
+                    <h2 class="text-2xl font-bold">Ready to meet?</h2>
+                    <p class="text-slate-400 text-sm mt-2">Schedule a paid working session</p>
+                </div>
 
-                            <!-- Pagination Dots -->
-                            <div class="flex gap-2 mt-6 justify-center" role="tablist" aria-label="Project slides">
-                                <button onclick="goToProject(0)" class="w-2 h-2 rounded-full bg-blue-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" id="dot0" role="tab" aria-selected="true" aria-label="Project 1"></button>
-                                <button onclick="goToProject(1)" class="w-2 h-2 rounded-full bg-slate-600 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" id="dot1" role="tab" aria-selected="false" aria-label="Project 2"></button>
-                                <button onclick="goToProject(2)" class="w-2 h-2 rounded-full bg-slate-600 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" id="dot2" role="tab" aria-selected="false" aria-label="Project 3"></button>
-                            </div>
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6 max-w-sm">
+                    <label for="name-input" class="text-sm text-slate-400 mb-2 block">Your name</label>
+                    <input type="text" id="name-input" placeholder="First name"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 mb-4">
 
-                            <!-- Navigation -->
-                            <div class="flex gap-4 mt-4 justify-center">
-                                <button onclick="prevProject()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" aria-label="Previous project">← Previous</button>
-                                <button onclick="nextProject()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950" aria-label="Next project">Next →</button>
-                            </div>
-                        </div>
+                    <label for="email-input" class="text-sm text-slate-400 mb-2 block">Email</label>
+                    <input type="email" id="email-input" placeholder="you@email.com"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 mb-4">
 
-                        <!-- Time Breakdown -->
-                        <div>
-                            <h3 class="text-lg font-bold mb-8">This Year's Priorities</h3>
-                            <div class="space-y-6">
-                                <div>
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="font-semibold">3Cs Software</p>
-                                        <span class="text-blue-400 text-sm">35%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="3Cs Software allocation">
-                                        <div class="bg-blue-500 h-2 rounded" style="width: 35%;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="font-semibold">Everything Stack</p>
-                                        <span class="text-emerald-400 text-sm">40%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Everything Stack allocation">
-                                        <div class="bg-emerald-500 h-2 rounded" style="width: 40%;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="font-semibold">Food Forest</p>
-                                        <span class="text-emerald-300 text-sm">15%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" aria-label="Food Forest allocation">
-                                        <div class="bg-emerald-400 h-2 rounded" style="width: 15%;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="font-semibold">Outreach + Community</p>
-                                        <span class="text-blue-300 text-sm">10%</span>
-                                    </div>
-                                    <div class="w-full bg-slate-800 rounded h-2" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" aria-label="Outreach and Community allocation">
-                                        <div class="bg-blue-400 h-2 rounded" style="width: 10%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mt-8 p-4 bg-slate-900 border border-slate-700 rounded">
-                                <p class="text-sm text-slate-300">You contribute based on interest + skill. Some work solo, some collaborative. All tied to shipping real things.</p>
-                            </div>
-                        </div>
+                    <label for="hours-input" class="text-sm text-slate-400 mb-2 block">Hours/month (10-60)</label>
+                    <input type="range" id="hours-input" min="10" max="60" value="20"
+                        class="w-full mb-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">10</span>
+                        <span id="hours-value" class="text-emerald-400 font-semibold">20 hrs/month</span>
+                        <span class="text-slate-500">60</span>
                     </div>
                 </div>
-            </section>
 
-            <!-- Time & Requirements -->
-            <section class="bg-slate-900 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="time-heading">
-                <div class="max-w-6xl mx-auto">
-                    <h2 id="time-heading" class="text-sm font-mono text-slate-300 mb-8 tracking-wider">TIME & COMMITMENT</h2>
+                <div class="bg-slate-800 border border-blue-500/30 rounded-lg p-4 mb-6 max-w-sm">
+                    <p class="text-sm text-blue-300 font-semibold mb-1">Next steps</p>
+                    <p class="text-xs text-slate-400">You'll schedule a $50/hr paid working session (2-4 hours). If we both agree, you start a trial.</p>
+                </div>
 
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="space-y-6">
-                            <div>
-                                <p class="text-emerald-400 font-semibold mb-2">Minimum 10 hrs/week</p>
-                                <p class="text-slate-300 text-sm">Family + kids. Mornings, some evenings. Flexible within a week.</p>
-                            </div>
-                            <div>
-                                <p class="text-blue-400 font-semibold mb-2">Up to 60 hrs/month</p>
-                                <p class="text-slate-300 text-sm">Real work on projects. Actual development + design + coordination.</p>
-                            </div>
-                            <div>
-                                <p class="text-emerald-400 font-semibold mb-2">1 week off/quarter</p>
-                                <p class="text-slate-300 text-sm">+ 1 week/year. Planned. We're structured about it.</p>
-                            </div>
-                        </div>
+                <button onclick="goToSchedule()" id="schedule-btn" class="bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold max-w-sm">
+                    Schedule interview →
+                </button>
+            </div>
 
-                        <div class="space-y-6">
-                            <div>
-                                <p class="text-blue-400 font-semibold mb-2">What you get</p>
-                                <ul class="text-slate-300 text-sm space-y-2">
-                                    <li><span aria-hidden="true">✓</span> <span>Room + board + meals</span></li>
-                                    <li><span aria-hidden="true">✓</span> <span>$300/month</span></li>
-                                    <li><span aria-hidden="true">✓</span> <span>Work you care about</span></li>
-                                    <li><span aria-hidden="true">✓</span> <span>Mentorship + network</span></li>
-                                    <li><span aria-hidden="true">✓</span> <span>First month's rent when you leave</span></li>
-                                </ul>
-                            </div>
-                        </div>
+            <!-- Stage: Schedule -->
+            <div id="stage-schedule" class="hidden p-8">
+                <div class="text-center mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">STAGE 3</p>
+                    <h2 class="text-2xl font-bold">Pick a time</h2>
+                    <p class="text-slate-400 text-sm mt-2">$50/hr • 2-4 hours • Real work</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6 max-w-sm">
+                    <p class="text-sm text-slate-400 mb-4">Your application</p>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="text-slate-500">Name:</span> <span id="summary-name" class="text-white">—</span></p>
+                        <p><span class="text-slate-500">Projects:</span> <span id="summary-projects" class="text-white">—</span></p>
+                        <p><span class="text-slate-500">Hours:</span> <span id="summary-hours" class="text-white">—</span></p>
                     </div>
                 </div>
-            </section>
 
-            <!-- Who Thrives Here -->
-            <section class="bg-slate-950 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="fit-heading">
-                <div class="max-w-6xl mx-auto">
-                    <h2 id="fit-heading" class="text-sm font-mono text-emerald-300 mb-8 tracking-wider">WHO THRIVES HERE</h2>
-
-                    <div class="grid md:grid-cols-2 gap-12">
-                        <div>
-                            <h3 class="text-2xl font-bold mb-6">It's not about your resume.</h3>
-                            <p class="text-slate-300 leading-relaxed mb-6">
-                                We don't care what languages you know or what companies you've worked for. We care about how you think, how you solve problems, and whether you're genuinely curious.
-                            </p>
-                            <div class="space-y-4 text-sm">
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">?</span>
-                                    <span class="text-slate-300">Tell us about a problem you solved that you're proud of</span>
-                                </div>
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">?</span>
-                                    <span class="text-slate-300">How do you use AI in your daily workflow?</span>
-                                </div>
-                                <div class="flex gap-3">
-                                    <span class="text-emerald-400 font-bold" aria-hidden="true">?</span>
-                                    <span class="text-slate-300">What are you genuinely curious about right now?</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-900 border border-slate-700 rounded-lg p-8">
-                            <h3 class="text-sm font-mono text-blue-300 mb-6 tracking-wider">YOU MIGHT BE A FIT IF...</h3>
-                            <div class="space-y-4 text-sm">
-                                <div>
-                                    <p class="text-blue-300 font-semibold mb-1">AI-native</p>
-                                    <p class="text-slate-300">You reach for AI tools naturally. Not because it's trendy—because it makes you better.</p>
-                                </div>
-                                <div>
-                                    <p class="text-emerald-300 font-semibold mb-1">Flexible + self-directed</p>
-                                    <p class="text-slate-300">You don't need hand-holding. You figure things out and ask good questions when stuck.</p>
-                                </div>
-                                <div>
-                                    <p class="text-blue-300 font-semibold mb-1">Ship over perfect</p>
-                                    <p class="text-slate-300">You'd rather launch something real than polish something theoretical.</p>
-                                </div>
-                                <div>
-                                    <p class="text-emerald-300 font-semibold mb-1">Community-minded</p>
-                                    <p class="text-slate-300">You want to build things that help people coordinate, not just consume.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Google Calendar embed -->
+                <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden mb-6 max-w-sm">
+                    <iframe src="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ09rD-oZ5R5xg89_mnm7AP0tBpNOB9zNF7euG6T7luGJMJ4RRLO8-SFSzHFb87yR_ZqjGmngEjO" width="100%" height="400" frameborder="0" style="border:0"></iframe>
                 </div>
-            </section>
+            </div>
 
-            <!-- The Deal -->
-            <section class="bg-slate-900 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="deal-heading">
-                <div class="max-w-6xl mx-auto">
-                    <h2 id="deal-heading" class="text-sm font-mono text-slate-300 mb-8 tracking-wider">THE DEAL (WRITTEN, SIGNED)</h2>
-
-                    <div class="grid md:grid-cols-3 gap-6 text-sm">
-                        <div>
-                            <p class="text-blue-400 font-semibold mb-2">Hours & Boundaries</p>
-                            <p class="text-slate-300">10–60/month, when, where, what. All documented.</p>
-                        </div>
-                        <div class="bg-slate-900/50 border border-emerald-500/30 rounded-lg p-4">
-                            <p class="text-emerald-400 font-semibold mb-2">Honest Power Dynamic</p>
-                            <p class="text-slate-300">We provide housing. That matters. We acknowledge it and protect against it.</p>
-                        </div>
-                        <div>
-                            <p class="text-blue-400 font-semibold mb-2">Freedom to Leave</p>
-                            <p class="text-slate-300">2 weeks notice. Safe exit. We help you move forward.</p>
-                        </div>
-                        <div>
-                            <p class="text-emerald-400 font-semibold mb-2">No Power Dynamics</p>
-                            <p class="text-slate-300">We all feel comfortable. You're not a tenant. Not an employee. Family.</p>
-                        </div>
-                        <div>
-                            <p class="text-blue-400 font-semibold mb-2">Mutual Success</p>
-                            <p class="text-slate-300">We're committed to your growth, your projects, your transition.</p>
-                        </div>
-                        <div>
-                            <p class="text-emerald-400 font-semibold mb-2">Kids Have to Like You</p>
-                            <p class="text-slate-300">And you need to like them. Vibe first. Everything else flows from that.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- CTA -->
-            <section class="bg-slate-900 border-t border-slate-800 py-16 px-8 md:px-16 lg:px-24" aria-labelledby="cta-heading">
-                <div class="max-w-6xl mx-auto flex md:flex-row flex-col gap-12 items-start justify-between">
-                    <div>
-                        <h3 id="cta-heading" class="text-sm font-mono text-slate-300 mb-4 tracking-wider">LOCATION</h3>
-                        <p class="text-2xl font-bold mb-2">West Michigan</p>
-                        <p class="text-slate-300">30 min from downtown GR. Highway. Room to build.</p>
-                    </div>
-
-                    <div class="md:text-right">
-                        <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg px-4 py-2 mb-6 inline-block">
-                            <p class="text-sm text-blue-300 font-mono">Applications open January 5</p>
-                        </div>
-                        <div>
-                            <a href="mailto:jim@jimr.fyi?subject=Educator%20%2B%203CS%20Builder%20Application&body=Hey%20Jim%2C%0A%0AI%20saw%20the%20Educator%20%2B%203CS%20Builder%20page%20and%20I%27m%20interested.%0A%0A---%0AName%3A%20%0AGitHub%3A%20%0A%0AWhat%20draws%20me%20to%20this%3A%0A%0A%0AA%20problem%20I%27ve%20solved%20that%20I%27m%20proud%20of%3A%0A%0A%0AHow%20I%20use%20AI%20in%20my%20workflow%3A%0A%0A" class="inline-block bg-emerald-500 hover:bg-emerald-400 px-10 py-4 rounded-lg text-lg font-bold transition-all shadow-lg shadow-emerald-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900">
-                                Apply Now
-                            </a>
-                        </div>
-                        <p class="text-sm text-slate-400 mt-4 font-mono">jim@jimr.fyi</p>
-                    </div>
-                </div>
-            </section>
-        </main>
+            <!-- Stage: Confirmed -->
+            <div id="stage-confirmed" class="hidden p-8 text-center">
+                <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-4xl mx-auto mb-6">✓</div>
+                <h2 class="text-2xl font-bold mb-2">You're scheduled</h2>
+                <p class="text-slate-400">Check your email for details</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Calendly widget -->
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
     <script>
-        const projects = [
-            {
-                title: "3Cs Coordination Software",
-                desc: "Platform for managing distributed communities. Connect groups, reach consensus on decisions, coordinate distributed action across networks.",
-                percent: 35,
-                color: "bg-blue-500"
-            },
-            {
-                title: "Everything Stack",
-                desc: "AI-native application framework. Voice-first interfaces, workflow orchestration, ambient AI assistants, conversational systems with on-device inference.",
-                percent: 40,
-                color: "bg-emerald-500"
-            },
-            {
-                title: "Food Forest",
-                desc: "Regenerative food systems on our property. Permaculture design, sustainable living, hands-on learning. Work with the land.",
-                percent: 15,
-                color: "bg-emerald-400"
+        // State
+        let exchanges = 0;
+        let selectedProjects = [];
+        let chatHistory = [];
+        let userEmail = '';
+        let projects = [];
+        let isStreaming = false;
+        let fitScore = 0;
+        let canUnlockEmail = false;
+        const API_BASE = location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
+        // Initialize
+        async function init() {
+            // Load projects
+            try {
+                const response = await fetch('/data/projects.json');
+                projects = await response.json();
+            } catch (e) {
+                console.error('Failed to load projects:', e);
+                projects = [];
             }
-        ];
 
-        let currentProject = 0;
+            document.getElementById('chat-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !isStreaming) sendMessage();
+            });
 
-        function updateProject() {
-            const p = projects[currentProject];
-            document.getElementById("projectTitle").textContent = p.title;
-            document.getElementById("projectDesc").textContent = p.desc;
-            document.getElementById("projectPercent").textContent = p.percent + "%";
-            document.getElementById("projectBar").style.width = p.percent + "%";
-            document.getElementById("projectBar").className = p.color + " h-2 rounded transition-all duration-300";
-            document.getElementById("projectCounter").textContent = `PROJECT 0${currentProject + 1}/0${projects.length}`;
-            document.getElementById("projectProgressBar").setAttribute("aria-valuenow", p.percent);
+            document.getElementById('hours-input').addEventListener('input', updateHours);
+        }
 
-            // Update pagination dots
-            for (let i = 0; i < projects.length; i++) {
-                const dot = document.getElementById(`dot${i}`);
-                if (i === currentProject) {
-                    dot.className = "w-3 h-3 rounded-full bg-blue-500 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
-                    dot.setAttribute("aria-selected", "true");
-                } else {
-                    dot.className = "w-2 h-2 rounded-full bg-slate-600 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950";
-                    dot.setAttribute("aria-selected", "false");
+        // Chat
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message || isStreaming) return;
+
+            // Add user message
+            addChatMessage(message, 'user');
+            chatHistory.push({ role: 'user', content: message });
+            input.value = '';
+            exchanges++;
+            updateExchangeCount();
+
+            // Log message
+            logMessage(message, 'user');
+
+            // Show typing indicator
+            const typingDiv = showTyping();
+            isStreaming = true;
+            input.disabled = true;
+            document.getElementById('send-btn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: chatHistory })
+                });
+
+                if (!response.ok) throw new Error('API error');
+
+                typingDiv.remove();
+
+                // Stream response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let aiMessage = '';
+                let messageDiv = null;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                if (parsed.text) {
+                                    aiMessage += parsed.text;
+                                    if (!messageDiv) {
+                                        messageDiv = addChatMessage(aiMessage, 'assistant');
+                                    } else {
+                                        messageDiv.querySelector('p').textContent = aiMessage;
+                                    }
+                                }
+                                if (parsed.type === 'metadata') {
+                                    fitScore = parsed.fitScore;
+                                    canUnlockEmail = parsed.canUnlockEmail;
+                                    updateFitDisplay();
+                                    if (canUnlockEmail) {
+                                        showEmailGate();
+                                    }
+                                }
+                            } catch (e) {
+                                // Skip invalid JSON
+                            }
+                        }
+                    }
                 }
+
+                chatHistory.push({ role: 'assistant', content: aiMessage });
+                logMessage(aiMessage, 'assistant');
+
+                // Auto-unlock projects at 15 exchanges
+                if (exchanges >= 15) {
+                    showStage('projects');
+                }
+
+            } catch (error) {
+                console.error('API error:', error);
+                typingDiv.remove();
+                addChatMessage('Sorry, something went wrong. Please try again.', 'assistant');
+            }
+
+            isStreaming = false;
+            input.disabled = false;
+            document.getElementById('send-btn').disabled = false;
+            input.focus();
+        }
+
+        function addChatMessage(text, role) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'chat-bubble flex gap-3' + (role === 'user' ? ' flex-row-reverse' : '');
+
+            const avatar = role === 'user'
+                ? '<div class="w-8 h-8 rounded-full bg-emerald-500 flex-shrink-0 flex items-center justify-center text-xs">You</div>'
+                : '<div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>';
+
+            const bgColor = role === 'user' ? 'bg-emerald-500/20' : 'bg-slate-700';
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="${bgColor} rounded-lg p-3 max-w-[75%]">
+                    <p class="text-sm">${text}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'chat-bubble flex gap-3';
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>
+                <div class="bg-slate-700 rounded-lg p-3">
+                    <div class="flex gap-1">
+                        <span class="typing-indicator">●</span>
+                        <span class="typing-indicator" style="animation-delay: 0.2s;">●</span>
+                        <span class="typing-indicator" style="animation-delay: 0.4s;">●</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        function updateExchangeCount() {
+            document.getElementById('exchange-count').textContent = `${exchanges} exchanges`;
+        }
+
+        function logMessage(content, role) {
+            fetch(`${API_BASE}/api/log-message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    message: content,
+                    role,
+                    timestamp: new Date().toISOString(),
+                    stage: getCurrentStage(),
+                    projectsInterested: selectedProjects.map(p => p.id)
+                })
+            }).catch(e => console.error('Log error:', e));
+        }
+
+        function getCurrentStage() {
+            if (document.getElementById('stage-projects').classList.contains('hidden') === false) return 'projects';
+            if (document.getElementById('stage-commit').classList.contains('hidden') === false) return 'commit';
+            if (document.getElementById('stage-schedule').classList.contains('hidden') === false) return 'schedule';
+            return 'chat';
+        }
+
+        function focusChat() {
+            document.getElementById('chat-input').focus();
+        }
+
+        // Projects
+        function renderProjects() {
+            const container = document.getElementById('projects-container');
+            container.innerHTML = projects.map((p, i) => `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 cursor-pointer hover:border-${p.color}-500/50 transition" onclick="toggleProject('${p.id}')">
+                    <p class="text-${p.color}-300 text-xs font-mono mb-2">${p.name}</p>
+                    <p class="text-sm text-slate-400">${p.description}</p>
+                    <p class="text-xs text-slate-500 mt-2">${p.longDescription}</p>
+                    <div class="mt-4">
+                        <span id="project-${p.id}-status" class="text-xs text-slate-500">Click to select</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleProject(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            const idx = selectedProjects.findIndex(p => p.id === projectId);
+
+            if (idx >= 0) {
+                selectedProjects.splice(idx, 1);
+            } else {
+                selectedProjects.push(project);
+            }
+
+            updateProjectsList();
+            document.getElementById(`project-${projectId}-status`).textContent =
+                idx >= 0 ? 'Click to select' : '✓ Selected';
+
+            if (selectedProjects.length > 0) {
+                document.getElementById('to-commit-btn').classList.remove('hidden');
             }
         }
 
-        function nextProject() {
-            currentProject = (currentProject + 1) % projects.length;
-            updateProject();
+        function updateProjectsList() {
+            const list = document.getElementById('selected-projects-list');
+            if (selectedProjects.length === 0) {
+                list.innerHTML = '<span class="text-xs text-slate-500">None yet</span>';
+            } else {
+                list.innerHTML = selectedProjects.map(p =>
+                    `<span class="bg-${p.color}-500/20 text-${p.color}-300 px-3 py-1 rounded-full text-xs">${p.name}</span>`
+                ).join('');
+            }
         }
 
-        function prevProject() {
-            currentProject = (currentProject - 1 + projects.length) % projects.length;
-            updateProject();
+        // Commitment
+        function updateHours() {
+            const value = document.getElementById('hours-input').value;
+            document.getElementById('hours-value').textContent = `${value} hrs/month`;
         }
 
-        function goToProject(index) {
-            currentProject = index;
-            updateProject();
+        function goToCommit() {
+            showStage('commit');
         }
 
-        updateProject();
+        async function goToSchedule() {
+            const name = document.getElementById('name-input').value || 'Anonymous';
+            const email = document.getElementById('email-input').value;
+            const hours = document.getElementById('hours-input').value;
+
+            if (!email) {
+                alert('Please provide an email');
+                return;
+            }
+
+            userEmail = email;
+
+            // Send transcript
+            try {
+                await fetch(`${API_BASE}/api/send-transcript`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email,
+                        name,
+                        transcript: chatHistory,
+                        projects: selectedProjects.map(p => p.name),
+                        hours
+                    })
+                });
+            } catch (error) {
+                console.error('Failed to send transcript:', error);
+            }
+
+            // Update summary
+            document.getElementById('summary-name').textContent = name;
+            document.getElementById('summary-projects').textContent = selectedProjects.map(p => p.name).join(', ');
+            document.getElementById('summary-hours').textContent = `${hours} hrs/month`;
+
+            showStage('schedule');
+        }
+
+        function showStage(stage) {
+            ['initial', 'projects', 'commit', 'schedule', 'confirmed'].forEach(s => {
+                document.getElementById(`stage-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`stage-${stage}`).classList.remove('hidden');
+        }
+
+        // Fit score display
+        function updateFitDisplay() {
+            let display = document.getElementById('fit-score-display');
+            if (!display) {
+                display = document.createElement('div');
+                display.id = 'fit-score-display';
+                display.className = 'bg-slate-900 border border-slate-700 rounded-lg p-4 mb-4 text-center';
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.parentElement.insertBefore(display, messagesContainer);
+            }
+            display.innerHTML = `
+                <p class="text-sm text-slate-500 mb-2">Fit Score</p>
+                <p class="text-2xl font-bold text-emerald-400">${fitScore}/100</p>
+                ${canUnlockEmail ? '<p class="text-xs text-emerald-400 mt-2">✓ Ready to continue</p>' : ''}
+            `;
+        }
+
+        // Email gate
+        function showEmailGate() {
+            let gate = document.getElementById('email-gate-container');
+            if (!gate) {
+                gate = document.createElement('div');
+                gate.id = 'email-gate-container';
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.parentElement.insertBefore(gate, messagesContainer);
+            }
+            gate.className = 'bg-slate-900 border border-blue-500/30 rounded-lg p-4 mb-4';
+            gate.innerHTML = `
+                <p class="text-sm text-blue-300 font-semibold mb-3">Ready to move forward?</p>
+                <input type="email" id="gate-email" placeholder="your@email.com"
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm mb-3 focus:outline-none focus:border-blue-500">
+                <button onclick="submitEmail()" class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">
+                    Continue
+                </button>
+            `;
+        }
+
+        async function submitEmail() {
+            const email = document.getElementById('gate-email').value.trim();
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+            userEmail = email;
+            document.getElementById('email-gate-container').remove();
+            showStage('projects');
+        }
+
+        init();
     </script>
 </body>
 </html>

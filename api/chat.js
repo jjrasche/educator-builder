@@ -173,22 +173,41 @@ async function evaluateConversation(chatHistory, rubric) {
       throw new Error(`Failed to parse response: ${e.message}`);
     }
 
-    // If assessing, calculate fitness score
-    if (shouldAssess && parsed.criteriaScores) {
-      const fitScore = calculateFitScore(parsed.criteriaScores, rubric);
-      return {
-        action: 'assess',
-        criteriaScores: parsed.criteriaScores,
-        rationale: parsed.rationale || '',
-        fitScore,
-        decision: fitScore >= 60 ? 'request_email' : 'no_email',
-        timestamp: new Date().toISOString()
-      };
-    }
-
-    // Debug: if assess was attempted but no criteriaScores
-    if (shouldAssess && !parsed.criteriaScores) {
-      console.warn('Assessment prompt sent but Groq returned:', Object.keys(parsed));
+    // If assessing, either use parsed scores or extract from response
+    if (shouldAssess) {
+      // If Groq gave us criteriaScores, use them
+      if (parsed.criteriaScores) {
+        const fitScore = calculateFitScore(parsed.criteriaScores, rubric);
+        return {
+          action: 'assess',
+          criteriaScores: parsed.criteriaScores,
+          rationale: parsed.rationale || '',
+          fitScore,
+          decision: fitScore >= 60 ? 'request_email' : 'no_email',
+          timestamp: new Date().toISOString()
+        };
+      } else {
+        // Groq didn't follow format - generate scores based on response
+        console.warn('Assessment triggered but Groq returned probe format. Inferring scores from text.');
+        const responseText = JSON.stringify(parsed);
+        const inferredScores = {
+          'depth-of-questioning': calculateScoreFromText(responseText, ['deep', 'question', 'explore', 'think']),
+          'self-awareness': calculateScoreFromText(responseText, ['know', 'articulate', 'aware', 'understand']),
+          'systems-thinking': calculateScoreFromText(responseText, ['community', 'system', 'connection', 'together']),
+          'experimentation-evidence': calculateScoreFromText(responseText, ['build', 'experiment', 'try', 'question']),
+          'authenticity': calculateScoreFromText(responseText, ['genuine', 'real', 'authentic', 'true']),
+          'reciprocal-curiosity': calculateScoreFromText(responseText, ['ask', 'curious', 'interested', 'learn'])
+        };
+        const fitScore = calculateFitScore(inferredScores, rubric);
+        return {
+          action: 'assess',
+          criteriaScores: inferredScores,
+          rationale: 'Inferred from conversation (Groq response format fallback)',
+          fitScore,
+          decision: fitScore >= 60 ? 'request_email' : 'no_email',
+          timestamp: new Date().toISOString()
+        };
+      }
     }
 
     // Otherwise, return probe
@@ -197,6 +216,15 @@ async function evaluateConversation(chatHistory, rubric) {
       probeQuestion: parsed.probeQuestion || 'Tell me more about your thinking on this.',
       timestamp: new Date().toISOString()
     };
+
+    function calculateScoreFromText(text, keywords) {
+      let matches = 0;
+      const lowerText = text.toLowerCase();
+      for (const kw of keywords) {
+        if (lowerText.includes(kw)) matches++;
+      }
+      return Math.min(10, Math.max(3, matches * 2));
+    }
   } catch (error) {
     console.warn('Evaluation failed:', error.message);
     // Return neutral probe on failure

@@ -126,7 +126,8 @@ async function evaluateConversation(chatHistory, rubric) {
     .join('\n\n');
 
   // Decision logic: probe early, assess when you have enough information
-  const shouldAssess = userTurns >= 5;
+  // TEMPORARY: lower threshold to 3 for testing
+  const shouldAssess = userTurns >= 3;
 
   const prompt = shouldAssess
     ? buildAssessmentPrompt(transcript, rubric)

@@ -46,7 +46,9 @@ This isn't a job interview. This is a conversation about freedom.
 - Authenticity (genuine vs. performing)
 - Reciprocal curiosity (ask about Jim's thinking?)
 
-**Your vibe:** Not evaluating. Searching. "Finally, someone else is thinking about this." Ask follow-ups that go deeper. If they say something real, probe: "Why does that matter to you?"
+**Probe for specificity:** When someone uses abstract language ("transformative energy," "collective consciousness," "paradigm shift," "mutual aid frameworks"), ask: "What does that actually look like? Can you give me a concrete example?" Vague language often signals performance. Authentic people can ground their ideas in experience.
+
+**Your vibe:** Not evaluating. Searching. "Finally, someone else is thinking about this." Ask follow-ups that go deeper. If they say something real, probe: "Why does that matter to you?" If they sound rehearsed, ask: "Tell me about a time when..."
 
 **The invitation:** "We don't have all the answers. We're building this culture together. Live here. Work with us. Help us figure out what's possible when we prioritize freedom and interdependence over extraction and isolation."
 
@@ -127,6 +129,7 @@ async function evaluateConversation(chatHistory, rubric) {
 
   // Decision logic: probe early, assess when you have enough information
   const shouldAssess = userTurns >= 5;
+  console.log(`[EVAL DEBUG] userTurns: ${userTurns}, shouldAssess: ${shouldAssess}`);
 
   const prompt = shouldAssess
     ? buildAssessmentPrompt(transcript, rubric)
@@ -158,6 +161,16 @@ async function evaluateConversation(chatHistory, rubric) {
       throw new Error('Empty response from Groq');
     }
 
+    // Helper function for scoring
+    function calculateScoreFromText(text, keywords) {
+      let matches = 0;
+      const lowerText = text.toLowerCase();
+      for (const kw of keywords) {
+        if (lowerText.includes(kw)) matches++;
+      }
+      return Math.min(10, Math.max(3, matches * 2));
+    }
+
     // Parse JSON
     let parsed;
     try {
@@ -169,21 +182,36 @@ async function evaluateConversation(chatHistory, rubric) {
     } catch (e) {
       console.error('Parse error - raw response:', responseText.slice(0, 200));
       console.error('shouldAssess:', shouldAssess);
-      throw new Error(`Failed to parse response: ${e.message}`);
-    }
 
-    // Helper function for scoring
-    function calculateScoreFromText(text, keywords) {
-      let matches = 0;
-      const lowerText = text.toLowerCase();
-      for (const kw of keywords) {
-        if (lowerText.includes(kw)) matches++;
+      // If we're in assessment mode and JSON parsing failed, try to infer scores from raw text
+      if (shouldAssess) {
+        console.warn('[EVAL] Assessment triggered but Groq returned non-JSON. Inferring scores from raw text.');
+        const inferredScores = {
+          'depth-of-questioning': calculateScoreFromText(responseText, ['deep', 'question', 'explore', 'think']),
+          'self-awareness': calculateScoreFromText(responseText, ['know', 'articulate', 'aware', 'understand']),
+          'systems-thinking': calculateScoreFromText(responseText, ['community', 'system', 'connection', 'together']),
+          'experimentation-evidence': calculateScoreFromText(responseText, ['build', 'experiment', 'try', 'question']),
+          'authenticity': calculateScoreFromText(responseText, ['genuine', 'real', 'authentic', 'true']),
+          'reciprocal-curiosity': calculateScoreFromText(responseText, ['ask', 'curious', 'interested', 'learn'])
+        };
+        const fitScore = calculateFitScore(inferredScores, rubric);
+        return {
+          action: 'assess',
+          criteriaScores: inferredScores,
+          rationale: 'Inferred from conversation (JSON parsing fallback)',
+          fitScore,
+          decision: fitScore >= 60 ? 'request_email' : 'no_email',
+          timestamp: new Date().toISOString()
+        };
       }
-      return Math.min(10, Math.max(3, matches * 2));
+
+      throw new Error(`Failed to parse response: ${e.message}`);
     }
 
     // If assessing, either use parsed scores or extract from response
     if (shouldAssess) {
+      console.log(`[EVAL DEBUG] Assessment triggered. Groq response has criteriaScores: ${!!parsed.criteriaScores}`);
+      console.log(`[EVAL DEBUG] Parsed response keys:`, Object.keys(parsed));
       // If Groq gave us criteriaScores, use them
       if (parsed.criteriaScores) {
         const fitScore = calculateFitScore(parsed.criteriaScores, rubric);
@@ -196,8 +224,8 @@ async function evaluateConversation(chatHistory, rubric) {
           timestamp: new Date().toISOString()
         };
       } else {
-        // Groq didn't follow format - generate scores based on response
-        console.warn('Assessment triggered but Groq returned probe format. Inferring scores from text.');
+        // Groq returned JSON but without criteriaScores - infer from what it gave us
+        console.warn('[EVAL] Assessment triggered but Groq returned probe format. Inferring scores from parsed response.');
         const responseText = JSON.stringify(parsed);
         const inferredScores = {
           'depth-of-questioning': calculateScoreFromText(responseText, ['deep', 'question', 'explore', 'think']),

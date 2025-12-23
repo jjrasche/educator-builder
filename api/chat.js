@@ -160,7 +160,8 @@ async function evaluateConversation(chatHistory, rubric) {
       }
       parsed = JSON.parse(jsonMatch[0]);
     } catch (e) {
-      console.error('Parse error:', responseText);
+      console.error('Parse error - raw response:', responseText.slice(0, 200));
+      console.error('shouldAssess:', shouldAssess);
       throw new Error(`Failed to parse response: ${e.message}`);
     }
 
@@ -175,6 +176,11 @@ async function evaluateConversation(chatHistory, rubric) {
         decision: fitScore >= 60 ? 'request_email' : 'no_email',
         timestamp: new Date().toISOString()
       };
+    }
+
+    // Debug: if assess was attempted but no criteriaScores
+    if (shouldAssess && !parsed.criteriaScores) {
+      console.warn('Assessment prompt sent but Groq returned:', Object.keys(parsed));
     }
 
     // Otherwise, return probe

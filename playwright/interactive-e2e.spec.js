@@ -87,9 +87,14 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     guideResponse: guideResponse1,
     metadata: turn1Metadata
   });
+  console.log('  ✓ Turn 1 stored');
 
-  // Skip screenshot for now - focus on conversation flow
-  // await page.screenshot({ path: `${SCREENSHOTS_DIR}/02-turn1-complete.png`, fullPage: true });
+  // Reset UI state for next turn
+  console.log('  → Resetting UI for Turn 2...');
+  await page.waitForTimeout(500);
+  console.log('  ✓ UI reset ready');
+  await input.click();
+  console.log('  ✓ Input field ready');
 
   // 3. TURN 2: Real follow-up - show I understood them
   console.log('\n' + '─'.repeat(80));
@@ -99,12 +104,18 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
   const turn2Message = "That sounds meaningful. I've also been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?";
   console.log(`\n[Me]: "${turn2Message}"`);
 
+  console.log('  → [DEBUG] Clicking input...');
   await input.click();
+  console.log('  → [DEBUG] Clearing input...');
   await input.clear();
+  console.log('  → [DEBUG] Filling message...');
   await input.fill(turn2Message);
+  console.log('  → [DEBUG] Message filled, waiting to press Enter...');
 
   console.log('  → Waiting for API response...');
+  console.log('  → [DEBUG] Pressing Enter...');
   await input.press('Enter');
+  console.log('  → [DEBUG] Enter pressed');
   try {
     await page.waitForResponse(resp => resp.url().includes('/api/chat') && resp.status() === 200, { timeout: 10000 });
   } catch (e) {

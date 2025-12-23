@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Golden Case",
+  "description": "A notable interaction extracted from a conversation, used for regression testing when prompt/rubric changes",
+  "type": "object",
+  "required": ["name", "source", "userMessage", "expected", "actual"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Descriptive name for this golden case"
+    },
+    "source": {
+      "type": "object",
+      "description": "Where this case came from",
+      "required": ["persona", "turnNumber"],
+      "properties": {
+        "persona": {
+          "type": "string",
+          "enum": ["philosophical-thinker", "transactional-seeker", "performative-philosopher", "authentic-inarticulate"],
+          "description": "Persona this case came from"
+        },
+        "turnNumber": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Which turn in the conversation (1-indexed)"
+        },
+        "context": {
+          "type": "string",
+          "description": "Brief context explaining why this turn is notable"
+        }
+      }
+    },
+    "userMessage": {
+      "type": "string",
+      "description": "The user's input message for this turn"
+    },
+    "expected": {
+      "type": "object",
+      "description": "What we expect the AI to do (contract for regression testing)",
+      "required": ["dialogueAct", "speechAct", "tier"],
+      "properties": {
+        "dialogueAct": {
+          "type": "string",
+          "enum": ["open_with_question", "probe_deeper", "ask_for_concrete", "validate_genuine", "redirect_from_surface", "reflect_understanding", "affirm_commitment"],
+          "description": "Expected dialogue act"
+        },
+        "speechAct": {
+          "type": "string",
+          "enum": ["assertive", "directive", "expressive", "commissive", "declarative"],
+          "description": "Expected speech act"
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["A", "B", "C"],
+          "description": "A=ideal, B=good alternative, C=suboptimal"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Why we expect this tier"
+        },
+        "alternativeTiers": {
+          "type": "array",
+          "description": "Other acceptable tiers if execution differs",
+          "items": {
+            "type": "object",
+            "required": ["dialogueAct", "speechAct", "tier"],
+            "properties": {
+              "dialogueAct": {
+                "type": "string",
+                "enum": ["open_with_question", "probe_deeper", "ask_for_concrete", "validate_genuine", "redirect_from_surface", "reflect_understanding", "affirm_commitment"]
+              },
+              "speechAct": {
+                "type": "string",
+                "enum": ["assertive", "directive", "expressive", "commissive", "declarative"]
+              },
+              "tier": {
+                "type": "string",
+                "enum": ["A", "B", "C"]
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "actual": {
+      "type": "object",
+      "description": "What actually happened (captured from KV/Playwright)",
+      "properties": {
+        "response": {
+          "type": "string",
+          "description": "The AI's actual response text"
+        },
+        "dialogueAct": {
+          "type": "string",
+          "enum": ["open_with_question", "probe_deeper", "ask_for_concrete", "validate_genuine", "redirect_from_surface", "reflect_understanding", "affirm_commitment"]
+        },
+        "speechAct": {
+          "type": "string",
+          "enum": ["assertive", "directive", "expressive", "commissive", "declarative"]
+        },
+        "tier": {
+          "type": "string",
+          "enum": ["A", "B", "C"],
+          "description": "Assigned tier (may differ from expected if test regression)"
+        },
+        "criteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Rubric criteria this response addressed"
+        },
+        "rubricScores": {
+          "type": "object",
+          "description": "Scores for each rubric criterion (person evaluation)",
+          "properties": {
+            "depth-of-questioning": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "self-awareness": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "systems-thinking": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "experimentation-evidence": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "authenticity": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 },
+            "reciprocal-curiosity": { "type": ["integer", "null"], "minimum": 1, "maximum": 10 }
+          }
+        },
+        "fitScore": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Overall fit score for this turn"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "aiResponseQuality": {
+      "type": "object",
+      "description": "Post-hoc evaluation of how well the response executed its intended dialogue act (AI effectiveness rubric)",
+      "properties": {
+        "executionScore": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 10,
+          "description": "How well did the response execute the dialogue act?"
+        },
+        "executionNotes": {
+          "type": "string",
+          "description": "Detailed notes on execution quality"
+        },
+        "regressionStatus": {
+          "type": "string",
+          "enum": ["pass", "fail", "degrade"],
+          "description": "pass=tier matches expected, degrade=tier dropped from expected"
+        }
+      }
+    },
+    "analysis": {
+      "type": "string",
+      "description": "Human analysis of why this case is interesting and what it validates"
+    }
+  }
+}

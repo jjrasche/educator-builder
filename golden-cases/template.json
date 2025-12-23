@@ -1,0 +1,46 @@
+{
+  "name": "Example: Philosophical Thinker Probes Interdependence",
+  "source": {
+    "persona": "philosophical-thinker",
+    "turnNumber": 3,
+    "context": "Person articulated interdependence as core value. Testing if they can ground it in real experience."
+  },
+  "userMessage": "Both, actually. I think real freedom is knowing you're interdependent but choosing it. I want to work on something meaningful with people who think differently than me.",
+  "expected": {
+    "dialogueAct": "probe_deeper",
+    "speechAct": "directive",
+    "tier": "A",
+    "reason": "Person articulated something real. Time to ask why it matters.",
+    "alternativeTiers": [
+      {
+        "dialogueAct": "validate_genuine",
+        "speechAct": "expressive",
+        "tier": "B",
+        "reason": "Affirm insight first, then probe"
+      }
+    ]
+  },
+  "actual": {
+    "response": "I like that—interdependence by choice, not necessity. That requires real self-awareness. What does meaningful work look like to you?",
+    "dialogueAct": "probe_deeper",
+    "speechAct": "directive",
+    "tier": "A",
+    "criteria": ["self-awareness", "systems-thinking"],
+    "rubricScores": {
+      "depth-of-questioning": 7,
+      "self-awareness": 8,
+      "systems-thinking": 7,
+      "experimentation-evidence": null,
+      "authenticity": 8,
+      "reciprocal-curiosity": 6
+    },
+    "fitScore": 75,
+    "timestamp": "2025-12-23T10:30:00Z"
+  },
+  "aiResponseQuality": {
+    "executionScore": 8,
+    "executionNotes": "Naturally probed deeper. Validated insight, then asked next layer.",
+    "regressionStatus": "pass"
+  },
+  "analysis": "Good example of recognizing authentic thinking and pressing further. Response validates insight, then probes naturally (what does this mean for work?)."
+}

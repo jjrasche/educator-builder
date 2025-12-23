@@ -67,14 +67,21 @@ test('PERSONA: Philosophical Thinker - Multi-turn evaluation', async ({ page }, 
 
     // Now extract the response
     const chatText = await page.locator('#chat-messages').innerText();
+    console.log(`\n[DEBUG] Full chat text length: ${chatText.length}`);
+    console.log(`[DEBUG] Chat text preview (first 300 chars):\n${chatText.substring(0, 300)}\n`);
+
     const parts = chatText.split('\nAI\n');
+    console.log(`[DEBUG] Split by "\\nAI\\n": ${parts.length} parts`);
+
     if (parts.length > 1) {
       response1 = parts[parts.length - 1].split('\nYou\n')[0].trim();
+      console.log(`[DEBUG] Extracted from AI section: ${response1.length} chars`);
     }
     if (!response1 || response1.length < 100) {
       // Fallback: get last substantial message block
       const messages1 = chatText.split(/\n{2,}/).filter(m => m.trim().length > 100);
       response1 = messages1[messages1.length - 1] || '';
+      console.log(`[DEBUG] Fallback extraction: ${response1.length} chars`);
     }
   } catch (e) {
     console.warn('⚠ Response extraction failed:', e.message);

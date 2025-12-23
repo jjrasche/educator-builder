@@ -22,6 +22,7 @@ export default async function handler(req, res) {
 
     // 2. Evaluate conversation inline
     const evaluationResult = await evaluateConversation(messages, rubric);
+    console.log('EVAL RESULT:', JSON.stringify(evaluationResult).slice(0, 200));
 
     // 3. Initialize Groq client for streaming response
     const client = new OpenAI({
@@ -91,7 +92,14 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
     }
 
     // 7. If assessment complete, send fitness score metadata
+    console.log('Metadata check:', {
+      hasResult: !!evaluationResult,
+      action: evaluationResult?.action,
+      fitScore: evaluationResult?.fitScore,
+      shouldSend: evaluationResult && evaluationResult.action === 'assess' && evaluationResult.fitScore
+    });
     if (evaluationResult && evaluationResult.action === 'assess' && evaluationResult.fitScore) {
+      console.log('SENDING METADATA');
       res.write(`data: ${JSON.stringify({
         type: 'metadata',
         fitScore: evaluationResult.fitScore,

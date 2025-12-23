@@ -69,10 +69,37 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     console.warn('  ⚠ Timeout waiting for response DOM');
   }
 
-  const chatContainer = page.locator('#chat-messages');
-  const allText = await chatContainer.innerText().catch(() => '');
-  const messages = allText.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
-  const guideResponse1 = messages[messages.length - 1] || '';
+  // Get the LAST assistant message - try multiple extraction methods
+  let guideResponse1 = '';
+
+  // Method 1: Try data-role attribute (should be set by SSE stream)
+  try {
+    const assistantMsgs = await page.locator('#chat-messages [data-role="assistant"]');
+    const count = await assistantMsgs.count();
+    if (count > 0) {
+      guideResponse1 = await assistantMsgs.last().innerText();
+    }
+  } catch (e) {
+    console.warn('  ⚠ Method 1 (data-role) failed:', e.message);
+  }
+
+  // Method 2: If Method 1 fails, extract by matching text patterns
+  if (!guideResponse1) {
+    try {
+      const allText = await page.locator('#chat-messages').innerText();
+      const lines = allText.split(/\n{2,}/);
+      const messages = lines.filter(m => m.trim().length > 50);
+      if (messages.length > 1) {
+        guideResponse1 = messages[messages.length - 1];
+      }
+    } catch (e) {
+      console.warn('  ⚠ Method 2 (text split) failed:', e.message);
+    }
+  }
+
+  if (!guideResponse1) {
+    console.warn('  ⚠ Could not extract guide response - possible streaming issue');
+  }
 
   console.log(`\n[Guide]: "${guideResponse1.substring(0, 150)}..."`);
   console.log(`  → Response length: ${guideResponse1.length} chars`);
@@ -140,9 +167,15 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     console.warn('  ⚠ Timeout waiting for response DOM');
   }
 
-  const allText2 = await page.locator('#chat-messages').innerText().catch(() => '');
-  const messages2 = allText2.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
-  const guideResponse2 = messages2[messages2.length - 1] || '';
+  // Get guide response for turn 2
+  let guideResponse2 = '';
+  try {
+    const allText2 = await page.locator('#chat-messages').innerText().catch(() => '');
+    const messages2 = allText2.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
+    guideResponse2 = messages2[messages2.length - 1] || '';
+  } catch (e) {
+    console.warn('  ⚠ Turn 2 extraction failed:', e.message);
+  }
 
   console.log(`\n[Guide]: "${guideResponse2.substring(0, 150)}..."`);
   console.log(`  → Response length: ${guideResponse2.length} chars`);
@@ -199,9 +232,15 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
     console.warn('  ⚠ Timeout waiting for response DOM');
   }
 
-  const allText3 = await page.locator('#chat-messages').innerText().catch(() => '');
-  const messages3 = allText3.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
-  const guideResponse3 = messages3[messages3.length - 1] || '';
+  // Get guide response for turn 3
+  let guideResponse3 = '';
+  try {
+    const allText3 = await page.locator('#chat-messages').innerText().catch(() => '');
+    const messages3 = allText3.split(/\n{2,}/).map(m => m.trim()).filter(m => m.length > 100);
+    guideResponse3 = messages3[messages3.length - 1] || '';
+  } catch (e) {
+    console.warn('  ⚠ Turn 3 extraction failed:', e.message);
+  }
 
   console.log(`\n[Guide]: "${guideResponse3.substring(0, 150)}..."`);
   console.log(`  → Response length: ${guideResponse3.length} chars`);

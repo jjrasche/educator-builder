@@ -1,78 +1,76 @@
-// Unified evaluation endpoint: probes, scores, calculates fitness
+/**
+ * Golden Dataset Regression Testing
+ *
+ * This file is for LOCAL testing only - NOT deployed to Vercel.
+ *
+ * Usage: Run conversations through the evaluation logic to validate:
+ * - New rubric versions don't degrade scoring on known-good conversations
+ * - Prompt changes maintain consistency
+ * - Edge cases are handled correctly
+ *
+ * To use:
+ * 1. Export a conversation from KV (query by sessionId/email)
+ * 2. Create a test case in the GOLDEN_DATASET below
+ * 3. Run: node evaluate-test.js
+ * 4. Compare scores between rubric versions
+ */
+
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+// ========== GOLDEN DATASET ==========
+// Add test conversations here that represent known-good evaluations
+// Format: { name: string, conversation: [{role, content}], expectedDecision: string }
+
+const GOLDEN_DATASET = [
+  // Example - replace with real conversations from KV
+  {
+    name: 'Deep Thinker Example',
+    conversation: [
+      { role: 'user', content: 'I\'ve been obsessed with how we organize work. Like, fundamentally - why do we separate life from work?' },
+      { role: 'assistant', content: 'What draws you to that question specifically?' },
+      { role: 'user', content: 'Because I keep bumping into this in my own life. I\'m building things but always feel disconnected from the community around them.' },
+      { role: 'assistant', content: 'That disconnection - is it about the work itself or the environment?' },
+      { role: 'user', content: 'Both. Like, I want to be part of something that matters, not just doing tasks.' }
+    ],
+    expectedDecision: 'request_email'
   }
+];
 
-  const { chatHistory } = req.body;
+// ========== TESTING FUNCTIONS ==========
 
-  if (!chatHistory || !Array.isArray(chatHistory)) {
-    return res.status(400).json({ error: 'Invalid chatHistory format' });
-  }
+async function testGoldenDataset() {
+  console.log('Loading rubric...');
+  const rubricPath = path.join(process.cwd(), 'data', 'rubric-v1.json');
+  const rubricData = fs.readFileSync(rubricPath, 'utf-8');
+  const rubric = JSON.parse(rubricData);
 
-  try {
-    // Load rubric
-    const rubricPath = path.join(process.cwd(), 'data', 'rubric-v1.json');
-    const rubricData = fs.readFileSync(rubricPath, 'utf-8');
-    const rubric = JSON.parse(rubricData);
+  console.log(`\nRunning ${GOLDEN_DATASET.length} golden dataset test(s)...\n`);
 
-    // Evaluate with retry
-    const result = await evaluateWithRetry(chatHistory, rubric);
+  for (const testCase of GOLDEN_DATASET) {
+    console.log(`📝 Test: ${testCase.name}`);
+    console.log(`   Turns: ${testCase.conversation.filter(m => m.role === 'user').length}`);
 
-    return res.status(200).json(result);
-  } catch (error) {
-    console.error('Evaluation error:', error);
-    return res.status(500).json({
-      error: 'Evaluation failed',
-      details: error.message
-    });
-  }
-}
-
-async function evaluateWithRetry(chatHistory, rubric, maxRetries = 1) {
-  const client = new OpenAI({
-    apiKey: process.env.GROQ_API_KEY,
-    baseURL: 'https://api.groq.com/openai/v1',
-  });
-
-  for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
     try {
-      return await evaluateConversation(client, chatHistory, rubric);
+      const result = await evaluateConversation(testCase.conversation, rubric);
+
+      if (result.action === 'assess') {
+        console.log(`   Decision: ${result.decision} (fitScore: ${result.fitScore})`);
+        console.log(`   Scores:`, result.criteriaScores);
+        console.log(`   ✓ Expected: ${testCase.expectedDecision} - ${result.decision === testCase.expectedDecision ? 'PASS' : 'FAIL'}`);
+      } else {
+        console.log(`   Action: ${result.action}`);
+        console.log(`   ProbeQuestion: ${result.probeQuestion}`);
+      }
     } catch (error) {
-      console.error(`Evaluation attempt ${attempt} failed:`, error.message);
-
-      if (attempt === maxRetries + 1) {
-        // Return neutral fallback
-        console.warn('Evaluation fallback: returning neutral response');
-        return {
-          action: 'probe',
-          probeQuestion: 'Can you tell me more about what draws you to this vision?',
-          criteriaScores: {
-            'depth-of-questioning': 5,
-            'self-awareness': 5,
-            'systems-thinking': 5,
-            'experimentation-evidence': 5,
-            'authenticity': 5,
-            'reciprocal-curiosity': 5
-          },
-          fitScore: 50,
-          decision: null,
-          timestamp: new Date().toISOString()
-        };
-      }
-
-      if (attempt < maxRetries + 1) {
-        await sleep(1000 * attempt);
-      }
+      console.error(`   ✗ ERROR:`, error.message);
     }
+    console.log();
   }
 }
 
-async function evaluateConversation(client, chatHistory, rubric) {
+async function evaluateConversation(chatHistory, rubric) {
   const userTurns = chatHistory.filter(msg => msg.role === 'user').length;
   const transcript = chatHistory
     .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
@@ -84,6 +82,11 @@ async function evaluateConversation(client, chatHistory, rubric) {
   const prompt = shouldAssess
     ? buildAssessmentPrompt(transcript, rubric)
     : buildProbePrompt(transcript, rubric);
+
+  const client = new OpenAI({
+    apiKey: process.env.GROQ_API_KEY,
+    baseURL: 'https://api.groq.com/openai/v1',
+  });
 
   const response = await client.chat.completions.create({
     model: 'llama-3.3-70b-versatile',
@@ -189,6 +192,8 @@ function calculateFitScore(criteriaScores, rubric) {
   return Math.round((weightedSum / weightSum) * 10);
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// ========== RUN TESTS ==========
+testGoldenDataset().catch(err => {
+  console.error('Test error:', err);
+  process.exit(1);
+});

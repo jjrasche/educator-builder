@@ -1,4 +1,4 @@
-// Vercel serverless function - orchestrates unified /api/evaluate + streaming
+// Vercel serverless function - handles chat streaming + inline evaluation + KV storage
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
@@ -8,23 +8,28 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages } = req.body;
+  const { messages, sessionId, email } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Invalid messages format' });
   }
 
   try {
-    // 1. Evaluate conversation (async - probes or assesses based on turn count)
-    const evaluationPromise = callEvaluate(messages);
+    // 1. Load rubric for evaluation
+    const rubricPath = path.join(process.cwd(), 'data', 'rubric-v1.json');
+    const rubricData = fs.readFileSync(rubricPath, 'utf-8');
+    const rubric = JSON.parse(rubricData);
 
-    // 2. Initialize Groq client for streaming response
+    // 2. Evaluate conversation inline
+    const evaluationResult = await evaluateConversation(messages, rubric);
+
+    // 3. Initialize Groq client for streaming response
     const client = new OpenAI({
       apiKey: process.env.GROQ_API_KEY,
       baseURL: 'https://api.groq.com/openai/v1',
     });
 
-    // 3. Build base system prompt
+    // 4. Build base system prompt
     const basePrompt = `You are Claude, helping Jim find people who want to co-create a different way of living and working together.
 
 This isn't a job interview. This is a conversation about freedom.
@@ -56,16 +61,13 @@ This isn't a job interview. This is a conversation about freedom.
 
 Be conversational. Keep responses 2-3 sentences unless deep exploration is happening.`;
 
-    // 4. Wait for evaluation and integrate guidance
+    // 5. Integrate evaluation guidance into system prompt
     let systemPrompt = basePrompt;
-    const evaluationResult = await evaluationPromise;
-
-    // If evaluator suggests a probe, add it to system prompt
     if (evaluationResult && evaluationResult.action === 'probe' && evaluationResult.probeQuestion) {
       systemPrompt += `\n\nGuidance: Consider asking about: ${evaluationResult.probeQuestion}`;
     }
 
-    // 5. Stream Groq response
+    // 6. Stream Groq response
     const stream = await client.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'system', content: systemPrompt }, ...messages],
@@ -88,7 +90,7 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
       }
     }
 
-    // 6. If assessment complete, send fitness score metadata
+    // 7. If assessment complete, send fitness score metadata
     if (evaluationResult && evaluationResult.action === 'assess' && evaluationResult.fitScore) {
       res.write(`data: ${JSON.stringify({
         type: 'metadata',
@@ -96,12 +98,12 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
         decision: evaluationResult.decision,
         canUnlockEmail: evaluationResult.decision === 'request_email'
       })}\n\n`);
-
-      // Log evaluation (fire and forget)
-      logEvaluation(evaluationResult).catch(err =>
-        console.error('Logging error:', err.message)
-      );
     }
+
+    // 8. Store conversation to KV (fire and forget)
+    storeConversation(sessionId, email, messages, aiMessage, evaluationResult).catch(err =>
+      console.error('KV storage error:', err.message)
+    );
 
     res.write('data: [DONE]\n\n');
     res.end();
@@ -115,54 +117,159 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
   }
 }
 
-async function callEvaluate(messages) {
-  try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+// ========== EVALUATION FUNCTIONS ==========
 
-    const response = await fetch(`${baseUrl}/api/evaluate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatHistory: messages })
+async function evaluateConversation(chatHistory, rubric) {
+  const userTurns = chatHistory.filter(msg => msg.role === 'user').length;
+  const transcript = chatHistory
+    .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+    .join('\n\n');
+
+  // Decision logic: probe early, assess when you have enough information
+  const shouldAssess = userTurns >= 5;
+
+  const prompt = shouldAssess
+    ? buildAssessmentPrompt(transcript, rubric)
+    : buildProbePrompt(transcript, rubric);
+
+  const client = new OpenAI({
+    apiKey: process.env.GROQ_API_KEY,
+    baseURL: 'https://api.groq.com/openai/v1',
+  });
+
+  try {
+    const response = await client.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 700
     });
 
-    if (!response.ok) {
-      throw new Error(`Evaluation failed: ${response.statusText}`);
+    const responseText = response.choices[0]?.message?.content;
+
+    if (!responseText) {
+      throw new Error('Empty response from Groq');
     }
 
-    return await response.json();
+    // Parse JSON
+    let parsed;
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      console.error('Parse error:', responseText);
+      throw new Error(`Failed to parse response: ${e.message}`);
+    }
+
+    // If assessing, calculate fitness score
+    if (shouldAssess && parsed.criteriaScores) {
+      const fitScore = calculateFitScore(parsed.criteriaScores, rubric);
+      return {
+        action: 'assess',
+        criteriaScores: parsed.criteriaScores,
+        rationale: parsed.rationale || '',
+        fitScore,
+        decision: fitScore >= 60 ? 'request_email' : 'no_email',
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    // Otherwise, return probe
+    return {
+      action: 'probe',
+      probeQuestion: parsed.probeQuestion || 'Tell me more about your thinking on this.',
+      timestamp: new Date().toISOString()
+    };
   } catch (error) {
-    console.warn('Evaluation call failed:', error.message);
+    console.warn('Evaluation failed:', error.message);
     // Return neutral probe on failure
     return {
       action: 'probe',
-      probeQuestion: 'Can you tell me more about what draws you to this?'
+      probeQuestion: 'Can you tell me more about what draws you to this vision?',
+      criteriaScores: {
+        'depth-of-questioning': 5,
+        'self-awareness': 5,
+        'systems-thinking': 5,
+        'experimentation-evidence': 5,
+        'authenticity': 5,
+        'reciprocal-curiosity': 5
+      },
+      fitScore: 50,
+      decision: null,
+      timestamp: new Date().toISOString()
     };
   }
 }
 
-async function logEvaluation(evaluationResult) {
-  try {
-    // Create logs directory if it doesn't exist
-    const logsDir = path.join(process.cwd(), 'logs');
-    if (!fs.existsSync(logsDir)) {
-      fs.mkdirSync(logsDir, { recursive: true });
-    }
+function buildProbePrompt(transcript, rubric) {
+  return `You are Jim, conducting a hiring conversation for a live-in collaboration role focused on freedom, community, and alternative living. Your job is to understand the person deeply.
 
-    // Append to evaluations.jsonl
-    const logFile = path.join(logsDir, 'evaluations.jsonl');
-    const logEntry = {
-      timestamp: evaluationResult.timestamp || new Date().toISOString(),
-      criteriaScores: evaluationResult.criteriaScores,
-      fitScore: evaluationResult.fitScore,
-      decision: evaluationResult.decision,
-      rationale: evaluationResult.rationale
-    };
+RUBRIC (for reference):
+${JSON.stringify(rubric.criteria, null, 2)}
 
-    fs.appendFileSync(logFile, JSON.stringify(logEntry) + '\n');
-  } catch (error) {
-    console.error('Logging error:', error.message);
-    // Don't throw - logging failure shouldn't break the chat
+CONVERSATION SO FAR:
+${transcript}
+
+YOUR ROLE:
+You are genuinely curious. Ask ONE specific follow-up question to understand their thinking better. Be conversational, not evaluative. Probe the areas where you still have questions.
+
+RESPOND WITH JSON:
+{
+  "probeQuestion": "Your specific follow-up question here"
+}`;
+}
+
+function buildAssessmentPrompt(transcript, rubric) {
+  return `You are Jim, assessing whether someone is a fit for a live-in collaboration role focused on freedom, community, and alternative living.
+
+RUBRIC:
+${JSON.stringify(rubric.criteria, null, 2)}
+
+CONVERSATION:
+${transcript}
+
+ASSESSMENT TASK:
+Based on everything you've learned across this conversation, score each rubric criterion (1-10). Then provide brief rationale.
+
+RESPOND WITH JSON:
+{
+  "criteriaScores": {
+    "depth-of-questioning": score,
+    "self-awareness": score,
+    "systems-thinking": score,
+    "experimentation-evidence": score,
+    "authenticity": score,
+    "reciprocal-curiosity": score
+  },
+  "rationale": "Brief assessment based on conversation"
+}`;
+}
+
+function calculateFitScore(criteriaScores, rubric) {
+  let weightedSum = 0;
+  let weightSum = 0;
+
+  for (const criterion of rubric.criteria) {
+    const score = criteriaScores[criterion.id] || 5;
+    weightedSum += score * criterion.weight;
+    weightSum += criterion.weight;
   }
+
+  return Math.round((weightedSum / weightSum) * 10);
+}
+
+// ========== KV STORAGE FUNCTIONS ==========
+
+async function storeConversation(sessionId, email, messages, aiMessage, evaluationResult) {
+  // TODO: Implement Vercel KV storage
+  // For now, log to console
+  console.log('Store conversation:', {
+    sessionId,
+    email,
+    messageCount: messages.length,
+    evaluation: evaluationResult?.action
+  });
 }

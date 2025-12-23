@@ -933,3 +933,83 @@ ASD Policy §8: Foundational docs (README, ARCHITECTURE, DECISIONS, ADRs) requir
 2025-12-23T03:10:44.844Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
 2025-12-23T03:10:44.846Z - Tool: Bash
 2025-12-23T03:10:44.851Z - Decision: allow - Safe read-only command
+2025-12-23T03:10:59.832Z - === Global Hook Invoked ===
+2025-12-23T03:10:59.850Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:10:59.854Z - Tool: TodoWrite
+2025-12-23T03:10:59.856Z - Decision: allow - Auto-approved TodoWrite
+2025-12-23T03:11:05.463Z - === Global Hook Invoked ===
+2025-12-23T03:11:05.470Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:11:05.471Z - Tool: Bash
+2025-12-23T03:11:05.473Z - Decision: allow - Safe read-only command
+2025-12-23T03:11:22.173Z - === Global Hook Invoked ===
+2025-12-23T03:11:22.188Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:11:22.191Z - Tool: Bash
+2025-12-23T03:11:22.203Z - Decision: allow - Safe read-only command
+2025-12-23T03:11:34.052Z - === Global Hook Invoked ===
+2025-12-23T03:11:34.067Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:11:34.069Z - Tool: WebFetch
+2025-12-23T03:11:34.071Z - Decision: allow - Auto-approved WebFetch
+2025-12-23T03:11:44.118Z - === Global Hook Invoked ===
+2025-12-23T03:11:44.126Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:11:44.128Z - Tool: TodoWrite
+2025-12-23T03:11:44.130Z - Decision: allow - Auto-approved TodoWrite
+2025-12-23T03:28:22.034Z - === Global Hook Invoked ===
+2025-12-23T03:28:22.043Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:28:22.046Z - Tool: AskUserQuestion
+2025-12-23T03:28:22.049Z - Decision: allow - Auto-approved AskUserQuestion
+2025-12-23T03:42:23.789Z - === Global Hook Invoked ===
+2025-12-23T03:42:23.793Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:42:23.794Z - Tool: TodoWrite
+2025-12-23T03:42:23.795Z - Decision: allow - Auto-approved TodoWrite
+2025-12-23T03:42:29.013Z - === Global Hook Invoked ===
+2025-12-23T03:42:29.018Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:42:29.019Z - Tool: Read
+2025-12-23T03:42:29.019Z - Decision: allow - Auto-approved Read
+2025-12-23T03:42:33.776Z - === Global Hook Invoked ===
+2025-12-23T03:42:33.781Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:42:33.781Z - Tool: Read
+2025-12-23T03:42:33.782Z - Decision: allow - Auto-approved Read
+2025-12-23T03:43:09.536Z - === Global Hook Invoked ===
+2025-12-23T03:43:09.541Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:43:09.542Z - Tool: Edit
+2025-12-23T03:43:09.544Z - Decision: allow - Write to non-sensitive file
+2025-12-23T03:43:16.595Z - === Global Hook Invoked ===
+2025-12-23T03:43:16.600Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:43:16.601Z - Tool: TodoWrite
+2025-12-23T03:43:16.602Z - Decision: allow - Auto-approved TodoWrite
+2025-12-23T03:43:22.435Z - === Global Hook Invoked ===
+2025-12-23T03:43:22.439Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:43:22.440Z - Tool: Bash
+2025-12-23T03:43:22.442Z - Decision: allow - Safe read-only command
+2025-12-23T03:43:33.490Z - === Global Hook Invoked ===
+2025-12-23T03:43:33.495Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:43:33.496Z - Tool: Read
+2025-12-23T03:43:33.497Z - Decision: allow - Auto-approved Read
+2025-12-23T03:43:56.204Z - === Global Hook Invoked ===
+2025-12-23T03:43:56.209Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:43:56.210Z - Tool: Edit
+2025-12-23T03:43:56.213Z - Decision: allow - Write to non-sensitive file
+2025-12-23T03:44:02.393Z - === Global Hook Invoked ===
+2025-12-23T03:44:02.397Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:44:02.397Z - Tool: Read
+2025-12-23T03:44:02.398Z - Decision: allow - Auto-approved Read
+2025-12-23T03:44:13.556Z - === Global Hook Invoked ===
+2025-12-23T03:44:13.560Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:44:13.561Z - Tool: Edit
+2025-12-23T03:44:13.564Z - Decision: allow - Write to non-sensitive file
+2025-12-23T03:44:20.551Z - === Global Hook Invoked ===
+2025-12-23T03:44:20.557Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:44:20.557Z - Tool: Bash
+2025-12-23T03:44:20.560Z - Decision: allow - Safe read-only command
+2025-12-23T03:44:36.923Z - === Global Hook Invoked ===
+2025-12-23T03:44:36.927Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:44:36.928Z - Tool: Edit
+2025-12-23T03:44:36.930Z - Decision: allow - Write to non-sensitive file
+2025-12-23T03:44:48.505Z - === Global Hook Invoked ===
+2025-12-23T03:44:48.511Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:44:48.513Z - Tool: TodoWrite
+2025-12-23T03:44:48.514Z - Decision: allow - Auto-approved TodoWrite
+2025-12-23T03:45:01.371Z - === Global Hook Invoked ===
+2025-12-23T03:45:01.376Z - Project: C:\Users\rasche_j\Documents\workspace\educator-builder
+2025-12-23T03:45:01.377Z - Tool: Bash
+2025-12-23T03:45:01.381Z - Decision: allow - Safe read-only command

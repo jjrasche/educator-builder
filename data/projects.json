@@ -1,0 +1,29 @@
+[
+  {
+    "id": "3cs",
+    "name": "3Cs Coordination Software",
+    "description": "Platform for distributed communities. Connect, reach consensus, coordinate action.",
+    "longDescription": "3Cs is the coordination layer for intentional communities and distributed teams. It helps groups connect (shared understanding), reach consensus (collective decision-making), and coordinate action (execution). You'd work on the architecture, UX, and integrations that make coordination feel natural instead of bureaucratic.",
+    "color": "blue",
+    "skills": ["systems thinking", "community building", "software architecture"],
+    "why": "If you care about how groups make decisions together and want to solve a real bottleneck in community work, this is it."
+  },
+  {
+    "id": "everything",
+    "name": "Everything Stack",
+    "description": "AI-native framework. Voice interfaces, workflow orchestration, ambient AI.",
+    "longDescription": "Everything Stack is how we build AI-native applications—where AI isn't a chatbot you talk to, it's ambient intelligence that helps you work. You'd collaborate on voice interfaces, multi-step workflows, and integrations that make AI feel like a natural extension of how you think.",
+    "color": "emerald",
+    "skills": ["AI integration", "UX design", "workflow automation"],
+    "why": "If you're curious about how AI can augment human thinking (not replace it), this is where we explore that."
+  },
+  {
+    "id": "food",
+    "name": "Food Forest",
+    "description": "Regenerative food systems. Permaculture design, sustainable living.",
+    "longDescription": "Food Forest is our long-term bet on regenerative food systems—designing and implementing permaculture principles on the land. You'd work on the design, maintenance, and knowledge systems that make food production resilient and abundant.",
+    "color": "green",
+    "skills": ["permaculture", "systems design", "soil science"],
+    "why": "If you're interested in food systems and want to see regenerative agriculture work in practice, this is how."
+  }
+]

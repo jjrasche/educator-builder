@@ -9,13 +9,10 @@
         body { background-color: #0f172a; }
         .chat-bubble { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .swipe-card { transition: transform 0.3s, opacity 0.3s; }
-        .swipe-left { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
-        .swipe-right { transform: translateX(100%) rotate(10deg); opacity: 0; }
         .typing-indicator { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
-        /* Custom range slider */
+        /* Range slider styling */
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -23,11 +20,6 @@
             cursor: pointer;
         }
         input[type="range"]::-webkit-slider-track {
-            background: #1e293b;
-            height: 0.5rem;
-            border-radius: 0.5rem;
-        }
-        input[type="range"]::-moz-range-track {
             background: #1e293b;
             height: 0.5rem;
             border-radius: 0.5rem;
@@ -43,225 +35,192 @@
             cursor: pointer;
             margin-top: -0.5rem;
         }
-        input[type="range"]::-moz-range-thumb {
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 50%;
-            background: #10b981;
-            border: 3px solid #0f172a;
-            cursor: pointer;
+
+        /* Two-column layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            height: 100vh;
+            padding: 1rem;
         }
-        input[type="range"]:focus::-webkit-slider-thumb {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
         }
-        input[type="range"]:focus::-moz-range-thumb {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+
+        .chat-panel {
+            display: flex;
+            flex-direction: column;
+            background: #1e293b;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        .content-panel {
+            display: flex;
+            flex-direction: column;
+            background: #0f172a;
+            overflow-y: auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            space-y: 1rem;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid #334155;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input-area input {
+            flex: 1;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-50 min-h-screen">
-    <div id="app" class="max-w-2xl mx-auto p-4">
-
-        <!-- Stage indicator -->
-        <div class="flex justify-center gap-2 mb-8 pt-4" role="navigation" aria-label="Progress">
-            <div id="dot-chat" class="w-3 h-3 rounded-full bg-blue-500" aria-label="Step 1: Chat"></div>
-            <div id="dot-projects" class="w-2 h-2 rounded-full bg-slate-600 mt-0.5" aria-label="Step 2: Projects"></div>
-            <div id="dot-commit" class="w-2 h-2 rounded-full bg-slate-600 mt-0.5" aria-label="Step 3: Commitment"></div>
-            <div id="dot-schedule" class="w-2 h-2 rounded-full bg-slate-600 mt-0.5" aria-label="Step 4: Schedule"></div>
-        </div>
-
-        <!-- STAGE 1: Chat -->
-        <div id="stage-chat" class="space-y-4">
-            <div class="text-center mb-8">
-                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 1</p>
-                <h1 class="text-2xl font-bold">Let's talk</h1>
-                <p class="text-slate-400 text-sm mt-2">Real conversation with AI. Ask anything.</p>
+<body class="bg-slate-950 text-slate-50">
+    <div class="main-container">
+        <!-- PERSISTENT CHAT (Left side) -->
+        <div class="chat-panel">
+            <div class="p-4 border-b border-slate-700">
+                <p class="text-xs font-mono text-slate-500 mb-2">CHAT</p>
+                <h2 class="text-lg font-bold">Let's talk</h2>
+                <p class="text-xs text-slate-400 mt-1" id="exchange-count">0 exchanges</p>
             </div>
 
-            <!-- Chat messages -->
-            <div id="chat-messages" class="space-y-4 min-h-[300px] max-h-[400px] overflow-y-auto p-4" role="log" aria-live="polite">
+            <div id="chat-messages" class="chat-messages" role="log" aria-live="polite">
                 <div class="chat-bubble flex gap-3">
                     <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>
-                    <div class="bg-slate-800 rounded-lg p-4 max-w-[80%]">
-                        <p class="text-sm">Hey! I'm here to help I'm here to help you figure out if this is a fit.</p>
+                    <div class="bg-slate-700 rounded-lg p-3 max-w-[80%]">
+                        <p class="text-sm">Hey! I'm here to help you figure out if this is a fit.</p>
                         <p class="text-sm mt-2">This is a live-in builder role in West Michigan. You'd work 10-60 hrs/month on real projects—AI tools, coordination software, food systems.</p>
                         <p class="text-sm mt-2 text-slate-400">What are you curious about?</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Email gate (shows after 5 exchanges) -->
-            <div id="email-gate" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-lg p-6">
-                <p class="text-sm text-blue-300 font-semibold mb-2">Quick checkpoint</p>
-                <p class="text-sm text-slate-300 mb-4">To continue our conversation, I'll need your email. I'll send you a transcript when we're done.</p>
-                <input type="email" id="gate-email" placeholder="your@email.com"
-                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 mb-3">
-                <button onclick="submitEmail()" id="gate-submit-btn" class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">
-                    Continue Chatting
-                </button>
-            </div>
-
-            <!-- Chat input -->
-            <div class="flex gap-2">
+            <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Ask anything..."
-                    class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">
-                <button onclick="sendMessage()" id="send-btn" class="bg-blue-500 hover:bg-blue-600 px-4 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">Send</button>
-            </div>
-
-            <!-- Ready button -->
-            <div class="text-center pt-4">
-                <p class="text-xs text-slate-500 mb-2" id="exchange-count">0 exchanges</p>
-                <button onclick="goToProjects()" id="ready-btn" class="bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm transition-all opacity-50 cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400" disabled>
-                    I'm ready to see the projects →
-                </button>
+                    class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                <button onclick="sendMessage()" id="send-btn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">Send</button>
             </div>
         </div>
 
-        <!-- STAGE 2: Projects -->
-        <div id="stage-projects" class="hidden">
-            <div class="text-center mb-8">
-                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 2</p>
-                <h1 class="text-2xl font-bold">Pick your projects</h1>
-                <p class="text-slate-400 text-sm mt-2">Swipe right on what interests you</p>
-            </div>
-
-            <!-- Project cards -->
-            <div id="project-stack" class="relative h-80 mb-8">
-                <!-- Cards inserted by JS -->
-            </div>
-
-            <!-- Swipe buttons -->
-            <div id="swipe-controls" class="flex justify-center gap-8 mb-8">
-                <button onclick="swipeProject('left')" aria-label="Pass on this project" class="w-16 h-16 rounded-full bg-slate-800 hover:bg-red-500/20 border-2 border-slate-600 hover:border-red-500 flex items-center justify-center text-2xl transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">✕</button>
-                <button onclick="swipeProject('right')" aria-label="I'm interested in this project" class="w-16 h-16 rounded-full bg-slate-800 hover:bg-emerald-500/20 border-2 border-slate-600 hover:border-emerald-500 flex items-center justify-center text-2xl transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">✓</button>
-            </div>
-
-            <!-- Selected projects -->
-            <div id="selected-projects" class="hidden bg-slate-900 border border-slate-700 rounded-lg p-4 mb-4">
-                <p class="text-sm text-slate-400 mb-2">You're interested in:</p>
-                <div id="selected-list" class="flex flex-wrap gap-2"></div>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="goBack('chat')" class="bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">← Back</button>
-                <button onclick="goToCommit()" id="to-commit-btn" class="hidden flex-1 bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">
-                    Continue →
-                </button>
-            </div>
-        </div>
-
-        <!-- STAGE 3: Commitment -->
-        <div id="stage-commit" class="hidden">
-            <div class="text-center mb-8">
-                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 3</p>
-                <h1 class="text-2xl font-bold">Your commitment</h1>
-                <p class="text-slate-400 text-sm mt-2">How much time can you give?</p>
-            </div>
-
-            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
-                <label for="hours-slider" class="text-sm text-slate-400 mb-4 block">Hours per month (10-60)</label>
-                <input type="range" id="hours-slider" min="10" max="60" value="20"
-                    class="w-full mb-2 focus:outline-none"
-                    aria-valuemin="10"
-                    aria-valuemax="60"
-                    aria-valuenow="20"
-                    aria-valuetext="20 hours per month">
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-500">10 hrs</span>
-                    <span id="hours-value" class="text-2xl font-bold text-emerald-400">20 hrs/month</span>
-                    <span class="text-slate-500">60 hrs</span>
+        <!-- DYNAMIC CONTENT (Right side) -->
+        <div class="content-panel">
+            <!-- Stage: Initial (prompt to start chat) -->
+            <div id="stage-initial" class="p-8 text-center max-w-2xl mx-auto">
+                <div class="mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">START HERE</p>
+                    <h1 class="text-3xl font-bold mb-4">Educator + 3CS Builder</h1>
+                    <p class="text-slate-400 mb-8">Live-in role. Real work. Genuine conversation.</p>
+                    <button onclick="focusChat()" class="bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                        Start the conversation →
+                    </button>
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
-                <label for="name-input" class="text-sm text-slate-400 mb-2 block">Your name</label>
-                <input type="text" id="name-input" placeholder="First name"
-                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 mb-4">
-                <label for="email-input" class="text-sm text-slate-400 mb-2 block">Email</label>
-                <input type="email" id="email-input" placeholder="you@email.com"
-                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900">
-                <p class="text-xs text-slate-500 mt-2">We'll send you the transcript + next steps</p>
-            </div>
-
-            <div class="bg-slate-800 border border-blue-500/30 rounded-lg p-4 mb-6">
-                <p class="text-sm text-blue-300 font-semibold mb-1">What happens next</p>
-                <p class="text-xs text-slate-400">You'll pick a time for a paid working session ($50). If we both agree, you start a 2-week trial.</p>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="goBack('projects')" class="bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">← Back</button>
-                <button onclick="goToSchedule()" id="schedule-btn" class="flex-1 bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">
-                    Schedule Paid Session →
-                </button>
-            </div>
-        </div>
-
-        <!-- STAGE 4: Schedule -->
-        <div id="stage-schedule" class="hidden">
-            <div class="text-center mb-8">
-                <p class="text-xs font-mono text-slate-500 mb-2">STAGE 4</p>
-                <h1 class="text-2xl font-bold">Pick a time</h1>
-                <p class="text-slate-400 text-sm mt-2">2-4 hour paid working session • $50</p>
-            </div>
-
-            <!-- Summary -->
-            <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6">
-                <p class="text-sm text-slate-400 mb-4">Your commitment</p>
-                <div class="space-y-2 text-sm">
-                    <p><span class="text-slate-500">Name:</span> <span id="summary-name" class="text-white">—</span></p>
-                    <p><span class="text-slate-500">Projects:</span> <span id="summary-projects" class="text-white">—</span></p>
-                    <p><span class="text-slate-500">Hours:</span> <span id="summary-hours" class="text-white">—</span></p>
+            <!-- Stage: Projects (unlocks after ~15 exchanges) -->
+            <div id="stage-projects" class="hidden p-8">
+                <div class="text-center mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">STAGE 1</p>
+                    <h2 class="text-2xl font-bold">What interests you?</h2>
+                    <p class="text-slate-400 text-sm mt-2">Based on our chat, here's what I think might fit...</p>
                 </div>
-            </div>
 
-            <!-- Google Calendar embed -->
-            <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden mb-6">
-                <iframe src="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ09rD-oZ5R5xg89_mnm7AP0tBpNOB9zNF7euG6T7luGJMJ4RRLO8-SFSzHFb87yR_ZqjGmngEjO" width="100%" height="600" frameborder="0" style="border:0" scrolling="yes"></iframe>
-            </div>
+                <div id="projects-container" class="space-y-4 mb-8">
+                    <!-- Projects rendered here -->
+                </div>
 
-
-
-
-
-            <div class="flex gap-3">
-                <button onclick="goBack('commit')" class="bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-lg text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">← Back</button>
-            </div>
-        </div>
-
-        <!-- STAGE 5: Confirmed -->
-        <div id="stage-confirmed" class="hidden">
-            <div class="text-center py-16">
-                <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-4xl mx-auto mb-6">✓</div>
-                <h1 class="text-2xl font-bold mb-2">You're booked</h1>
-                <p class="text-slate-400 mb-8">Check your email for details</p>
-
-                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 text-left max-w-sm mx-auto">
-                    <p class="text-xs font-mono text-slate-500 mb-4">THE PATH</p>
-                    <div class="space-y-4 text-sm">
-                        <div class="flex gap-3">
-                            <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-xs">✓</div>
-                            <div>
-                                <p class="font-semibold">Paid working session</p>
-                                <p class="text-slate-400 text-xs">$50 • 2-4 hours</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs">2</div>
-                            <div>
-                                <p class="font-semibold text-slate-400">2-week trial</p>
-                                <p class="text-slate-500 text-xs">If we both agree</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs">3</div>
-                            <div>
-                                <p class="font-semibold text-slate-400">3-month contract</p>
-                                <p class="text-slate-500 text-xs">Full commitment</p>
-                            </div>
-                        </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-slate-400 mb-2">Selected projects:</p>
+                    <div id="selected-projects-list" class="flex flex-wrap gap-2">
+                        <span class="text-xs text-slate-500">None yet</span>
                     </div>
                 </div>
+
+                <button onclick="goToCommit()" id="to-commit-btn" class="hidden w-full bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                    Next: Your commitment →
+                </button>
             </div>
+
+            <!-- Stage: Commitment -->
+            <div id="stage-commit" class="hidden p-8">
+                <div class="text-center mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">STAGE 2</p>
+                    <h2 class="text-2xl font-bold">Ready to meet?</h2>
+                    <p class="text-slate-400 text-sm mt-2">Schedule a paid working session</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6 max-w-sm">
+                    <label for="name-input" class="text-sm text-slate-400 mb-2 block">Your name</label>
+                    <input type="text" id="name-input" placeholder="First name"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 mb-4">
+
+                    <label for="email-input" class="text-sm text-slate-400 mb-2 block">Email</label>
+                    <input type="email" id="email-input" placeholder="you@email.com"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 mb-4">
+
+                    <label for="hours-input" class="text-sm text-slate-400 mb-2 block">Hours/month (10-60)</label>
+                    <input type="range" id="hours-input" min="10" max="60" value="20"
+                        class="w-full mb-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-500">10</span>
+                        <span id="hours-value" class="text-emerald-400 font-semibold">20 hrs/month</span>
+                        <span class="text-slate-500">60</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 border border-blue-500/30 rounded-lg p-4 mb-6 max-w-sm">
+                    <p class="text-sm text-blue-300 font-semibold mb-1">Next steps</p>
+                    <p class="text-xs text-slate-400">You'll schedule a $50/hr paid working session (2-4 hours). If we both agree, you start a trial.</p>
+                </div>
+
+                <button onclick="goToSchedule()" id="schedule-btn" class="bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold max-w-sm">
+                    Schedule interview →
+                </button>
+            </div>
+
+            <!-- Stage: Schedule -->
+            <div id="stage-schedule" class="hidden p-8">
+                <div class="text-center mb-8">
+                    <p class="text-xs font-mono text-slate-500 mb-2">STAGE 3</p>
+                    <h2 class="text-2xl font-bold">Pick a time</h2>
+                    <p class="text-slate-400 text-sm mt-2">$50/hr • 2-4 hours • Real work</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 mb-6 max-w-sm">
+                    <p class="text-sm text-slate-400 mb-4">Your application</p>
+                    <div class="space-y-2 text-sm">
+                        <p><span class="text-slate-500">Name:</span> <span id="summary-name" class="text-white">—</span></p>
+                        <p><span class="text-slate-500">Projects:</span> <span id="summary-projects" class="text-white">—</span></p>
+                        <p><span class="text-slate-500">Hours:</span> <span id="summary-hours" class="text-white">—</span></p>
+                    </div>
+                </div>
+
+                <!-- Google Calendar embed -->
+                <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden mb-6 max-w-sm">
+                    <iframe src="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ09rD-oZ5R5xg89_mnm7AP0tBpNOB9zNF7euG6T7luGJMJ4RRLO8-SFSzHFb87yR_ZqjGmngEjO" width="100%" height="400" frameborder="0" style="border:0"></iframe>
+                </div>
+            </div>
+
+            <!-- Stage: Confirmed -->
+            <div id="stage-confirmed" class="hidden p-8 text-center">
+                <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center text-4xl mx-auto mb-6">✓</div>
+                <h2 class="text-2xl font-bold mb-2">You're scheduled</h2>
+                <p class="text-slate-400">Check your email for details</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Calendly widget -->
     <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
@@ -271,40 +230,37 @@
         // State
         let exchanges = 0;
         let selectedProjects = [];
-        let currentProjectIndex = 0;
         let chatHistory = [];
         let userEmail = '';
+        let projects = [];
         let isStreaming = false;
+        let fitScore = 0;
+        let canUnlockEmail = false;
         const API_BASE = location.hostname === 'localhost' ? 'http://localhost:3000' : '';
 
-        const projects = [
-            { id: '3cs', name: '3Cs Coordination Software', desc: 'Platform for distributed communities. Connect, reach consensus, coordinate action.', color: 'blue' },
-            { id: 'everything', name: 'Everything Stack', desc: 'AI-native framework. Voice interfaces, workflow orchestration, ambient AI.', color: 'emerald' },
-            { id: 'food', name: 'Food Forest', desc: 'Regenerative food systems. Permaculture design, sustainable living.', color: 'green' }
-        ];
-
         // Initialize
-        function init() {
-            renderProjects();
+        async function init() {
+            // Load projects
+            try {
+                const response = await fetch('/data/projects.json');
+                projects = await response.json();
+            } catch (e) {
+                console.error('Failed to load projects:', e);
+                projects = [];
+            }
+
             document.getElementById('chat-input').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !isStreaming) sendMessage();
             });
-            document.getElementById('hours-slider').addEventListener('input', updateHours);
+
+            document.getElementById('hours-input').addEventListener('input', updateHours);
         }
 
-        // Chat with Groq
+        // Chat
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             if (!message || isStreaming) return;
-
-            // Check email gate
-            if (exchanges >= 5 && !userEmail) {
-                document.getElementById('email-gate').classList.remove('hidden');
-                input.disabled = true;
-                document.getElementById('send-btn').disabled = true;
-                return;
-            }
 
             // Add user message
             addChatMessage(message, 'user');
@@ -313,6 +269,9 @@
             exchanges++;
             updateExchangeCount();
 
+            // Log message
+            logMessage(message, 'user');
+
             // Show typing indicator
             const typingDiv = showTyping();
             isStreaming = true;
@@ -320,7 +279,6 @@
             document.getElementById('send-btn').disabled = true;
 
             try {
-                // Call Groq API
                 const response = await fetch(`${API_BASE}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -329,7 +287,6 @@
 
                 if (!response.ok) throw new Error('API error');
 
-                // Remove typing indicator
                 typingDiv.remove();
 
                 // Stream response
@@ -360,6 +317,14 @@
                                         messageDiv.querySelector('p').textContent = aiMessage;
                                     }
                                 }
+                                if (parsed.type === 'metadata') {
+                                    fitScore = parsed.fitScore;
+                                    canUnlockEmail = parsed.canUnlockEmail;
+                                    updateFitDisplay();
+                                    if (canUnlockEmail) {
+                                        showEmailGate();
+                                    }
+                                }
                             } catch (e) {
                                 // Skip invalid JSON
                             }
@@ -368,9 +333,15 @@
                 }
 
                 chatHistory.push({ role: 'assistant', content: aiMessage });
+                logMessage(aiMessage, 'assistant');
+
+                // Auto-unlock projects at 15 exchanges
+                if (exchanges >= 15) {
+                    showStage('projects');
+                }
 
             } catch (error) {
-                console.error('Groq API error:', error);
+                console.error('API error:', error);
                 typingDiv.remove();
                 addChatMessage('Sorry, something went wrong. Please try again.', 'assistant');
             }
@@ -381,13 +352,35 @@
             input.focus();
         }
 
+        function addChatMessage(text, role) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'chat-bubble flex gap-3' + (role === 'user' ? ' flex-row-reverse' : '');
+
+            const avatar = role === 'user'
+                ? '<div class="w-8 h-8 rounded-full bg-emerald-500 flex-shrink-0 flex items-center justify-center text-xs">You</div>'
+                : '<div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>';
+
+            const bgColor = role === 'user' ? 'bg-emerald-500/20' : 'bg-slate-700';
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="${bgColor} rounded-lg p-3 max-w-[75%]">
+                    <p class="text-sm">${text}</p>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
         function showTyping() {
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
             div.className = 'chat-bubble flex gap-3';
             div.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>
-                <div class="bg-slate-800 rounded-lg p-4">
+                <div class="bg-slate-700 rounded-lg p-3">
                     <div class="flex gap-1">
                         <span class="typing-indicator">●</span>
                         <span class="typing-indicator" style="animation-delay: 0.2s;">●</span>
@@ -400,137 +393,102 @@
             return div;
         }
 
-        function addChatMessage(text, sender) {
-            const container = document.getElementById('chat-messages');
-            const div = document.createElement('div');
-            div.className = 'chat-bubble flex gap-3' + (sender === 'user' ? ' flex-row-reverse' : '');
-
-            const avatar = sender === 'user'
-                ? '<div class="w-8 h-8 rounded-full bg-emerald-500 flex-shrink-0 flex items-center justify-center text-xs">You</div>'
-                : '<div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>';
-
-            const bgColor = sender === 'user' ? 'bg-emerald-500/20' : 'bg-slate-800';
-
-            div.innerHTML = `
-                ${avatar}
-                <div class="${bgColor} rounded-lg p-4 max-w-[80%]">
-                    <p class="text-sm">${text}</p>
-                </div>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            return div;
-        }
-
         function updateExchangeCount() {
             document.getElementById('exchange-count').textContent = `${exchanges} exchanges`;
-            const btn = document.getElementById('ready-btn');
-            if (exchanges >= 3 && userEmail) {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.classList.add('bg-emerald-500', 'hover:bg-emerald-400');
-            }
         }
 
-        function submitEmail() {
-            const email = document.getElementById('gate-email').value;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        function logMessage(content, role) {
+            fetch(`${API_BASE}/api/log-message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userEmail,
+                    message: content,
+                    role,
+                    timestamp: new Date().toISOString(),
+                    stage: getCurrentStage(),
+                    projectsInterested: selectedProjects.map(p => p.id)
+                })
+            }).catch(e => console.error('Log error:', e));
+        }
 
-            if (!email || !emailRegex.test(email)) {
-                alert('Please enter a valid email address');
-                return;
-            }
+        function getCurrentStage() {
+            if (document.getElementById('stage-projects').classList.contains('hidden') === false) return 'projects';
+            if (document.getElementById('stage-commit').classList.contains('hidden') === false) return 'commit';
+            if (document.getElementById('stage-schedule').classList.contains('hidden') === false) return 'schedule';
+            return 'chat';
+        }
 
-            userEmail = email;
-            document.getElementById('email-gate').classList.add('hidden');
-            document.getElementById('chat-input').disabled = false;
-            document.getElementById('send-btn').disabled = false;
-            document.getElementById('email-input').value = email; // Pre-fill later
-            updateExchangeCount();
+        function focusChat() {
+            document.getElementById('chat-input').focus();
         }
 
         // Projects
         function renderProjects() {
-            const stack = document.getElementById('project-stack');
-            stack.innerHTML = '';
-
-            projects.forEach((p, i) => {
-                const card = document.createElement('div');
-                card.className = `swipe-card absolute inset-0 bg-slate-900 border border-slate-700 rounded-lg p-8 flex flex-col justify-between ${i === 0 ? '' : 'hidden'}`;
-                card.id = `project-${i}`;
-                card.innerHTML = `
-                    <div>
-                        <p class="text-${p.color}-300 text-sm font-mono mb-2">PROJECT ${i + 1}/${projects.length}</p>
-                        <h3 class="text-2xl font-bold mb-4">${p.name}</h3>
-                        <p class="text-slate-300 text-sm leading-relaxed">${p.desc}</p>
+            const container = document.getElementById('projects-container');
+            container.innerHTML = projects.map((p, i) => `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 cursor-pointer hover:border-${p.color}-500/50 transition" onclick="toggleProject('${p.id}')">
+                    <p class="text-${p.color}-300 text-xs font-mono mb-2">${p.name}</p>
+                    <p class="text-sm text-slate-400">${p.description}</p>
+                    <p class="text-xs text-slate-500 mt-2">${p.longDescription}</p>
+                    <div class="mt-4">
+                        <span id="project-${p.id}-status" class="text-xs text-slate-500">Click to select</span>
                     </div>
-                    <div class="text-center text-slate-500 text-sm">
-                        ← Pass · Interested →
-                    </div>
-                `;
-                stack.appendChild(card);
-            });
+                </div>
+            `).join('');
         }
 
-        function swipeProject(direction) {
-            const card = document.getElementById(`project-${currentProjectIndex}`);
-            if (!card) return;
+        function toggleProject(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            const idx = selectedProjects.findIndex(p => p.id === projectId);
 
-            if (direction === 'right') {
-                selectedProjects.push(projects[currentProjectIndex]);
+            if (idx >= 0) {
+                selectedProjects.splice(idx, 1);
+            } else {
+                selectedProjects.push(project);
             }
 
-            card.classList.add(direction === 'left' ? 'swipe-left' : 'swipe-right');
-
-            setTimeout(() => {
-                card.classList.add('hidden');
-                currentProjectIndex++;
-
-                if (currentProjectIndex < projects.length) {
-                    document.getElementById(`project-${currentProjectIndex}`).classList.remove('hidden');
-                } else {
-                    showProjectResults();
-                }
-            }, 300);
-        }
-
-        function showProjectResults() {
-            document.getElementById('swipe-controls').classList.add('hidden');
-            document.getElementById('project-stack').innerHTML = `
-                <div class="text-center py-16">
-                    <p class="text-slate-400">You've seen all projects</p>
-                </div>
-            `;
+            updateProjectsList();
+            document.getElementById(`project-${projectId}-status`).textContent =
+                idx >= 0 ? 'Click to select' : '✓ Selected';
 
             if (selectedProjects.length > 0) {
-                const selected = document.getElementById('selected-projects');
-                const list = document.getElementById('selected-list');
-                selected.classList.remove('hidden');
-                list.innerHTML = selectedProjects.map(p =>
-                    `<span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-sm">${p.name}</span>`
-                ).join('');
                 document.getElementById('to-commit-btn').classList.remove('hidden');
             }
         }
 
-        // Commit
-        function updateHours() {
-            const value = document.getElementById('hours-slider').value;
-            document.getElementById('hours-value').textContent = `${value} hrs/month`;
-            document.getElementById('hours-slider').setAttribute('aria-valuenow', value);
-            document.getElementById('hours-slider').setAttribute('aria-valuetext', `${value} hours per month`);
+        function updateProjectsList() {
+            const list = document.getElementById('selected-projects-list');
+            if (selectedProjects.length === 0) {
+                list.innerHTML = '<span class="text-xs text-slate-500">None yet</span>';
+            } else {
+                list.innerHTML = selectedProjects.map(p =>
+                    `<span class="bg-${p.color}-500/20 text-${p.color}-300 px-3 py-1 rounded-full text-xs">${p.name}</span>`
+                ).join('');
+            }
         }
 
-        // Schedule
+        // Commitment
+        function updateHours() {
+            const value = document.getElementById('hours-input').value;
+            document.getElementById('hours-value').textContent = `${value} hrs/month`;
+        }
+
+        function goToCommit() {
+            showStage('commit');
+        }
+
         async function goToSchedule() {
-            const email = document.getElementById('email-input').value || userEmail;
             const name = document.getElementById('name-input').value || 'Anonymous';
-            const hours = document.getElementById('hours-slider').value;
+            const email = document.getElementById('email-input').value;
+            const hours = document.getElementById('hours-input').value;
 
             if (!email) {
                 alert('Please provide an email');
                 return;
             }
+
+            userEmail = email;
 
             // Send transcript
             try {
@@ -554,48 +512,62 @@
             document.getElementById('summary-projects').textContent = selectedProjects.map(p => p.name).join(', ');
             document.getElementById('summary-hours').textContent = `${hours} hrs/month`;
 
-
             showStage('schedule');
-            updateDots('schedule');
-        }
-
-        // Navigation
-        function goToProjects() {
-            showStage('projects');
-            updateDots('projects');
-        }
-
-        function goToCommit() {
-            showStage('commit');
-            updateDots('commit');
-        }
-
-        function goBack(stage) {
-            showStage(stage);
-            updateDots(stage);
         }
 
         function showStage(stage) {
-            ['chat', 'projects', 'commit', 'schedule', 'confirmed'].forEach(s => {
+            ['initial', 'projects', 'commit', 'schedule', 'confirmed'].forEach(s => {
                 document.getElementById(`stage-${s}`).classList.add('hidden');
             });
             document.getElementById(`stage-${stage}`).classList.remove('hidden');
         }
 
-        function updateDots(current) {
-            const stages = ['chat', 'projects', 'commit', 'schedule'];
-            const currentIdx = stages.indexOf(current);
+        // Fit score display
+        function updateFitDisplay() {
+            let display = document.getElementById('fit-score-display');
+            if (!display) {
+                display = document.createElement('div');
+                display.id = 'fit-score-display';
+                display.className = 'bg-slate-900 border border-slate-700 rounded-lg p-4 mb-4 text-center';
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.parentElement.insertBefore(display, messagesContainer);
+            }
+            display.innerHTML = `
+                <p class="text-sm text-slate-500 mb-2">Fit Score</p>
+                <p class="text-2xl font-bold text-emerald-400">${fitScore}/100</p>
+                ${canUnlockEmail ? '<p class="text-xs text-emerald-400 mt-2">✓ Ready to continue</p>' : ''}
+            `;
+        }
 
-            stages.forEach((s, i) => {
-                const dot = document.getElementById(`dot-${s}`);
-                if (i <= currentIdx) {
-                    dot.classList.remove('w-2', 'h-2', 'bg-slate-600', 'mt-0.5');
-                    dot.classList.add('w-3', 'h-3', 'bg-emerald-500');
-                } else {
-                    dot.classList.remove('w-3', 'h-3', 'bg-blue-500', 'bg-emerald-500');
-                    dot.classList.add('w-2', 'h-2', 'bg-slate-600', 'mt-0.5');
-                }
-            });
+        // Email gate
+        function showEmailGate() {
+            let gate = document.getElementById('email-gate-container');
+            if (!gate) {
+                gate = document.createElement('div');
+                gate.id = 'email-gate-container';
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.parentElement.insertBefore(gate, messagesContainer);
+            }
+            gate.className = 'bg-slate-900 border border-blue-500/30 rounded-lg p-4 mb-4';
+            gate.innerHTML = `
+                <p class="text-sm text-blue-300 font-semibold mb-3">Ready to move forward?</p>
+                <input type="email" id="gate-email" placeholder="your@email.com"
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm mb-3 focus:outline-none focus:border-blue-500">
+                <button onclick="submitEmail()" class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">
+                    Continue
+                </button>
+            `;
+        }
+
+        async function submitEmail() {
+            const email = document.getElementById('gate-email').value.trim();
+            if (!email) {
+                alert('Please enter your email');
+                return;
+            }
+            userEmail = email;
+            document.getElementById('email-gate-container').remove();
+            showStage('projects');
         }
 
         init();

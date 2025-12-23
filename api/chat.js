@@ -125,6 +125,23 @@ async function evaluateConversation(chatHistory, rubric) {
     .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
     .join('\n\n');
 
+  // TEMP FOR TESTING: Return hardcoded assessment immediately
+  return {
+    action: 'assess',
+    criteriaScores: {
+      'depth-of-questioning': 7,
+      'self-awareness': 8,
+      'systems-thinking': 6,
+      'experimentation-evidence': 7,
+      'authenticity': 8,
+      'reciprocal-curiosity': 7
+    },
+    rationale: 'TEST MODE - HARDCODED SCORE',
+    fitScore: 72,
+    decision: 'request_email',
+    timestamp: new Date().toISOString()
+  };
+
   // Decision logic: probe early, assess when you have enough information
   // TEMPORARY: ALWAYS assess for testing
   const shouldAssess = true; // userTurns >= 5;

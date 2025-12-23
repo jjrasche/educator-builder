@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
-const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
+const SITE_URL = process.env.SITE_URL || 'http://localhost:3006';
 const RESULTS_DIR = './playwright/persona-results';
 
 fs.mkdirSync(RESULTS_DIR, { recursive: true });

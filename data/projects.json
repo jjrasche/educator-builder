@@ -1,29 +1,42 @@
 [
   {
-    "id": "3cs",
-    "name": "3Cs Coordination Software",
-    "description": "Platform for distributed communities. Connect, reach consensus, coordinate action.",
-    "longDescription": "3Cs is the coordination layer for intentional communities and distributed teams. It helps groups connect (shared understanding), reach consensus (collective decision-making), and coordinate action (execution). You'd work on the architecture, UX, and integrations that make coordination feel natural instead of bureaucratic.",
-    "color": "blue",
-    "skills": ["systems thinking", "community building", "software architecture"],
-    "why": "If you care about how groups make decisions together and want to solve a real bottleneck in community work, this is it."
-  },
-  {
-    "id": "everything",
+    "id": "everything-stack",
     "name": "Everything Stack",
-    "description": "AI-native framework. Voice interfaces, workflow orchestration, ambient AI.",
-    "longDescription": "Everything Stack is how we build AI-native applications—where AI isn't a chatbot you talk to, it's ambient intelligence that helps you work. You'd collaborate on voice interfaces, multi-step workflows, and integrations that make AI feel like a natural extension of how you think.",
-    "color": "emerald",
-    "skills": ["AI integration", "UX design", "workflow automation"],
-    "why": "If you're curious about how AI can augment human thinking (not replace it), this is where we explore that."
+    "description": "AI-native application framework enabling Autonomous Software Development",
+    "longDescription": "Building the foundational platform that enables Autonomous Software Development. Semantic search backbone, voice-first AI interaction, and modular tooling. The infrastructure that lets us build anything—from 3Cs to ambient AI systems to future applications.",
+    "color": "blue",
+    "category": "Creation"
   },
   {
-    "id": "food",
-    "name": "Food Forest",
-    "description": "Regenerative food systems. Permaculture design, sustainable living.",
-    "longDescription": "Food Forest is our long-term bet on regenerative food systems—designing and implementing permaculture principles on the land. You'd work on the design, maintenance, and knowledge systems that make food production resilient and abundant.",
-    "color": "green",
-    "skills": ["permaculture", "systems design", "soil science"],
-    "why": "If you're interested in food systems and want to see regenerative agriculture work in practice, this is how."
+    "id": "3cs",
+    "name": "3Cs (Collaboration Software)",
+    "description": "Solves the hard problems of group collaboration",
+    "longDescription": "Connect-Consensus-Coordinate framework built on Everything Stack. The application that helps people organize together and resolve the coordination challenges that prevent communities from working effectively. First test case for scaling human collaboration through infrastructure.",
+    "color": "emerald",
+    "category": "Coordination"
+  },
+  {
+    "id": "food-forest",
+    "name": "Food Forest Experiments",
+    "description": "Regenerative food systems on permaculture principles",
+    "longDescription": "Testing whether we can feed one person on 0.1 acres with less than 20 hours/year of work. Permaculture-based design combining trees, shrubs, perennials, and integrated systems. Building proof that food abundance is possible at household scale through design, not external inputs.",
+    "color": "amber",
+    "category": "Cultivation"
+  },
+  {
+    "id": "pud-village",
+    "name": "PUD Village Infrastructure",
+    "description": "Designing intentional communities at scale (250-2,000 people)",
+    "longDescription": "10-year vision for a regenerative village using Planned Unit Development zoning. Self-sufficient water, sewage, power systems. Mixed housing (multifamily core, single-family ring). Co-op + condo hybrid ownership. Built with 3Cs coordination and food forest principles. Proof that sustainable community infrastructure is buildable.",
+    "color": "purple",
+    "category": "Coordination"
+  },
+  {
+    "id": "open-collaboration",
+    "name": "Your Own Ideas",
+    "description": "What do you want to build?",
+    "longDescription": "We're building the infrastructure for community abundance. What problems excite you? What systems do you want to experiment with? Come bring your ideas and we'll figure out how to make them real together.",
+    "color": "cyan",
+    "category": "Open"
   }
 ]

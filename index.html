@@ -109,22 +109,9 @@
             </div>
 
             <div class="chat-input-area">
-                <input type="text" id="chat-input" data-testid="chat-input" placeholder="Ask anything..."
+                <input type="text" id="chat-input" placeholder="Ask anything..."
                     class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                 <button onclick="sendMessage()" id="send-btn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">Send</button>
-            </div>
-
-            <!-- Fit Score Display (for visual feedback) -->
-            <div class="p-3 border-t border-slate-700 bg-slate-900">
-                <div class="flex justify-between items-center text-xs">
-                    <span class="text-slate-500">Fit Score</span>
-                    <div id="fit-score-display" class="flex items-center gap-2">
-                        <span id="fit-score-value" class="text-slate-400">—</span>
-                        <div id="fit-score-bar" class="h-2 w-24 bg-slate-700 rounded-full overflow-hidden">
-                            <div id="fit-score-fill" class="h-full bg-emerald-500 transition-all" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -139,6 +126,21 @@
                     <button onclick="focusChat()" class="bg-emerald-500 hover:bg-emerald-400 px-6 py-3 rounded-lg text-sm font-semibold">
                         Start the conversation →
                     </button>
+                    <div class="mt-6">
+                        <button onclick="showResumePrompt()" class="text-slate-500 hover:text-slate-300 text-sm underline">
+                            Resume a previous conversation
+                        </button>
+                    </div>
+                    <!-- Resume prompt (hidden by default) -->
+                    <div id="resume-prompt" class="hidden mt-6 bg-slate-800 border border-slate-700 rounded-lg p-4 max-w-sm mx-auto">
+                        <p class="text-sm text-slate-400 mb-3">Enter the email you used before:</p>
+                        <input type="email" id="resume-email" placeholder="you@email.com"
+                            class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-blue-500">
+                        <button onclick="handleResume()" class="w-full bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">
+                            Resume
+                        </button>
+                        <p id="resume-error" class="hidden text-red-400 text-xs mt-2"></p>
+                    </div>
                 </div>
             </div>
 
@@ -203,11 +205,11 @@
                 </button>
             </div>
 
-            <!-- Stage: Schedule -->
+            <!-- Stage: Schedule (placeholder - calendar integration pending) -->
             <div id="stage-schedule" class="hidden p-8">
                 <div class="text-center mb-8">
                     <p class="text-xs font-mono text-slate-500 mb-2">STAGE 3</p>
-                    <h2 class="text-2xl font-bold">Pick a time</h2>
+                    <h2 class="text-2xl font-bold">Application Submitted</h2>
                     <p class="text-slate-400 text-sm mt-2">$50/hr • 2-4 hours • Real work</p>
                 </div>
 
@@ -220,9 +222,9 @@
                     </div>
                 </div>
 
-                <!-- Google Calendar embed -->
-                <div class="bg-slate-900 border border-slate-700 rounded-lg overflow-hidden mb-6 max-w-sm">
-                    <iframe src="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ09rD-oZ5R5xg89_mnm7AP0tBpNOB9zNF7euG6T7luGJMJ4RRLO8-SFSzHFb87yR_ZqjGmngEjO" width="100%" height="400" frameborder="0" style="border:0"></iframe>
+                <div class="bg-slate-800 border border-emerald-500/30 rounded-lg p-4 mb-6 max-w-sm">
+                    <p class="text-sm text-emerald-300 font-semibold mb-1">What's next?</p>
+                    <p class="text-xs text-slate-400">We'll review your conversation and reach out to schedule a paid working session.</p>
                 </div>
             </div>
 
@@ -235,9 +237,6 @@
         </div>
     </div>
 
-    <!-- Calendly widget -->
-    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
-    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 
     <script>
         // State
@@ -245,22 +244,28 @@
         let selectedProjects = [];
         let chatHistory = [];
         let userEmail = '';
+        let sessionId = '';
         let projects = [];
         let isStreaming = false;
         let fitScore = 0;
         let canUnlockEmail = false;
-        let lastMetadata = null; // Store full metadata for Playwright access
-        const API_BASE = location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+        let lastMetadata = null;
 
-        // Generate session ID for KV storage
-        let sessionId = localStorage.getItem('sessionId');
-        if (!sessionId) {
-          sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-          localStorage.setItem('sessionId', sessionId);
+        // Generate or retrieve sessionId from localStorage
+        function getOrCreateSessionId() {
+            let id = localStorage.getItem('sessionId');
+            if (!id) {
+                id = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('sessionId', id);
+            }
+            return id;
         }
 
         // Initialize
         async function init() {
+            sessionId = getOrCreateSessionId();
+            console.log('Session ID:', sessionId);
+
             // Load projects
             try {
                 const response = await fetch('/data/projects.json');
@@ -270,11 +275,105 @@
                 projects = [];
             }
 
+            // Try to recover existing session from KV
+            await recoverSession();
+
             document.getElementById('chat-input').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !isStreaming) sendMessage();
             });
 
             document.getElementById('hours-input').addEventListener('input', updateHours);
+        }
+
+        // Resume session by email (cross-device)
+        async function resumeByEmail(email) {
+            try {
+                const response = await fetch(`/api/resume?email=${encodeURIComponent(email)}`);
+                if (!response.ok) return false;
+
+                const data = await response.json();
+                if (!data.found || !data.hasConversation) {
+                    return false;
+                }
+
+                // Set session ID and persist to localStorage
+                sessionId = data.sessionId;
+                localStorage.setItem('sessionId', sessionId);
+                userEmail = data.email;
+
+                // Restore state
+                chatHistory = data.chatHistory;
+                exchanges = data.exchanges;
+
+                if (data.lastMetadata) {
+                    fitScore = data.lastMetadata.fitScore || 0;
+                    canUnlockEmail = data.lastMetadata.canUnlockEmail || false;
+                }
+
+                // Render messages
+                const container = document.getElementById('chat-messages');
+                container.innerHTML = '';
+                for (const msg of chatHistory) {
+                    addChatMessage(msg.content, msg.role);
+                }
+
+                // Update UI
+                updateExchangeCount();
+                if (fitScore > 0) updateFitDisplay();
+                if (canUnlockEmail) showEmailGate();
+                if (exchanges >= 15) showStage('projects');
+
+                console.log(`Resumed session for ${email}: ${exchanges} exchanges`);
+                return true;
+            } catch (e) {
+                console.error('Resume by email failed:', e.message);
+                return false;
+            }
+        }
+
+        // Session recovery - restores chat from KV if session exists
+        async function recoverSession() {
+            try {
+                const response = await fetch(`/api/session?sessionId=${encodeURIComponent(sessionId)}`);
+                if (!response.ok) return;
+
+                const data = await response.json();
+                if (!data.found || !data.chatHistory || data.chatHistory.length === 0) {
+                    console.log('No existing session to recover');
+                    return;
+                }
+
+                console.log(`Recovering session: ${data.exchanges} exchanges`);
+
+                // Restore chat history
+                chatHistory = data.chatHistory;
+                exchanges = data.exchanges;
+
+                // Restore UI state
+                if (data.lastMetadata) {
+                    fitScore = data.lastMetadata.fitScore || 0;
+                    canUnlockEmail = data.lastMetadata.canUnlockEmail || false;
+                }
+
+                // Render recovered messages (skip the initial AI greeting which is already in HTML)
+                const container = document.getElementById('chat-messages');
+                // Clear the default greeting
+                container.innerHTML = '';
+
+                for (const msg of chatHistory) {
+                    addChatMessage(msg.content, msg.role);
+                }
+
+                // Update UI
+                updateExchangeCount();
+                if (fitScore > 0) updateFitDisplay();
+                if (canUnlockEmail) showEmailGate();
+                if (exchanges >= 15) showStage('projects');
+
+                console.log('Session recovered successfully');
+            } catch (e) {
+                console.log('Session recovery skipped:', e.message);
+            }
         }
 
         // Chat
@@ -300,10 +399,14 @@
             document.getElementById('send-btn').disabled = true;
 
             try {
-                const response = await fetch(`${API_BASE}/api/chat`, {
+                const response = await fetch(`/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: chatHistory, sessionId, email: userEmail })
+                    body: JSON.stringify({
+                        messages: chatHistory,
+                        sessionId: sessionId,
+                        email: userEmail || null
+                    })
                 });
 
                 if (!response.ok) throw new Error('API error');
@@ -400,18 +503,22 @@
             const div = document.createElement('div');
             div.className = 'chat-bubble flex gap-3' + (role === 'user' ? ' flex-row-reverse' : '');
 
-            const avatar = role === 'user'
-                ? '<div class="w-8 h-8 rounded-full bg-emerald-500 flex-shrink-0 flex items-center justify-center text-xs">You</div>'
-                : '<div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>';
+            // Build DOM safely to prevent XSS
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs' +
+                (role === 'user' ? ' bg-emerald-500' : ' bg-blue-500 font-semibold');
+            avatarDiv.textContent = role === 'user' ? 'You' : 'AI';
 
-            const bgColor = role === 'user' ? 'bg-emerald-500/20' : 'bg-slate-700';
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = (role === 'user' ? 'bg-emerald-500/20' : 'bg-slate-700') + ' rounded-lg p-3 max-w-[75%]';
 
-            div.innerHTML = `
-                ${avatar}
-                <div class="${bgColor} rounded-lg p-3 max-w-[75%]">
-                    <p class="text-sm">${text}</p>
-                </div>
-            `;
+            const textP = document.createElement('p');
+            textP.className = 'text-sm';
+            textP.textContent = text; // Safe: uses textContent, not innerHTML
+            bubbleDiv.appendChild(textP);
+
+            div.appendChild(avatarDiv);
+            div.appendChild(bubbleDiv);
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
             return div;
@@ -440,24 +547,8 @@
             document.getElementById('exchange-count').textContent = `${exchanges} exchanges`;
         }
 
-        function updateFitDisplay() {
-            // Update fit score display
-            const scoreValue = document.getElementById('fit-score-value');
-            const scoreFill = document.getElementById('fit-score-fill');
-
-            if (fitScore !== null && fitScore !== undefined) {
-                scoreValue.textContent = `${fitScore}%`;
-                scoreValue.className = fitScore >= 60 ? 'text-emerald-400 font-semibold' : 'text-slate-400';
-                scoreFill.style.width = `${Math.min(fitScore, 100)}%`;
-            } else {
-                scoreValue.textContent = '—';
-                scoreValue.className = 'text-slate-400';
-                scoreFill.style.width = '0%';
-            }
-        }
-
         function logMessage(content, role) {
-            fetch(`${API_BASE}/api/log-message`, {
+            fetch(`/api/log-message`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -482,19 +573,60 @@
             document.getElementById('chat-input').focus();
         }
 
-        // Projects
+        function showResumePrompt() {
+            document.getElementById('resume-prompt').classList.remove('hidden');
+        }
+
+        async function handleResume() {
+            const email = document.getElementById('resume-email').value.trim();
+            const errorEl = document.getElementById('resume-error');
+
+            if (!email) {
+                errorEl.textContent = 'Please enter an email';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+            const success = await resumeByEmail(email);
+
+            if (success) {
+                document.getElementById('resume-prompt').classList.add('hidden');
+            } else {
+                errorEl.textContent = 'No conversation found for this email';
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        // Projects - color map for Tailwind JIT compatibility
+        const projectColorMap = {
+            emerald: { border: 'hover:border-emerald-500/50', text: 'text-emerald-300', bg: 'bg-emerald-500/20' },
+            blue: { border: 'hover:border-blue-500/50', text: 'text-blue-300', bg: 'bg-blue-500/20' },
+            purple: { border: 'hover:border-purple-500/50', text: 'text-purple-300', bg: 'bg-purple-500/20' },
+            amber: { border: 'hover:border-amber-500/50', text: 'text-amber-300', bg: 'bg-amber-500/20' },
+            rose: { border: 'hover:border-rose-500/50', text: 'text-rose-300', bg: 'bg-rose-500/20' },
+            cyan: { border: 'hover:border-cyan-500/50', text: 'text-cyan-300', bg: 'bg-cyan-500/20' },
+        };
+        const defaultColor = { border: 'hover:border-slate-500/50', text: 'text-slate-300', bg: 'bg-slate-500/20' };
+
+        function getProjectColor(colorName) {
+            return projectColorMap[colorName] || defaultColor;
+        }
+
         function renderProjects() {
             const container = document.getElementById('projects-container');
-            container.innerHTML = projects.map((p, i) => `
-                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 cursor-pointer hover:border-${p.color}-500/50 transition" onclick="toggleProject('${p.id}')">
-                    <p class="text-${p.color}-300 text-xs font-mono mb-2">${p.name}</p>
+            container.innerHTML = projects.map((p, i) => {
+                const colors = getProjectColor(p.color);
+                return `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 cursor-pointer ${colors.border} transition" onclick="toggleProject('${p.id}')">
+                    <p class="${colors.text} text-xs font-mono mb-2">${p.name}</p>
                     <p class="text-sm text-slate-400">${p.description}</p>
                     <p class="text-xs text-slate-500 mt-2">${p.longDescription}</p>
                     <div class="mt-4">
                         <span id="project-${p.id}-status" class="text-xs text-slate-500">Click to select</span>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function toggleProject(projectId) {
@@ -521,9 +653,10 @@
             if (selectedProjects.length === 0) {
                 list.innerHTML = '<span class="text-xs text-slate-500">None yet</span>';
             } else {
-                list.innerHTML = selectedProjects.map(p =>
-                    `<span class="bg-${p.color}-500/20 text-${p.color}-300 px-3 py-1 rounded-full text-xs">${p.name}</span>`
-                ).join('');
+                list.innerHTML = selectedProjects.map(p => {
+                    const colors = getProjectColor(p.color);
+                    return `<span class="${colors.bg} ${colors.text} px-3 py-1 rounded-full text-xs">${p.name}</span>`;
+                }).join('');
             }
         }
 
@@ -549,21 +682,15 @@
 
             userEmail = email;
 
-            // Send transcript
+            // Link email to session for cross-device resume
             try {
-                await fetch(`${API_BASE}/api/send-transcript`, {
+                await fetch(`/api/magic-link`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email,
-                        name,
-                        transcript: chatHistory,
-                        projects: selectedProjects.map(p => p.name),
-                        hours
-                    })
+                    body: JSON.stringify({ email, sessionId, name })
                 });
             } catch (error) {
-                console.error('Failed to send transcript:', error);
+                console.error('Failed to link email to session:', error);
             }
 
             // Update summary

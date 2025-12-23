@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
-const SITE_URL = 'http://localhost:3000'; // Change to deployed URL
+const SITE_URL = process.env.SITE_URL || 'http://localhost:3007';
 const SCREENSHOTS_DIR = './playwright/screenshots';
 const TRANSCRIPTS_DIR = './playwright/transcripts';
 
@@ -56,7 +56,8 @@ const personas = {
 
 test.describe('E2E Persona Testing', () => {
   for (const [personaKey, personaData] of Object.entries(personas)) {
-    test(`${personaData.name} - Full Conversation Flow`, async ({ page }) => {
+    test(`${personaData.name} - Full Conversation Flow`, async ({ page }, testInfo) => {
+      testInfo.setTimeout(180000); // 3 minutes per persona
       const transcript = {
         persona: personaKey,
         name: personaData.name,
@@ -79,7 +80,7 @@ test.describe('E2E Persona Testing', () => {
         const userMessage = personaData.turns[turnNum];
 
         // Find message input and send
-        const input = page.locator('input[placeholder*="message"], textarea, input[type="text"]').first();
+        const input = page.locator('#chat-input');
         await input.click();
         await input.fill(userMessage);
 
@@ -92,28 +93,37 @@ test.describe('E2E Persona Testing', () => {
           screenshotPath: null
         };
 
-        // Send message and wait for response
-        await Promise.all([
-          page.waitForResponse(response => response.url().includes('/api/chat')),
-          input.press('Enter')
-        ]);
+        // Send message
+        await input.press('Enter');
 
-        // Wait for response to appear
-        await page.waitForTimeout(1000);
+        // Wait for new assistant message with metadata (indicates streaming complete)
+        const currentCount = await page.locator('[data-metadata][data-role="assistant"]').count();
+        await page.waitForFunction(
+          (expectedCount) => {
+            const elements = document.querySelectorAll('[data-metadata][data-role="assistant"]');
+            return elements.length > expectedCount;
+          },
+          currentCount,
+          { timeout: 30000 }
+        );
 
-        // Extract AI response from DOM (adjust selectors based on your UI)
-        const aiMessages = page.locator('[data-role="assistant"], .ai-message, .response');
+        // Small delay to ensure DOM is fully updated
+        await page.waitForTimeout(500);
+
+        // Extract AI response from the last message
+        const aiMessages = page.locator('[data-role="assistant"]');
         const lastMessage = aiMessages.last();
         if (lastMessage) {
           const responseText = await lastMessage.textContent();
-          turnData.aiResponse = responseText?.trim();
+          turnData.aiResponse = responseText?.replace(/^AI/, '').trim();
         }
 
-        // Try to capture metadata from data attributes or console
-        // (Frontend should expose fitScore, speechAct, dialogueAct, etc.)
-        const metadataElement = page.locator('[data-metadata], .metadata, .evaluation');
-        if (metadataElement) {
-          const metadata = await metadataElement.getAttribute('data-metadata');
+        // Capture metadata from the last assistant message
+        const metadataElements = page.locator('[data-metadata][data-role="assistant"]');
+        const count = await metadataElements.count();
+        if (count > 0) {
+          const lastMetadataEl = metadataElements.nth(count - 1);
+          const metadata = await lastMetadataEl.getAttribute('data-metadata');
           if (metadata) {
             turnData.metadata = JSON.parse(metadata);
           }

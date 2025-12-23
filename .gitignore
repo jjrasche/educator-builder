@@ -1,7 +1,11 @@
 .vercel
+.env
 .env*.local
 node_modules/
 logs/
 *.log
 .DS_Store
 .claude/
+playwright/transcripts/
+playwright/screenshots/
+test-results/

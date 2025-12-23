@@ -1,6 +1,7 @@
 // Vercel serverless function - handles chat streaming + continuous inline evaluation + KV storage
 // ARCHITECTURE: Single LLM call returns response + speechAct + dialogueAct + criteria + rubricScores + fitScore every turn
 import OpenAI from 'openai';
+import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
@@ -253,9 +254,6 @@ function parseEvaluationResponse(responseText, rubric) {
 
 async function storeConversation(sessionId, email, messages, aiMessage, evaluation) {
   try {
-    // Import Vercel KV dynamically (only available in Vercel environment)
-    const { kv } = await import('@vercel/kv');
-
     // Get the last user message (most recent user input)
     const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
 

@@ -2,12 +2,8 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/app/index.html"
-    },
-    {
       "source": "/((?!api/.*).*)",
-      "destination": "/app/index.html"
+      "destination": "/index.html"
     }
   ]
 }

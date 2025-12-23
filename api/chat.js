@@ -128,11 +128,6 @@ Be conversational. Keep responses 2-3 sentences unless deep exploration is happe
 // ========== EVALUATION FUNCTIONS ==========
 
 async function evaluateConversation(chatHistory, rubric) {
-  const userTurns = chatHistory.filter(msg => msg.role === 'user').length;
-  const transcript = chatHistory
-    .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
-    .join('\n\n');
-
   // TEMP FOR TESTING: Return hardcoded assessment immediately
   return {
     action: 'assess',
@@ -149,6 +144,11 @@ async function evaluateConversation(chatHistory, rubric) {
     decision: 'request_email',
     timestamp: new Date().toISOString()
   };
+
+  const userTurns = chatHistory.filter(msg => msg.role === 'user').length;
+  const transcript = chatHistory
+    .map(msg => `${msg.role.toUpperCase()}: ${msg.content}`)
+    .join('\n\n');
 
   // Decision logic: probe early, assess when you have enough information
   // TEMPORARY: ALWAYS assess for testing

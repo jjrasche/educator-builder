@@ -51,25 +51,18 @@ test('PERSONA: Philosophical Thinker - Multi-turn evaluation', async ({ page }, 
   await input.press('Enter');
   console.log('→ Message sent, waiting for response...\n');
 
-  // Wait for response
-  try {
-    await page.waitForFunction(() => {
-      const chatDiv = document.getElementById('chat-messages');
-      return chatDiv && chatDiv.querySelectorAll('div').length > 2;
-    }, { timeout: 10000 });
-  } catch (e) {
-    console.warn('⚠ Timeout waiting for response DOM');
-  }
-
-  // Wait for actual response text to appear (reactive - not just timing out)
+  // Wait for guide response to ACTUALLY appear (not typing indicator, not just more divs)
   let response1 = '';
   try {
-    // Wait until response has actual content (not just typing indicator)
+    // Smart wait: detect that guide response appeared by checking for:
+    // 1. Both user and AI markers in text
+    // 2. Total length > user message + some response
     await page.waitForFunction(() => {
       const text = document.getElementById('chat-messages').innerText || '';
-      // Check for response longer than just the user message (which is ~170 chars)
-      const lines = text.split('\n');
-      return lines.length > 5; // Multiple lines indicate guide response appeared
+      // Must have BOTH user message markers and AI response markers
+      const hasUserMsg = text.includes('I\'ve been reading') || text.includes('curious');
+      const hasAIResponse = text.length > 300; // User msg is ~175, AI response should add content
+      return hasUserMsg && hasAIResponse;
     }, { timeout: 15000 });
 
     // Now extract the response
@@ -135,12 +128,13 @@ test('PERSONA: Philosophical Thinker - Multi-turn evaluation', async ({ page }, 
   console.log('→ Message sent, waiting for response...\n');
 
   try {
+    // Wait for Turn 2 response - total text should be significantly larger
     await page.waitForFunction(() => {
-      const chatDiv = document.getElementById('chat-messages');
-      return chatDiv && chatDiv.querySelectorAll('div').length > 4;
-    }, { timeout: 10000 });
+      const text = document.getElementById('chat-messages').innerText || '';
+      return text.length > 600; // Initial + Turn1 + Turn2 msgs
+    }, { timeout: 15000 });
   } catch (e) {
-    console.warn('⚠ Timeout waiting for response DOM');
+    console.warn('⚠ Timeout waiting for Turn 2 response');
   }
 
   let response2 = '';
@@ -150,7 +144,7 @@ test('PERSONA: Philosophical Thinker - Multi-turn evaluation', async ({ page }, 
     if (parts.length > 1) {
       response2 = parts[parts.length - 1].split('\nYou\n')[0].trim();
     }
-    if (!response2 || response2.length === 0) {
+    if (!response2 || response2.length < 100) {
       const messages2 = chatText.split(/\n{2,}/).filter(m => m.trim().length > 100);
       response2 = messages2[messages2.length - 1] || '';
     }
@@ -205,12 +199,13 @@ test('PERSONA: Philosophical Thinker - Multi-turn evaluation', async ({ page }, 
   console.log('→ Message sent, waiting for response...\n');
 
   try {
+    // Wait for Turn 3 response
     await page.waitForFunction(() => {
-      const chatDiv = document.getElementById('chat-messages');
-      return chatDiv && chatDiv.querySelectorAll('div').length > 6;
-    }, { timeout: 10000 });
+      const text = document.getElementById('chat-messages').innerText || '';
+      return text.length > 900;
+    }, { timeout: 15000 });
   } catch (e) {
-    console.warn('⚠ Timeout waiting for response DOM');
+    console.warn('⚠ Timeout waiting for Turn 3 response');
   }
 
   let response3 = '';
@@ -220,7 +215,7 @@ test('PERSONA: Philosophical Thinker - Multi-turn evaluation', async ({ page }, 
     if (parts.length > 1) {
       response3 = parts[parts.length - 1].split('\nYou\n')[0].trim();
     }
-    if (!response3 || response3.length === 0) {
+    if (!response3 || response3.length < 100) {
       const messages3 = chatText.split(/\n{2,}/).filter(m => m.trim().length > 100);
       response3 = messages3[messages3.length - 1] || '';
     }

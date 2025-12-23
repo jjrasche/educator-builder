@@ -1,30 +1,27 @@
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
 
-const SITE_URL = 'http://localhost:3000';
+const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
 const SCREENSHOTS_DIR = './playwright/screenshots';
 const TRANSCRIPTS_DIR = './playwright/transcripts';
 
 fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
 fs.mkdirSync(TRANSCRIPTS_DIR, { recursive: true });
 
-// Interactive readline for getting persona responses
-function prompt(question) {
-  return new Promise(resolve => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    rl.question(question, answer => {
-      rl.close();
-      resolve(answer);
-    });
-  });
-}
+// Predefined persona conversations for automated testing
+const personaConversations = {
+  'philosophical-thinker': [
+    'Hi, I saw your post about living differently. I\'ve been thinking a lot about freedom and what it actually means.',
+    'Both, actually. I think real freedom is knowing you\'re interdependent but choosing it. I want to work on something meaningful with people who think differently than me.',
+    'Something where I can see the impact immediately, where I\'m learning constantly, and where the people around me actually care about each other.',
+    'I\'ve spent the last two years freelancing and it felt isolating. I want community as much as independence.',
+    'Why does that matter to me? I think because I was raised with scarcity thinking, and I\'ve been unlearning that. Community without extraction—that\'s new to me.'
+  ]
+};
 
-test('Interactive Persona Testing - Philosophical Thinker', async ({ page }) => {
+test('Interactive Persona Testing - Philosophical Thinker', async ({ page }, testInfo) => {
+  testInfo.setTimeout(600000); // 10 minutes for full conversation with retries
   const persona = 'philosophical-thinker';
   const transcript = {
     persona,
@@ -48,25 +45,20 @@ test('Interactive Persona Testing - Philosophical Thinker', async ({ page }) => 
   await page.screenshot({ path: initialScreenshot, fullPage: true });
   console.log(`✓ Loaded site`);
 
-  // 2. Interactive conversation loop
-  let turnCount = 0;
-  let continueConversation = true;
+  // 2. Automated conversation loop using predefined messages
+  const messages = personaConversations[persona] || [];
+  if (messages.length === 0) {
+    console.error(`❌ No predefined messages for persona: ${persona}`);
+    return;
+  }
 
-  while (continueConversation) {
-    turnCount++;
+  for (let turnCount = 1; turnCount <= messages.length; turnCount++) {
+    const personaMessage = messages[turnCount - 1];
+
     console.log(`\n${'─'.repeat(80)}`);
     console.log(`TURN ${turnCount}`);
     console.log('─'.repeat(80));
-
-    // Ask for persona message
-    const personaMessage = await prompt(
-      `\n[${persona}] Enter your message (or 'done' to end):\n> `
-    );
-
-    if (personaMessage.toLowerCase() === 'done') {
-      continueConversation = false;
-      break;
-    }
+    console.log(`\n[${persona}]: "${personaMessage}"`);
 
     // Type message into input (try multiple selectors)
     const inputSelectors = [
@@ -94,7 +86,6 @@ test('Interactive Persona Testing - Philosophical Thinker', async ({ page }) => 
 
     if (!input) {
       console.error('❌ Could not find message input field. Try adding data-testid="chat-input" to input element.');
-      continueConversation = false;
       break;
     }
 
@@ -104,27 +95,51 @@ test('Interactive Persona Testing - Philosophical Thinker', async ({ page }) => 
 
     // Wait for API response
     try {
+      console.log('  Waiting for API response...');
       await Promise.race([
         page.waitForResponse(resp => resp.url().includes('/api/chat') && resp.status() === 200, { timeout: 10000 }),
         input.press('Enter')
       ]);
+      console.log('  ✓ API responded');
     } catch (e) {
       console.warn('⚠ Warning: API timeout or response not captured');
     }
 
     // Wait for guide response with retries
     let guideText = '';
-    for (let attempt = 0; attempt < 4; attempt++) {
-      await page.waitForTimeout(1200);
-      const aiMessages = page.locator('[data-role="assistant"], .ai-message, .response, [role="assistant"]').last();
+    console.log('  Waiting for guide response...');
+    for (let attempt = 0; attempt < 5; attempt++) {
+      await page.waitForTimeout(500); // Shorter wait between attempts
+
       try {
-        const text = await aiMessages.textContent({ timeout: 2000 }).catch(() => '');
-        if (text && text.trim().length > 10) {
-          guideText = text;
+        // Get all text elements from various possible containers
+        let allMessages = [];
+        try {
+          const chatHistory = await page.locator('[class*="chat"]').allTextContents();
+          allMessages.push(...chatHistory);
+        } catch (e) {}
+
+        // Also try getting all non-empty divs
+        if (allMessages.length === 0) {
+          const allDivs = await page.locator('div').allTextContents();
+          allMessages = allDivs.map(t => t.trim()).filter(t => t.length > 0);
+        }
+
+        // Filter for substantial messages (filter out buttons, inputs, short text)
+        const substantialMessages = allMessages
+          .map(t => t.trim())
+          .filter(t => t.length > 50 && !t.match(/^(Send|Start|Ask|Save|Yes|No|Cancel)$/i));
+
+        if (substantialMessages.length > 0) {
+          // Get the last substantial message
+          guideText = substantialMessages[substantialMessages.length - 1];
+          console.log(`  ✓ Got response on attempt ${attempt + 1} (${guideText.length} chars)`);
           break;
+        } else {
+          console.log(`  Attempt ${attempt + 1}: found ${substantialMessages.length} substantial messages (from ${allMessages.length} total)`);
         }
       } catch (e) {
-        // Continue retrying
+        console.log(`  Attempt ${attempt + 1}: error - ${e.message}`);
       }
     }
 
@@ -157,14 +172,19 @@ test('Interactive Persona Testing - Philosophical Thinker', async ({ page }) => 
 
     // Take screenshot every 2 turns or on interesting moments
     if (turnCount % 2 === 0 || turnCount === 1) {
-      const screenshotPath = `${SCREENSHOTS_DIR}/${persona}-turn${turnCount}.png`;
-      await page.screenshot({ path: screenshotPath, fullPage: true });
-      turnData.screenshot = screenshotPath;
-      transcript.screenshots.push({
-        turn: turnCount,
-        path: screenshotPath
-      });
-      console.log(`✓ Screenshot saved`);
+      try {
+        const screenshotPath = `${SCREENSHOTS_DIR}/${persona}-turn${turnCount}.png`;
+        await page.screenshot({ path: screenshotPath, fullPage: true });
+        turnData.screenshot = screenshotPath;
+        transcript.screenshots.push({
+          turn: turnCount,
+          path: screenshotPath
+        });
+        console.log(`✓ Screenshot saved`);
+      } catch (e) {
+        console.warn(`⚠ Screenshot failed: ${e.message}`);
+        // Continue even if screenshot fails
+      }
     }
 
     transcript.turns.push(turnData);
@@ -179,9 +199,13 @@ test('Interactive Persona Testing - Philosophical Thinker', async ({ page }) => 
   }
 
   // 3. Final screenshot
-  const finalScreenshot = `${SCREENSHOTS_DIR}/${persona}-final.png`;
-  await page.screenshot({ path: finalScreenshot, fullPage: true });
-  transcript.screenshots.push({ turn: 'final', path: finalScreenshot });
+  try {
+    const finalScreenshot = `${SCREENSHOTS_DIR}/${persona}-final.png`;
+    await page.screenshot({ path: finalScreenshot, fullPage: true });
+    transcript.screenshots.push({ turn: 'final', path: finalScreenshot });
+  } catch (e) {
+    console.warn(`⚠ Final screenshot failed: ${e.message}`);
+  }
 
   // 4. Save transcript
   transcript.endTime = new Date().toISOString();

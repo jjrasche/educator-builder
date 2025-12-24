@@ -27,39 +27,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Load rubric for evaluation context
-    const rubricPath = path.join(process.cwd(), 'data', 'rubric-v1.json');
+    // 1. Load unified LLM config
+    const configPath = path.join(process.cwd(), 'data', 'llm-config-v1.json');
 
-    if (!fs.existsSync(rubricPath)) {
-      throw new Error(`Rubric file not found: ${rubricPath}`);
+    if (!fs.existsSync(configPath)) {
+      throw new Error(`LLM config not found: ${configPath}`);
     }
 
-    let rubric;
+    let config;
     try {
-      const rubricData = fs.readFileSync(rubricPath, 'utf-8');
-      rubric = JSON.parse(rubricData);
+      const configData = fs.readFileSync(configPath, 'utf-8');
+      config = JSON.parse(configData);
     } catch (parseError) {
-      throw new Error(`Failed to parse rubric file: ${parseError.message}`);
+      throw new Error(`Failed to parse LLM config: ${parseError.message}`);
     }
 
-    // 2. Load philosophy source document
-    const philosophyPath = path.join(process.cwd(), 'docs', 'philosophy-source.md');
+    // 2. Load content sources from config paths
+    const philosophyPath = path.join(process.cwd(), config.contentSources.philosophy);
     let philosophyContent = '';
     if (fs.existsSync(philosophyPath)) {
       philosophyContent = fs.readFileSync(philosophyPath, 'utf-8');
     }
 
-    // 3. Load position details document
-    const positionPath = path.join(process.cwd(), 'docs', 'position-details.md');
+    const positionPath = path.join(process.cwd(), config.contentSources.positionDetails);
     let positionContent = '';
     if (fs.existsSync(positionPath)) {
       positionContent = fs.readFileSync(positionPath, 'utf-8');
     }
 
-    // 4. Build system prompt with evaluation instruction (include voice signals if present)
-    const systemPrompt = buildSystemPrompt(rubric, voiceSignals, philosophyContent, positionContent);
+    // 3. Build system prompt with evaluation instruction (include voice signals if present)
+    const systemPrompt = buildSystemPrompt(config, voiceSignals, philosophyContent, positionContent);
 
-    // 3. Get response from Groq (or mock in test mode)
+    // 4. Get response from Groq (or mock in test mode)
     let responseText;
 
     if (isMockMode(req)) {
@@ -67,17 +66,17 @@ export default async function handler(req, res) {
       responseText = getMockGroqResponse(messages);
       console.log('[MOCK] Using mock Groq response');
     } else {
-      // REAL: Call Groq API
+      // REAL: Call Groq API with model settings from config
       const client = new OpenAI({
         apiKey: process.env.GROQ_API_KEY,
         baseURL: 'https://api.groq.com/openai/v1',
       });
 
       const groqResponse = await client.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: config.model.id,
         messages: [{ role: 'system', content: systemPrompt }, ...messages],
-        temperature: 0.7,
-        max_tokens: 1500
+        temperature: config.model.temperature,
+        max_tokens: config.model.maxTokens
       });
 
       responseText = groqResponse.choices[0]?.message?.content;
@@ -88,7 +87,7 @@ export default async function handler(req, res) {
     }
 
     // 5. Parse JSON response to extract structured data
-    const evaluation = parseEvaluationResponse(responseText, rubric);
+    const evaluation = parseEvaluationResponse(responseText, config.rubric);
 
     // 6. Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream');
@@ -214,7 +213,7 @@ function getMockGroqResponse(messages) {
 
 // ========== SYSTEM PROMPT & EVALUATION FUNCTIONS ==========
 
-function buildSystemPrompt(rubric, voiceSignals = null, philosophyContent = '', positionContent = '') {
+function buildSystemPrompt(config, voiceSignals = null, philosophyContent = '', positionContent = '') {
   // Build voice context if voice signals are present
   let voiceContext = '';
   let hasVoice = voiceSignals && (voiceSignals.paceCategory || voiceSignals.clarity || voiceSignals.wpm);

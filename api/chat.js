@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   try {
     // 1. Load unified LLM config
-    const configPath = path.join(process.cwd(), 'data', 'llm-config-v1.json');
+    const configPath = path.join(process.cwd(), 'data', 'llm-config-live-in-collaborator.json');
 
     if (!fs.existsSync(configPath)) {
       throw new Error(`LLM config not found: ${configPath}`);

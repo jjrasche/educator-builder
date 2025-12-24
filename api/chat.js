@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages, sessionId, email } = req.body;
+  const { messages, sessionId, email, voiceSignals } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Invalid messages format' });
@@ -42,8 +42,8 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse rubric file: ${parseError.message}`);
     }
 
-    // 2. Build system prompt with evaluation instruction
-    const systemPrompt = buildSystemPrompt(rubric);
+    // 2. Build system prompt with evaluation instruction (include voice signals if present)
+    const systemPrompt = buildSystemPrompt(rubric, voiceSignals);
 
     // 3. Get response from Groq (or mock in test mode)
     let responseText;
@@ -189,8 +189,30 @@ function getMockGroqResponse(messages) {
 
 // ========== SYSTEM PROMPT & EVALUATION FUNCTIONS ==========
 
-function buildSystemPrompt(rubric) {
-  return `You are Claude, helping Jim find people who want to co-create a different way of living and working together.
+function buildSystemPrompt(rubric, voiceSignals = null) {
+  // Build voice context if voice signals are present
+  let voiceContext = '';
+  if (voiceSignals && voiceSignals.confidence) {
+    const { wpm, confidence, pauses, hesitations } = voiceSignals;
+    voiceContext = `
+===== VOICE SIGNALS FOR THIS TURN =====
+The person is speaking (not typing). Here's how they sound:
+- Pace: ${wpm || '--'} words per minute
+- Pauses: ${pauses?.count || 0} pauses (longest: ${pauses?.maxSec || 0}s)
+- Hesitations: ${hesitations?.count || 0} filler words (${hesitations?.markers?.slice(0, 3).join(', ') || 'none'})
+- Overall confidence: ${confidence}
+
+${confidence === 'low' ? 'They seem to be thinking carefully or feeling uncertain. Be warm and patient. Give them space.' : ''}
+${confidence === 'high' ? 'They sound clear and confident. You can be more direct.' : ''}
+${confidence === 'moderate' ? 'They\'re working through their thoughts. Stay curious and engaged.' : ''}
+
+Adapt your tone to match how they're communicating. If they're hesitant, don't overwhelm them. If they're flowing, match their energy.
+=====
+
+`;
+  }
+
+  return `${voiceContext}You are Claude, helping Jim find people who want to co-create a different way of living and working together.
 
 This isn't a job interview. This is a conversation about freedom.
 

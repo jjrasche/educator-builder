@@ -311,7 +311,7 @@
                 projects = [];
             }
 
-            // Try to recover existing session from KV
+            // Try to recover existing session from database
             await recoverSession();
 
             document.getElementById('chat-input').addEventListener('keypress', (e) => {
@@ -426,8 +426,6 @@
             exchanges++;
             updateExchangeCount();
 
-            // Log message
-            logMessage(message, 'user');
 
             // Show typing indicator
             const typingDiv = showTyping();
@@ -522,7 +520,6 @@
                 }
 
                 chatHistory.push({ role: 'assistant', content: aiMessage });
-                logMessage(aiMessage, 'assistant');
 
                 // Auto-unlock projects at 15 exchanges
                 if (exchanges >= 15) {
@@ -593,28 +590,6 @@
 
         function updateExchangeCount() {
             document.getElementById('exchange-count').textContent = `${exchanges} exchanges`;
-        }
-
-        function logMessage(content, role) {
-            fetch(`/api/log-message`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: userEmail,
-                    message: content,
-                    role,
-                    timestamp: new Date().toISOString(),
-                    stage: getCurrentStage(),
-                    projectsInterested: selectedProjects.map(p => p.id)
-                })
-            }).catch(e => console.error('Log error:', e));
-        }
-
-        function getCurrentStage() {
-            // Check which tab is active
-            const projectsTab = document.getElementById('tab-projects');
-            if (projectsTab && projectsTab.classList.contains('active')) return 'projects';
-            return 'chat';
         }
 
         function focusChat() {
@@ -847,6 +822,7 @@
 
         // Store current voice signals for vibe update later
         let currentVoiceSignals = null;
+        let voiceDisplayHideTimeout = null;
 
         function updateVoiceSignalDisplay(signals, vibe = null) {
             const display = document.getElementById('voice-signal-display');
@@ -877,18 +853,30 @@
             document.getElementById('signal-interpretation').textContent =
                 vibe?.observation || (vibe ? 'Sensing...' : 'Analyzing...');
 
-            // Auto-hide after 10 seconds
-            setTimeout(() => {
+            // Set a long fallback timer (30s) in case vibe never arrives
+            // updateVibe() will reset this with a shorter timer when vibe arrives
+            if (voiceDisplayHideTimeout) clearTimeout(voiceDisplayHideTimeout);
+            voiceDisplayHideTimeout = setTimeout(() => {
                 if (!isRecording) {
                     display.classList.add('hidden');
                 }
-            }, 10000);
+            }, 30000);
         }
 
         function updateVibe(vibe) {
             if (vibe && vibe.emoji) {
+                const display = document.getElementById('voice-signal-display');
+                display.classList.remove('hidden'); // Ensure visible when vibe arrives
                 document.getElementById('signal-emoji').textContent = vibe.emoji;
                 document.getElementById('signal-interpretation').textContent = vibe.observation || '';
+
+                // Now that vibe is complete, set timer to hide
+                if (voiceDisplayHideTimeout) clearTimeout(voiceDisplayHideTimeout);
+                voiceDisplayHideTimeout = setTimeout(() => {
+                    if (!isRecording) {
+                        display.classList.add('hidden');
+                    }
+                }, 8000);
             }
         }
 
@@ -988,7 +976,6 @@
                 }
 
                 chatHistory.push({ role: 'assistant', content: aiMessage });
-                logMessage(aiMessage, 'assistant');
 
                 // If output modality is voice, speak the response with word-by-word reveal
                 if (outputModality === 'voice' && aiMessage && messageDiv) {

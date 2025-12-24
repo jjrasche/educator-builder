@@ -1,30 +1,21 @@
-// Vercel serverless function - links email to session for cross-device resume
-import { kv } from '@vercel/kv';
+// Links email to session for cross-device resume
+// Updates all turns in the session with the user's email
+import { linkEmailToSession } from '../lib/db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, sessionId, name } = req.body;
+  const { email, sessionId } = req.body;
 
   if (!email || !sessionId) {
     return res.status(400).json({ error: 'email and sessionId required' });
   }
 
   try {
-    // Store email -> sessionId mapping (no expiry - sessions persist indefinitely)
-    const emailKey = `email:${email.toLowerCase()}`;
-    await kv.set(emailKey, sessionId);
-
-    // Update session metadata with email
-    const metadataKey = `metadata:${sessionId}`;
-    const metadata = await kv.get(metadataKey) || {};
-    await kv.set(metadataKey, {
-      ...metadata,
-      email: email.toLowerCase(),
-      name: name || metadata.name
-    });
+    // Update all turns in this session with the email
+    await linkEmailToSession(sessionId, email.toLowerCase());
 
     console.log(`[EMAIL-LINK] Linked ${email} to session ${sessionId}`);
 

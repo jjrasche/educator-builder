@@ -1,34 +1,19 @@
-// Vercel serverless function - handles chat streaming + continuous inline evaluation + KV storage
+// Vercel serverless function - handles chat streaming + continuous inline evaluation + Postgres storage
 // ARCHITECTURE: Single LLM call returns response + speechAct + dialogueAct + criteria + rubricScores + fitScore every turn
 import OpenAI from 'openai';
-import { kv } from '@vercel/kv';
+import { storeTurn } from '../lib/db.js';
 import fs from 'fs';
 import path from 'path';
 
 // MOCK_MODE: For E2E testing without external API calls
-// When MOCK_MODE=true, mocks Groq API and Vercel KV only. All internal logic runs for real.
+// When MOCK_MODE=true, mocks Groq API and database. All internal logic runs for real.
 // Can be enabled via env var OR X-Mock-Mode header for testing.
 function isMockMode(req) {
   return process.env.MOCK_MODE === 'true' || req?.headers?.['x-mock-mode'] === 'true';
 }
 
-// In-memory KV for testing (shared across requests in same process)
-const testKVStore = globalThis.__testKVStore || (globalThis.__testKVStore = new Map());
-
-// Mock KV wrapper - needs request context
-function createKVWrapper(req) {
-  const mockMode = isMockMode(req);
-  return {
-    get: async (key) => {
-      if (mockMode) return testKVStore.get(key) || null;
-      return kv.get(key);
-    },
-    set: async (key, value) => {
-      if (mockMode) { testKVStore.set(key, value); return; }
-      return kv.set(key, value);
-    }
-  };
-}
+// In-memory store for testing (shared across requests in same process)
+const testStore = globalThis.__testStore || (globalThis.__testStore = new Map());
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -379,17 +364,30 @@ function parseEvaluationResponse(responseText, rubric) {
   }
 }
 
-// ========== KV STORAGE FUNCTIONS ==========
+// ========== DATABASE STORAGE FUNCTIONS ==========
 
 async function storeConversation(req, sessionId, email, messages, aiMessage, evaluation) {
-  const kvWrapper = createKVWrapper(req);
+  // In mock mode, use in-memory store
+  if (isMockMode(req)) {
+    const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+    const existing = testStore.get(sessionId) || [];
+    existing.push({
+      userMessage: lastUserMessage,
+      response: aiMessage,
+      speechAct: evaluation.speechAct,
+      dialogueAct: evaluation.dialogueAct,
+      fitScore: evaluation.fitScore
+    });
+    testStore.set(sessionId, existing);
+    console.log(`[MOCK DB] Stored turn ${existing.length} for session ${sessionId}`);
+    return;
+  }
 
   try {
     // Get the last user message (most recent user input)
     const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
 
     // Build operational data structure for this turn
-    // Continuous scoring: every turn gets this data
     const turnData = {
       userMessage: lastUserMessage,
       response: aiMessage,
@@ -399,40 +397,14 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       rubricScores: evaluation.rubricScores,
       fitScore: evaluation.fitScore,
       allFloorsPass: evaluation.allFloorsPass,
-      rationale: evaluation.rationale,
-      timestamp: new Date().toISOString()
+      rationale: evaluation.rationale
     };
 
-    // Store by sessionId
-    // KV structure: conversation:{sessionId} = array of turns
-    const kvKey = `conversation:${sessionId}`;
-    const existing = await kvWrapper.get(kvKey) || [];
-    const updated = Array.isArray(existing) ? existing : [existing].filter(x => x);
-    updated.push(turnData);
-    await kvWrapper.set(kvKey, updated);
-
-    // If email provided, create link: email:{email} -> sessionId
-    // This allows querying by email later
-    if (email) {
-      await kvWrapper.set(`email:${email}`, sessionId);
-    }
-
-    // Also store metadata for this session
-    const metadataKey = `metadata:${sessionId}`;
-    const existingMetadata = await kvWrapper.get(metadataKey) || {};
-    const metadata = {
-      email: email || null,
-      turnCount: updated.length,
-      lastFitScore: evaluation.fitScore,
-      lastAllFloorsPass: evaluation.allFloorsPass,
-      lastEvaluated: new Date().toISOString(),
-      startedAt: existingMetadata.startedAt || new Date().toISOString()
-    };
-    await kvWrapper.set(metadataKey, metadata);
-
-    console.log(`[KV] Stored turn ${updated.length} for session ${sessionId}, fitScore: ${evaluation.fitScore}`);
+    // Store to Postgres
+    const result = await storeTurn(sessionId, email, turnData);
+    console.log(`[DB] Stored turn ${result.turnNumber} for session ${sessionId}, fitScore: ${evaluation.fitScore}`);
   } catch (error) {
-    // Silently fail - chat should never break because of logging
-    console.warn('[KV] Storage failed:', error.message);
+    // Log but don't break chat - storage failure shouldn't stop conversation
+    console.error('[DB] Storage failed:', error.message);
   }
 }

@@ -8,6 +8,7 @@
     "test:playwright": "npx playwright test"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "@vercel/kv": "^1.0.1",
     "openai": "^4.77.0",
     "resend": "^4.0.1"

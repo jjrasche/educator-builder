@@ -1,90 +1,141 @@
-// Admin endpoint to verify KV is working and retrieve conversation data
-// GET /api/admin/kv-check?sessionId=xxx - retrieve specific session
+// Admin endpoint to verify database is working and retrieve conversation data
 // GET /api/admin/kv-check?test=true - write and read back test data
-import { kv } from '@vercel/kv';
+// GET /api/admin/kv-check?sessionId=xxx - retrieve specific session
+// GET /api/admin/kv-check?init=true - initialize database schema
+// GET /api/admin/kv-check?recent=true - list recent sessions
+import { testConnection, initSchema, getConversation, getRecentSessions, storeTurn } from '../../lib/db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { sessionId, test } = req.query;
+  const { sessionId, test, init, recent } = req.query;
 
   try {
+    // Initialize schema
+    if (init === 'true') {
+      const result = await initSchema();
+      return res.status(200).json({
+        status: 'INITIALIZED',
+        ...result
+      });
+    }
+
     // Test mode: write and read back
     if (test === 'true') {
-      const testKey = `test:${Date.now()}`;
-      const testValue = { written: new Date().toISOString(), msg: 'KV is working' };
-
-      await kv.set(testKey, testValue);
-      const readBack = await kv.get(testKey);
-      await kv.del(testKey); // cleanup
-
-      if (!readBack) {
+      // First check connection
+      const connTest = await testConnection();
+      if (!connTest.connected) {
         return res.status(500).json({
           status: 'FAIL',
-          error: 'Write succeeded but read returned null',
-          kvConfigured: false
+          error: connTest.error,
+          dbConfigured: false
+        });
+      }
+
+      // Try to init schema if needed
+      try {
+        await initSchema();
+      } catch (schemaError) {
+        // Schema might already exist, that's fine
+        console.log('Schema init:', schemaError.message);
+      }
+
+      // Write a test turn
+      const testSessionId = `test-${Date.now()}`;
+      const testTurn = {
+        userMessage: 'Test message',
+        response: 'Test response',
+        speechAct: 'assertive',
+        dialogueAct: 'probe_deeper',
+        criteria: ['test'],
+        rubricScores: { 'depth-of-questioning': 5 },
+        fitScore: 50,
+        allFloorsPass: true,
+        rationale: 'Test rationale'
+      };
+
+      await storeTurn(testSessionId, null, testTurn);
+
+      // Read it back
+      const readBack = await getConversation(testSessionId);
+
+      if (!readBack.turns || readBack.turns.length === 0) {
+        return res.status(500).json({
+          status: 'FAIL',
+          error: 'Write succeeded but read returned no data',
+          dbConfigured: true
         });
       }
 
       return res.status(200).json({
         status: 'PASS',
-        message: 'KV write/read verified',
-        written: testValue,
-        readBack: readBack,
-        kvConfigured: true
+        message: 'Database write/read verified',
+        written: testTurn,
+        readBack: readBack.turns[0],
+        dbConfigured: true,
+        serverTime: connTest.serverTime
+      });
+    }
+
+    // List recent sessions
+    if (recent === 'true') {
+      const sessions = await getRecentSessions(20);
+      return res.status(200).json({
+        status: 'OK',
+        sessionCount: sessions.length,
+        sessions,
+        dbConfigured: true
       });
     }
 
     // Retrieve specific session
     if (sessionId) {
-      const conversation = await kv.get(`conversation:${sessionId}`);
-      const metadata = await kv.get(`metadata:${sessionId}`);
+      const conversation = await getConversation(sessionId);
 
-      if (!conversation && !metadata) {
+      if (!conversation.turns || conversation.turns.length === 0) {
         return res.status(404).json({
           status: 'NOT_FOUND',
           sessionId,
           message: 'No data found for this session',
-          kvConfigured: true // KV works, just no data
+          dbConfigured: true
         });
       }
 
       return res.status(200).json({
         status: 'FOUND',
         sessionId,
-        turnCount: Array.isArray(conversation) ? conversation.length : 0,
-        conversation,
-        metadata,
-        kvConfigured: true
+        turnCount: conversation.turnCount,
+        turns: conversation.turns,
+        metadata: conversation.metadata,
+        dbConfigured: true
       });
     }
 
-    // No params: just check if KV is configured
-    const testKey = `ping:${Date.now()}`;
-    await kv.set(testKey, 'pong');
-    const pong = await kv.get(testKey);
-    await kv.del(testKey);
+    // No params: just check connection
+    const connTest = await testConnection();
 
     return res.status(200).json({
-      status: pong === 'pong' ? 'CONFIGURED' : 'MISCONFIGURED',
-      message: 'KV connection verified',
-      kvConfigured: pong === 'pong'
+      status: connTest.connected ? 'CONFIGURED' : 'MISCONFIGURED',
+      message: connTest.connected ? 'Database connection verified' : 'Database connection failed',
+      dbConfigured: connTest.connected,
+      serverTime: connTest.serverTime,
+      error: connTest.error
     });
 
   } catch (error) {
-    // Check for specific KV configuration errors
-    const isConfigError = error.message?.includes('KV_REST_API') ||
+    // Check for specific configuration errors
+    const isConfigError = error.message?.includes('DATABASE_URL') ||
                           error.message?.includes('ENOTFOUND') ||
-                          error.message?.includes('unauthorized');
+                          error.message?.includes('connection');
 
     return res.status(500).json({
       status: 'ERROR',
       error: error.message,
-      kvConfigured: false,
+      dbConfigured: false,
       hint: isConfigError
-        ? 'KV not configured. Create a KV store in Vercel dashboard and connect to this project.'
+        ? 'Database not configured. Add DATABASE_URL to Vercel environment variables.'
         : 'Unknown error'
     });
   }

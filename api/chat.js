@@ -5,6 +5,31 @@ import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
+// MOCK_MODE: For E2E testing without external API calls
+// When MOCK_MODE=true, mocks Groq API and Vercel KV only. All internal logic runs for real.
+// Can be enabled via env var OR X-Mock-Mode header for testing.
+function isMockMode(req) {
+  return process.env.MOCK_MODE === 'true' || req?.headers?.['x-mock-mode'] === 'true';
+}
+
+// In-memory KV for testing (shared across requests in same process)
+const testKVStore = globalThis.__testKVStore || (globalThis.__testKVStore = new Map());
+
+// Mock KV wrapper - needs request context
+function createKVWrapper(req) {
+  const mockMode = isMockMode(req);
+  return {
+    get: async (key) => {
+      if (mockMode) return testKVStore.get(key) || null;
+      return kv.get(key);
+    },
+    set: async (key, value) => {
+      if (mockMode) { testKVStore.set(key, value); return; }
+      return kv.set(key, value);
+    }
+  };
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -32,24 +57,32 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse rubric file: ${parseError.message}`);
     }
 
-    // 2. Initialize Groq client
-    const client = new OpenAI({
-      apiKey: process.env.GROQ_API_KEY,
-      baseURL: 'https://api.groq.com/openai/v1',
-    });
-
-    // 3. Build system prompt with evaluation instruction
+    // 2. Build system prompt with evaluation instruction
     const systemPrompt = buildSystemPrompt(rubric);
 
-    // 4. Get single response from Groq (response + evaluation data)
-    const groqResponse = await client.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      temperature: 0.7,
-      max_tokens: 1500
-    });
+    // 3. Get response from Groq (or mock in test mode)
+    let responseText;
 
-    const responseText = groqResponse.choices[0]?.message?.content;
+    if (isMockMode(req)) {
+      // MOCK: Generate deterministic response based on conversation state
+      responseText = getMockGroqResponse(messages);
+      console.log('[MOCK] Using mock Groq response');
+    } else {
+      // REAL: Call Groq API
+      const client = new OpenAI({
+        apiKey: process.env.GROQ_API_KEY,
+        baseURL: 'https://api.groq.com/openai/v1',
+      });
+
+      const groqResponse = await client.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'system', content: systemPrompt }, ...messages],
+        temperature: 0.7,
+        max_tokens: 1500
+      });
+
+      responseText = groqResponse.choices[0]?.message?.content;
+    }
 
     if (!responseText) {
       throw new Error('Empty response from Groq');
@@ -83,7 +116,7 @@ export default async function handler(req, res) {
     })}\n\n`);
 
     // 9. Store conversation to KV (fire and forget)
-    storeConversation(sessionId, email, messages, response, evaluation).catch(err =>
+    storeConversation(req, sessionId, email, messages, response, evaluation).catch(err =>
       console.error('KV storage error:', err.message)
     );
 
@@ -97,6 +130,73 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
+}
+
+// ========== MOCK RESPONSE GENERATOR ==========
+
+function getMockGroqResponse(messages) {
+  const userMessages = messages.filter(m => m.role === 'user');
+  const turnCount = userMessages.length;
+  const lastMessage = userMessages[userMessages.length - 1]?.content?.toLowerCase() || '';
+
+  // Detect message type - content detection takes priority over turn count
+  const shallowKeywords = ['how much', 'salary', 'pay', 'hours', 'location', 'remote', 'benefits', 'money'];
+  const deepKeywords = ['meaning', 'purpose', 'values', 'community', 'freedom', 'build', 'create', 'why', 'meaningful'];
+  const commitKeywords = ['ready', 'excited', 'want to', 'believe', 'need this', 'looking for'];
+
+  const isShallow = shallowKeywords.some(kw => lastMessage.includes(kw));
+  const isDeep = deepKeywords.some(kw => lastMessage.includes(kw));
+  const hasCommitment = commitKeywords.some(kw => lastMessage.includes(kw));
+
+  // Priority 1: Logistics questions - ANSWER → BRIDGE → PROBE pattern
+  if (isShallow) {
+    return JSON.stringify({
+      response: "Housing is about $900/mo value, meals another $400/mo, plus $300 cash if you want it—works out to roughly $22-32/hour depending on hours. What about that matters most to you? Is it the housing security, the flexibility, or something else entirely?",
+      speechAct: "assertive",
+      dialogueAct: "probe_deeper",
+      criteria: ["depth of questioning"],
+      rubricScores: { "depth-of-questioning": 3, "self-awareness": 4, "systems-thinking": 4, "experimentation-evidence": 4, "authenticity": 5, "reciprocal-curiosity": 3 },
+      fitScore: 35,
+      rationale: "Answered logistics, now probing for underlying motivation"
+    });
+  }
+
+  // Priority 2: Deep + commitment signals get high scores
+  if (isDeep && hasCommitment) {
+    return JSON.stringify({
+      response: "I hear real clarity in what you're saying. You're not just looking for a job—you're looking for a context where you can do meaningful work alongside people who care. What questions do you have about how we actually work together?",
+      speechAct: "expressive",
+      dialogueAct: "affirm_commitment",
+      criteria: ["commitment signals", "value alignment", "authenticity"],
+      rubricScores: { "depth-of-questioning": 8, "self-awareness": 8, "systems-thinking": 7, "experimentation-evidence": 7, "authenticity": 9, "reciprocal-curiosity": 7 },
+      fitScore: 82,
+      rationale: "User showing strong alignment and genuine commitment"
+    });
+  }
+
+  // Priority 3: Deep content without commitment (moderate scores)
+  if (isDeep) {
+    return JSON.stringify({
+      response: "That resonates. When you say that—what does it actually look like for you? Can you give me a concrete example?",
+      speechAct: "directive",
+      dialogueAct: "probe_deeper",
+      criteria: ["philosophical curiosity", "authenticity"],
+      rubricScores: { "depth-of-questioning": 6, "self-awareness": 6, "systems-thinking": 6, "experimentation-evidence": 5, "authenticity": 6, "reciprocal-curiosity": 5 },
+      fitScore: 58,
+      rationale: "User showing engagement, probing for specificity"
+    });
+  }
+
+  // Priority 4: Opening/default (neutral content)
+  return JSON.stringify({
+    response: "What are you trying to figure out about how to live? Not the logistics—the actual thing. What can't you stop thinking about?",
+    speechAct: "directive",
+    dialogueAct: "open_with_question",
+    criteria: ["philosophical curiosity", "self-awareness"],
+    rubricScores: { "depth-of-questioning": 5, "self-awareness": 5, "systems-thinking": 5, "experimentation-evidence": 5, "authenticity": 5, "reciprocal-curiosity": 5 },
+    fitScore: 50,
+    rationale: "Opening question to gauge genuine interest"
+  });
 }
 
 // ========== SYSTEM PROMPT & EVALUATION FUNCTIONS ==========
@@ -117,6 +217,19 @@ This isn't a job interview. This is a conversation about freedom.
 - Experimentation (building/questioning vs. passive)
 - Authenticity (genuine vs. performing)
 - Reciprocal curiosity (ask about Jim's thinking?)
+
+**CRITICAL - Handling logistics questions (pay, hours, benefits, location):**
+Always use the ANSWER → BRIDGE → PROBE pattern:
+1. ANSWER the question fully and honestly
+2. BRIDGE to what it reveals about their thinking
+3. PROBE to discover if there's depth underneath
+
+Examples:
+- "How much does it pay?" → "Housing (~$900/mo value) + meals (~$400/mo) + $300 cash if you want it. Works out to roughly $22-32/hour depending on hours. What about that matters most to you—the housing security, the flexibility, or something else?"
+- "What are the hours?" → "10-60 hours/month, totally flexible based on what we're building together. What kind of rhythm are you looking for? Are you trying to create space for something else, or looking for full immersion?"
+- "Is it remote?" → "It's live-in—you'd have a private suite here. What draws you to remote vs. in-person work? That tells me something about what you're optimizing for."
+
+The probe reveals whether they're thinking systemically or just job shopping. A pure logistics question with no curiosity = low fit. Logistics question + genuine exploration of why = potential depth.
 
 **Probe for specificity:** When someone uses abstract language ("transformative energy," "collective consciousness," "paradigm shift," "mutual aid frameworks"), ask: "What does that actually look like? Can you give me a concrete example?" Vague language often signals performance. Authentic people can ground their ideas in experience.
 
@@ -148,6 +261,22 @@ This isn't a job interview. This is a conversation about freedom.
 - Authenticity: Can they be genuine, not perform?
 - Systems awareness: Do they see personal + community as linked?
 - Reciprocal curiosity: Are they interested in mutual exploration?
+
+**CRITICAL - Evidence of DOING beats evidence of WANTING:**
+When scoring "experimentation-evidence", weight ACTUAL EXPERIENCE heavily:
+
+- Someone who says "I want to build community" = talk only = score 5-6
+- Someone who says "I built a 40-family garden" = evidence exists = score 7-8
+- Someone who says "I built X, learned Y, failed at Z, now I'm here because..." = evidence + learning = score 8-9
+
+When you hear evidence of something BUILT or TRIED, probe deeper:
+- "What did you learn from that?"
+- "What went wrong?"
+- "Why are you here now instead of continuing that?"
+
+The answers reveal whether they're a builder who learns, or just collecting experiences to talk about.
+
+Builders who've tried things and can articulate what they learned should score HIGHER than people who eloquently describe what they want. Evidence of doing > evidence of wanting.
 
 This is a lifestyle experiment, not a job application.
 
@@ -252,7 +381,9 @@ function parseEvaluationResponse(responseText, rubric) {
 
 // ========== KV STORAGE FUNCTIONS ==========
 
-async function storeConversation(sessionId, email, messages, aiMessage, evaluation) {
+async function storeConversation(req, sessionId, email, messages, aiMessage, evaluation) {
+  const kvWrapper = createKVWrapper(req);
+
   try {
     // Get the last user message (most recent user input)
     const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
@@ -275,20 +406,20 @@ async function storeConversation(sessionId, email, messages, aiMessage, evaluati
     // Store by sessionId
     // KV structure: conversation:{sessionId} = array of turns
     const kvKey = `conversation:${sessionId}`;
-    const existing = await kv.get(kvKey) || [];
+    const existing = await kvWrapper.get(kvKey) || [];
     const updated = Array.isArray(existing) ? existing : [existing].filter(x => x);
     updated.push(turnData);
-    await kv.set(kvKey, updated);
+    await kvWrapper.set(kvKey, updated);
 
     // If email provided, create link: email:{email} -> sessionId
     // This allows querying by email later
     if (email) {
-      await kv.set(`email:${email}`, sessionId);
+      await kvWrapper.set(`email:${email}`, sessionId);
     }
 
     // Also store metadata for this session
     const metadataKey = `metadata:${sessionId}`;
-    const existingMetadata = await kv.get(metadataKey) || {};
+    const existingMetadata = await kvWrapper.get(metadataKey) || {};
     const metadata = {
       email: email || null,
       turnCount: updated.length,
@@ -297,7 +428,7 @@ async function storeConversation(sessionId, email, messages, aiMessage, evaluati
       lastEvaluated: new Date().toISOString(),
       startedAt: existingMetadata.startedAt || new Date().toISOString()
     };
-    await kv.set(metadataKey, metadata);
+    await kvWrapper.set(metadataKey, metadata);
 
     console.log(`[KV] Stored turn ${updated.length} for session ${sessionId}, fitScore: ${evaluation.fitScore}`);
   } catch (error) {

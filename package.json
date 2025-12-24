@@ -2,6 +2,11 @@
   "name": "educator-builder",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "test:e2e": "node test/run.mjs",
+    "test:e2e:manual": "MOCK_MODE=true node test/e2e.test.mjs",
+    "test:playwright": "npx playwright test"
+  },
   "dependencies": {
     "@vercel/kv": "^1.0.1",
     "openai": "^4.77.0",

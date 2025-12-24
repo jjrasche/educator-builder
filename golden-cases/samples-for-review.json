@@ -1,0 +1,287 @@
+[
+  {
+    "category": "opening",
+    "userInput": "Hi, I saw this role and I'm curious",
+    "aiResponse": "What are you trying to figure out about how to live, not just the logistics of a job, but the actual thing that's been on your mind lately? Is it about freedom, community, or the way work shapes your life?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "open_with_question",
+      "fitScore": 50,
+      "rubricScores": {
+        "depth-of-questioning": 5,
+        "self-awareness": 5,
+        "systems-thinking": 5,
+        "experimentation-evidence": 5,
+        "authenticity": 5,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:34:34.848Z"
+  },
+  {
+    "category": "opening",
+    "userInput": "What exactly is this about?",
+    "aiResponse": "Exploring the idea of freedom and community in living and working arrangements",
+    "metadata": {
+      "speechAct": "expressive",
+      "dialogueAct": "open_with_question",
+      "fitScore": 50,
+      "rubricScores": {
+        "depth-of-questioning": 5,
+        "self-awareness": 5,
+        "systems-thinking": 5,
+        "experimentation-evidence": 1,
+        "authenticity": 5,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:34:37.604Z"
+  },
+  {
+    "category": "opening",
+    "userInput": "I'm interested in the live-in position",
+    "aiResponse": "What are you trying to figure out about how to live, not just the logistics of the position, but the actual thing that's been on your mind lately?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "open_with_question",
+      "fitScore": 50,
+      "rubricScores": {
+        "depth-of-questioning": 5,
+        "self-awareness": 5,
+        "systems-thinking": 5,
+        "experimentation-evidence": 0,
+        "authenticity": 5,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:34:40.724Z"
+  },
+  {
+    "category": "deep",
+    "userInput": "I've been thinking a lot about how we organize society. The way we work feels broken - we trade our time for money but never build anything lasting.",
+    "aiResponse": "It sounds like you're grappling with the notion of meaningful work and its relationship to personal fulfillment. You're recognizing that the traditional paradigm of exchanging time for money might not be leading to a sense of lasting purpose or legacy. What is it about building something lasting that resonates with you - is it about creating impact, leaving a mark, or something else entirely?",
+    "metadata": {
+      "speechAct": "expressive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 70,
+      "rubricScores": {
+        "depth-of-questioning": 8,
+        "self-awareness": 7,
+        "systems-thinking": 6,
+        "experimentation-evidence": 2,
+        "authenticity": 8,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:34:44.401Z"
+  },
+  {
+    "category": "deep",
+    "userInput": "I want to build community, not just have a job. I believe in creating spaces where people actually care about each other.",
+    "aiResponse": "That's a beautiful vision - what does that actually look like to you, though? Can you give me a concrete example of a time when you saw a community come together in a way that felt truly caring and supportive?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "ask_for_concrete",
+      "fitScore": 50,
+      "rubricScores": {
+        "depth-of-questioning": 4,
+        "self-awareness": 6,
+        "systems-thinking": 5,
+        "experimentation-evidence": 3,
+        "authenticity": 7,
+        "reciprocal-curiosity": 2
+      }
+    },
+    "timestamp": "2025-12-24T06:34:48.135Z"
+  },
+  {
+    "category": "deep",
+    "userInput": "Freedom means something different than just financial independence to me. It's about having agency over how I spend my days.",
+    "aiResponse": "That's a beautiful perspective on freedom - having the autonomy to choose how you allocate your time and energy. What does a typical day look like for you when you have that kind of agency, and how do you think community and interdependence play into that vision of freedom?",
+    "metadata": {
+      "speechAct": "expressive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 60,
+      "rubricScores": {
+        "depth-of-questioning": 6,
+        "self-awareness": 8,
+        "systems-thinking": 5,
+        "experimentation-evidence": 2,
+        "authenticity": 7,
+        "reciprocal-curiosity": 4
+      }
+    },
+    "timestamp": "2025-12-24T06:34:51.717Z"
+  },
+  {
+    "category": "surface",
+    "userInput": "How much does it pay?",
+    "aiResponse": "The compensation includes housing, meals, and an optional cash stipend, valued at around $22-32 per hour.",
+    "metadata": {
+      "speechAct": "assertive",
+      "dialogueAct": "ANSWER → BRIDGE → PROBE",
+      "fitScore": 30,
+      "rubricScores": {
+        "depth-of-questioning": 2,
+        "self-awareness": 4,
+        "systems-thinking": 3,
+        "experimentation-evidence": 1,
+        "authenticity": 5,
+        "reciprocal-curiosity": 2
+      }
+    },
+    "timestamp": "2025-12-24T06:34:55.050Z"
+  },
+  {
+    "category": "surface",
+    "userInput": "What are the hours? Is it remote?",
+    "aiResponse": "The hours are 10-60 hours/month, totally flexible based on what we're building together. As for remote work, it's actually a live-in position - you'd have a private suite in our family home. What kind of rhythm are you looking for in a work arrangement, and what draws you to either remote or in-person work - is it about flexibility, community, or something else?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 50,
+      "rubricScores": {
+        "depth-of-questioning": 4,
+        "self-awareness": 5,
+        "systems-thinking": 3,
+        "experimentation-evidence": 2,
+        "authenticity": 6,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:34:58.123Z"
+  },
+  {
+    "category": "surface",
+    "userInput": "What benefits do you offer?",
+    "aiResponse": "We offer a unique package that includes housing in a private suite, meals, and optional cash compensation, which works out to roughly $22-32/hour depending on the hours you contribute. What about that matters most to you—the housing security, the flexibility, or something else?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 40,
+      "rubricScores": {
+        "depth-of-questioning": 2,
+        "self-awareness": 4,
+        "systems-thinking": 3,
+        "experimentation-evidence": 1,
+        "authenticity": 5,
+        "reciprocal-curiosity": 6
+      }
+    },
+    "timestamp": "2025-12-24T06:35:01.683Z"
+  },
+  {
+    "category": "skeptical",
+    "userInput": "This sounds too good to be true. What's the catch?",
+    "aiResponse": "I love the skepticism - it's a sign of a healthy dose of critical thinking. There's no catch in the sense that we're not trying to sell you anything or deceive you, but rather, we're looking for people who genuinely resonate with our values and are willing to co-create a new way of living and working together.",
+    "metadata": {
+      "speechAct": "expressive",
+      "dialogueAct": "validate_genuine",
+      "fitScore": 60,
+      "rubricScores": {
+        "depth-of-questioning": 6,
+        "self-awareness": 7,
+        "systems-thinking": 5,
+        "experimentation-evidence": 2,
+        "authenticity": 8,
+        "reciprocal-curiosity": 4
+      }
+    },
+    "timestamp": "2025-12-24T06:35:05.126Z"
+  },
+  {
+    "category": "skeptical",
+    "userInput": "I've heard about these 'intentional community' things before. Most of them fail.",
+    "aiResponse": "What draws you to the idea of intentional communities despite their often-challenging track record, and what do you think is missing from the ones that don't succeed?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 60,
+      "rubricScores": {
+        "depth-of-questioning": 6,
+        "self-awareness": 5,
+        "systems-thinking": 4,
+        "experimentation-evidence": 2,
+        "authenticity": 6,
+        "reciprocal-curiosity": 7
+      }
+    },
+    "timestamp": "2025-12-24T06:35:08.479Z"
+  },
+  {
+    "category": "vague",
+    "userInput": "Oh my god this is exactly what I've been looking for! The energy here is amazing!",
+    "aiResponse": "I'm glad you're feeling the energy, but let's dive deeper - what specifically resonates with you about this way of living and working together? Is it the idea of freedom, community, or something else that's been on your mind?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 40,
+      "rubricScores": {
+        "depth-of-questioning": 2,
+        "self-awareness": 4,
+        "systems-thinking": 3,
+        "experimentation-evidence": 1,
+        "authenticity": 6,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:35:11.731Z"
+  },
+  {
+    "category": "vague",
+    "userInput": "I'm totally aligned with the vision. We need to shift the paradigm.",
+    "aiResponse": "That's great to hear that you're aligned with the vision, but can you tell me what specifically about shifting the paradigm resonates with you? What does that actually look like in your daily life or in the way you think about community and work?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 40,
+      "rubricScores": {
+        "depth-of-questioning": 2,
+        "self-awareness": 4,
+        "systems-thinking": 3,
+        "experimentation-evidence": 1,
+        "authenticity": 6,
+        "reciprocal-curiosity": 2
+      }
+    },
+    "timestamp": "2025-12-24T06:35:15.091Z"
+  },
+  {
+    "category": "grounded",
+    "userInput": "I built a community garden in my neighborhood last year. We had 40 families participating by the end. I learned a lot about what makes people actually show up.",
+    "aiResponse": "That's amazing, building a community garden and having 40 families participate is a significant achievement. What did you learn about what motivates people to get involved and stay engaged, and how do you think you can apply those lessons to other community-building efforts?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 80,
+      "rubricScores": {
+        "depth-of-questioning": 6,
+        "self-awareness": 7,
+        "systems-thinking": 8,
+        "experimentation-evidence": 9,
+        "authenticity": 8,
+        "reciprocal-curiosity": 6
+      }
+    },
+    "timestamp": "2025-12-24T06:35:18.202Z"
+  },
+  {
+    "category": "grounded",
+    "userInput": "I've been doing software development for 5 years but I spend my weekends building furniture and growing vegetables. I want to integrate these things.",
+    "aiResponse": "It sounds like you're looking to combine your technical skills with your passion for crafting and sustainability. What is it about building furniture and growing vegetables that draws you in, and how do you envision integrating these aspects into your life and work?",
+    "metadata": {
+      "speechAct": "directive",
+      "dialogueAct": "probe_deeper",
+      "fitScore": 70,
+      "rubricScores": {
+        "depth-of-questioning": 6,
+        "self-awareness": 7,
+        "systems-thinking": 6,
+        "experimentation-evidence": 8,
+        "authenticity": 8,
+        "reciprocal-curiosity": 5
+      }
+    },
+    "timestamp": "2025-12-24T06:35:21.278Z"
+  }
+]

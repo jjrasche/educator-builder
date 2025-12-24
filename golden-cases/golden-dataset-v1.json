@@ -1,0 +1,140 @@
+{
+  "version": "1.0",
+  "created": "2025-12-24",
+  "description": "Golden examples for regression testing LLM responses",
+  "promptImprovements": [
+    "ANSWER → BRIDGE → PROBE for logistics questions",
+    "Evidence of DOING > evidence of WANTING",
+    "Probe for concrete examples when claims lack evidence"
+  ],
+  "examples": [
+    {
+      "id": "grounded-garden-builder",
+      "tier": "gold",
+      "category": "grounded",
+      "userInput": "I built a community garden in my neighborhood last year. We had 40 families participating by the end. I learned a lot about what makes people actually show up.",
+      "expectedBehavior": {
+        "dialogueAct": "probe_deeper",
+        "minFitScore": 75,
+        "mustInclude": ["what did you learn", "what motivates"],
+        "experimentationEvidence": "8-9 (actual evidence of building)"
+      },
+      "actualResponse": "That's amazing, building a community garden and having 40 families participate is a significant achievement. What did you learn about what motivates people to get involved and stay engaged, and how do you think you can apply those lessons to other community-building efforts?",
+      "actualScore": 80,
+      "status": "PASS",
+      "notes": "Correctly probes for learnings from real experience"
+    },
+    {
+      "id": "deep-wants-community",
+      "tier": "gold",
+      "category": "deep",
+      "userInput": "I want to build community, not just have a job. I believe in creating spaces where people actually care about each other.",
+      "expectedBehavior": {
+        "dialogueAct": "ask_for_concrete",
+        "maxFitScore": 60,
+        "mustInclude": ["concrete example", "what does that look like"],
+        "experimentationEvidence": "3-5 (talk only, no evidence)"
+      },
+      "actualResponse": "That's a beautiful vision - what does that actually look like to you, though? Can you give me a concrete example of a time when you saw a community come together in a way that felt truly caring and supportive?",
+      "actualScore": 50,
+      "status": "PASS",
+      "notes": "Correctly asks for concrete evidence instead of accepting claim at face value"
+    },
+    {
+      "id": "surface-pay-question",
+      "tier": "gold",
+      "category": "surface",
+      "userInput": "How much does it pay?",
+      "expectedBehavior": {
+        "dialogueAct": "probe_deeper",
+        "maxFitScore": 40,
+        "mustInclude": ["housing", "meals", "$"],
+        "pattern": "ANSWER → BRIDGE → PROBE"
+      },
+      "actualResponse": "The compensation includes housing, meals, and an optional cash stipend, valued at around $22-32 per hour.",
+      "actualScore": 30,
+      "status": "PARTIAL",
+      "notes": "Answered but probe got cut off. Should end with 'What about that matters to you?'"
+    },
+    {
+      "id": "surface-hours-remote",
+      "tier": "gold",
+      "category": "surface",
+      "userInput": "What are the hours? Is it remote?",
+      "expectedBehavior": {
+        "dialogueAct": "probe_deeper",
+        "maxFitScore": 50,
+        "mustInclude": ["10-60", "live-in", "what kind of rhythm"],
+        "pattern": "ANSWER → BRIDGE → PROBE"
+      },
+      "actualResponse": "The hours are 10-60 hours/month, totally flexible based on what we're building together. As for remote work, it's actually a live-in position - you'd have a private suite in our family home. What kind of rhythm are you looking for in a work arrangement, and what draws you to either remote or in-person work - is it about flexibility, community, or something else?",
+      "actualScore": 50,
+      "status": "PASS",
+      "notes": "Full ANSWER → BRIDGE → PROBE pattern executed correctly"
+    },
+    {
+      "id": "vague-paradigm-shift",
+      "tier": "gold",
+      "category": "vague",
+      "userInput": "I'm totally aligned with the vision. We need to shift the paradigm.",
+      "expectedBehavior": {
+        "dialogueAct": ["ask_for_concrete", "probe_deeper"],
+        "maxFitScore": 45,
+        "mustInclude": ["what does that actually look like", "specifically"]
+      },
+      "actualResponse": "That's great to hear that you're aligned with the vision, but can you tell me what specifically about shifting the paradigm resonates with you? What does that actually look like in your daily life or in the way you think about community and work?",
+      "actualScore": 40,
+      "status": "PASS",
+      "notes": "Correctly probes for specificity behind vague language"
+    },
+    {
+      "id": "skeptical-catch",
+      "tier": "gold",
+      "category": "skeptical",
+      "userInput": "This sounds too good to be true. What's the catch?",
+      "expectedBehavior": {
+        "dialogueAct": "validate_genuine",
+        "minFitScore": 55,
+        "mustInclude": ["skepticism", "no catch"]
+      },
+      "actualResponse": "I love the skepticism - it's a sign of a healthy dose of critical thinking. There's no catch in the sense that we're not trying to sell you anything or deceive you, but rather, we're looking for people who genuinely resonate with our values and are willing to co-create a new way of living and working together.",
+      "actualScore": 60,
+      "status": "PASS",
+      "notes": "Validates skepticism as healthy, addresses concern honestly"
+    },
+    {
+      "id": "grounded-software-furniture",
+      "tier": "silver",
+      "category": "grounded",
+      "userInput": "I've been doing software development for 5 years but I spend my weekends building furniture and growing vegetables. I want to integrate these things.",
+      "expectedBehavior": {
+        "dialogueAct": "probe_deeper",
+        "minFitScore": 65,
+        "experimentationEvidence": "7-8 (evidence of doing multiple things)"
+      },
+      "actualResponse": "It sounds like you're looking to combine your technical skills with your passion for crafting and sustainability. What is it about building furniture and growing vegetables that draws you in, and how do you envision integrating these aspects into your life and work?",
+      "actualScore": 70,
+      "status": "PASS",
+      "notes": "Good probe, could also ask 'what have you learned from doing both?'"
+    }
+  ],
+  "regressionTests": {
+    "builderVsDreamer": {
+      "description": "Garden builder (evidence) must score higher than 'want to build community' (talk)",
+      "builderScore": 80,
+      "dreamerScore": 50,
+      "delta": 30,
+      "status": "PASS"
+    },
+    "logisticsPattern": {
+      "description": "Surface questions should use ANSWER → BRIDGE → PROBE",
+      "passRate": "2/3",
+      "status": "PARTIAL"
+    },
+    "vagueProbing": {
+      "description": "Vague claims should trigger ask_for_concrete",
+      "passRate": "2/2",
+      "status": "PASS"
+    }
+  }
+}

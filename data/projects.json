@@ -16,6 +16,14 @@
     "category": "Coordination"
   },
   {
+    "id": "modular-housing",
+    "name": "Modular Housing Systems",
+    "description": "Designing regenerative village housing for $6k per unit",
+    "longDescription": "Building the physical infrastructure for intentional communities. Designing, prototyping, and documenting fully modular 12×12 housing units that cost $6k each, assemble with community labor, and work at village scale. Radiant heating/cooling, straw infill, portable design, no foundation requirements. Testing on your property first, then scaling to PUD village. This is the housing layer of the 10-year community build.",
+    "color": "rose",
+    "category": "Coordination"
+  },
+  {
     "id": "food-forest",
     "name": "Food Forest Experiments",
     "description": "Regenerative food systems on permaculture principles",
@@ -27,7 +35,7 @@
     "id": "pud-village",
     "name": "PUD Village Infrastructure",
     "description": "Designing intentional communities at scale (250-2,000 people)",
-    "longDescription": "10-year vision for a regenerative village using Planned Unit Development zoning. Self-sufficient water, sewage, power systems. Mixed housing (multifamily core, single-family ring). Co-op + condo hybrid ownership. Built with 3Cs coordination and food forest principles. Proof that sustainable community infrastructure is buildable.",
+    "longDescription": "10-year vision for a regenerative village using Planned Unit Development zoning. Self-sufficient water, sewage, power systems. Mixed housing (modular core, expandable). Co-op + condo hybrid ownership. Built with 3Cs coordination and food forest principles. Proof that sustainable community infrastructure is buildable.",
     "color": "purple",
     "category": "Coordination"
   },

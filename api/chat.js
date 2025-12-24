@@ -100,10 +100,13 @@ export default async function handler(req, res) {
       canUnlockEmail: evaluation.fitScore !== null && evaluation.fitScore >= 60 && evaluation.allFloorsPass
     })}\n\n`);
 
-    // 9. Store conversation to KV (fire and forget)
-    storeConversation(req, sessionId, email, messages, response, evaluation).catch(err =>
-      console.error('KV storage error:', err.message)
-    );
+    // 9. Store conversation to database (must await in serverless)
+    try {
+      await storeConversation(req, sessionId, email, messages, response, evaluation);
+    } catch (err) {
+      console.error('DB storage error:', err.message);
+      // Don't break the response - storage failure shouldn't stop the chat
+    }
 
     res.write('data: [DONE]\n\n');
     res.end();

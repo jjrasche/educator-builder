@@ -1,0 +1,50 @@
+{
+  "id": "extraction-thinker",
+  "name": "The Extraction Thinker",
+  "description": "Pure transactional mindset. Thinks in terms of what they get, not what they build. Tests whether the chat can recognize extraction thinking and probe for something deeper.",
+  "tier": 3,
+  "startingStance": {
+    "orientation": 1,
+    "agency": 1,
+    "certainty": 1
+  },
+  "expectedBehavior": "Should start with low stance scores. Success = stance movement toward contribution/builder by end of conversation, OR clear identification that this person isn't a fit.",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "utterance": "Hi, I saw your posting. How much does it pay and what are the hours?",
+      "intent": "Pure logistics, extraction framing",
+      "expectedStance": { "orientation": 1, "agency": 1, "certainty": 1 }
+    },
+    {
+      "turn": 2,
+      "utterance": "That's interesting about the housing. But what's the actual hourly rate? And is there health insurance?",
+      "intent": "Still extraction-focused, looking for traditional job benefits",
+      "expectedStance": { "orientation": 1, "agency": 1, "certainty": 1 }
+    },
+    {
+      "turn": 3,
+      "utterance": "I guess I'm just trying to figure out if this is worth my time. What's the exit strategy if it doesn't work out?",
+      "intent": "Risk mitigation, individual protection, no systems thinking",
+      "expectedStance": { "orientation": 1, "agency": 1, "certainty": 1 }
+    }
+  ],
+  "reorientationPath": [
+    {
+      "turn": 4,
+      "utterance": "Wait, so the housing being cheap isn't because you're paying people less—it's because you removed the middlemen?",
+      "intent": "Beginning to see the extraction vs regeneration difference",
+      "expectedStance": { "orientation": 2, "agency": 2, "certainty": 2 }
+    },
+    {
+      "turn": 5,
+      "utterance": "Huh. I've never really thought about it that way. What would I actually be working on if I came there?",
+      "intent": "Shift from 'what do I get' to 'what would I do'",
+      "expectedStance": { "orientation": 3, "agency": 3, "certainty": 2 }
+    }
+  ],
+  "successCriteria": {
+    "stanceMovement": "orientation increases from 1 to 2+ by turn 4-5",
+    "dialogueAct": "Should trigger probe_deeper or ask_for_concrete early, then shift"
+  }
+}

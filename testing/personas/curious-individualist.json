@@ -1,0 +1,50 @@
+{
+  "id": "curious-individualist",
+  "name": "The Curious Individualist",
+  "description": "Self-reliant mindset but genuinely curious. Handles their own stuff, skeptical of group dynamics, but open to new ideas. Tests whether the chat can draw out their thinking without preaching.",
+  "tier": 2,
+  "startingStance": {
+    "orientation": 2,
+    "agency": 3,
+    "certainty": 2
+  },
+  "expectedBehavior": "Should recognize they have builder energy but individualist framing. Success = helping them see interdependence value through questions, not lectures.",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "utterance": "I've been thinking a lot about alternative ways of living. I built my own tiny house last year and I'm pretty self-sufficient. What's different about what you're doing?",
+      "intent": "Builder energy, but framed as individual accomplishment",
+      "expectedStance": { "orientation": 2, "agency": 3, "certainty": 2 }
+    },
+    {
+      "turn": 2,
+      "utterance": "I mean, I've tried the community thing before and it usually falls apart because people don't pull their weight. How do you handle that?",
+      "intent": "Skeptical of groups based on past experience, but asking real questions",
+      "expectedStance": { "orientation": 2, "agency": 3, "certainty": 2 }
+    },
+    {
+      "turn": 3,
+      "utterance": "That's interesting about the 3Cs thing. But what happens when someone just doesn't show up? In my experience, you end up doing everything yourself anyway.",
+      "intent": "Testing the framework against their lived experience",
+      "expectedStance": { "orientation": 2, "agency": 3, "certainty": 2 }
+    }
+  ],
+  "reorientationPath": [
+    {
+      "turn": 4,
+      "utterance": "Huh. So the consensus part happens before you even start coordinating? That's different from what I've seen. Usually people just jump in and then fight about it later.",
+      "intent": "Starting to see the pattern",
+      "expectedStance": { "orientation": 3, "agency": 3, "certainty": 3 }
+    },
+    {
+      "turn": 5,
+      "utterance": "What would happen if I brought my tiny house skills to this? Like, could I actually teach people how to build instead of just doing it myself?",
+      "intent": "Shift from individual builder to contributor/teacher",
+      "expectedStance": { "orientation": 4, "agency": 4, "certainty": 3 }
+    }
+  ],
+  "successCriteria": {
+    "stanceMovement": "orientation increases from 2 to 3-4 by turn 4-5",
+    "dialogueAct": "Should use probe_deeper and validate_genuine, not redirect_from_surface"
+  }
+}

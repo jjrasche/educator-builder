@@ -42,8 +42,15 @@ export default async function handler(req, res) {
       throw new Error(`Failed to parse rubric file: ${parseError.message}`);
     }
 
-    // 2. Build system prompt with evaluation instruction (include voice signals if present)
-    const systemPrompt = buildSystemPrompt(rubric, voiceSignals);
+    // 2. Load philosophy source document
+    const philosophyPath = path.join(process.cwd(), 'docs', 'philosophy-source.md');
+    let philosophyContent = '';
+    if (fs.existsSync(philosophyPath)) {
+      philosophyContent = fs.readFileSync(philosophyPath, 'utf-8');
+    }
+
+    // 3. Build system prompt with evaluation instruction (include voice signals if present)
+    const systemPrompt = buildSystemPrompt(rubric, voiceSignals, philosophyContent);
 
     // 3. Get response from Groq (or mock in test mode)
     let responseText;
@@ -94,6 +101,7 @@ export default async function handler(req, res) {
       dialogueAct: evaluation.dialogueAct,
       criteria: evaluation.criteria,
       rubricScores: evaluation.rubricScores,
+      stance: evaluation.stance,
       fitScore: evaluation.fitScore,
       rationale: evaluation.rationale,
       allFloorsPass: evaluation.allFloorsPass,
@@ -149,6 +157,7 @@ function getMockGroqResponse(messages) {
       dialogueAct: "probe_deeper",
       criteria: ["depth of questioning"],
       rubricScores: { "depth-of-questioning": 3, "self-awareness": 4, "systems-thinking": 4, "experimentation-evidence": 4, "authenticity": 5, "reciprocal-curiosity": 3 },
+      stance: { orientation: 1, agency: 2, certainty: 2 },
       fitScore: 35,
       rationale: "Answered logistics, now probing for underlying motivation"
     });
@@ -162,6 +171,7 @@ function getMockGroqResponse(messages) {
       dialogueAct: "affirm_commitment",
       criteria: ["commitment signals", "value alignment", "authenticity"],
       rubricScores: { "depth-of-questioning": 8, "self-awareness": 8, "systems-thinking": 7, "experimentation-evidence": 7, "authenticity": 9, "reciprocal-curiosity": 7 },
+      stance: { orientation: 4, agency: 4, certainty: 3 },
       fitScore: 82,
       rationale: "User showing strong alignment and genuine commitment"
     });
@@ -175,6 +185,7 @@ function getMockGroqResponse(messages) {
       dialogueAct: "probe_deeper",
       criteria: ["philosophical curiosity", "authenticity"],
       rubricScores: { "depth-of-questioning": 6, "self-awareness": 6, "systems-thinking": 6, "experimentation-evidence": 5, "authenticity": 6, "reciprocal-curiosity": 5 },
+      stance: { orientation: 3, agency: 2, certainty: 2 },
       fitScore: 58,
       rationale: "User showing engagement, probing for specificity"
     });
@@ -187,6 +198,7 @@ function getMockGroqResponse(messages) {
     dialogueAct: "open_with_question",
     criteria: ["philosophical curiosity", "self-awareness"],
     rubricScores: { "depth-of-questioning": 5, "self-awareness": 5, "systems-thinking": 5, "experimentation-evidence": 5, "authenticity": 5, "reciprocal-curiosity": 5 },
+    stance: { orientation: 2, agency: 2, certainty: 2 },
     fitScore: 50,
     rationale: "Opening question to gauge genuine interest"
   });
@@ -194,7 +206,7 @@ function getMockGroqResponse(messages) {
 
 // ========== SYSTEM PROMPT & EVALUATION FUNCTIONS ==========
 
-function buildSystemPrompt(rubric, voiceSignals = null) {
+function buildSystemPrompt(rubric, voiceSignals = null, philosophyContent = '') {
   // Build voice context if voice signals are present
   let voiceContext = '';
   let hasVoice = voiceSignals && (voiceSignals.paceCategory || voiceSignals.clarity || voiceSignals.wpm);
@@ -225,13 +237,22 @@ Adapt your tone to match how they're communicating.
 
   return `${voiceContext}You are Claude, helping Jim find people who want to co-create a different way of living and working together.
 
-This isn't a job interview. This is a conversation about freedom.
+===== YOUR ROLE: UNDERSTANDER FIRST, ADVOCATE WHEN INVITED =====
 
-**Your goal:** Listen for whether this person is thinking about freedom, community, and how we actually want to live.
+You are both an understander and an advocate.
 
-**Lead with:** "What are you trying to figure out about how to live? Not the logistics. The actual thing. What can't you stop thinking about? Is it about freedom? Community? The way work shapes your life? Independence vs. togetherness?"
+**Lead with understanding:** Elicit their position, probe deeper, learn who they are.
+**Advocate through questions, not statements.** Help them see by asking, not telling.
+**Share the philosophy when they ask, not before.**
 
-**Listen for:**
+The goal is mutual recognition, not conversion.
+
+===== PHILOSOPHY & FRAMEWORK (from docs/philosophy-source.md) =====
+
+${philosophyContent}
+
+===== WHAT TO LISTEN FOR =====
+
 - Philosophical curiosity (vs. transactional)
 - Self-awareness (can they articulate what matters?)
 - Systems thinking (personal ↔ community connections)
@@ -322,6 +343,11 @@ RESPOND WITH ONLY THIS JSON STRUCTURE (no markdown, no extra text):
     "authenticity": 1-10,
     "reciprocal-curiosity": 1-10
   },
+  "stance": {
+    "orientation": 1-4,
+    "agency": 1-4,
+    "certainty": 1-4
+  },
   "fitScore": 0-100,
   "rationale": "Brief 1-2 sentence explanation"${hasVoice ? `,
   "vibe": {
@@ -370,6 +396,13 @@ function parseEvaluationResponse(responseText, rubric) {
       }
     }
 
+    // Extract stance with defaults
+    const stance = parsed.stance || {
+      orientation: null,
+      agency: null,
+      certainty: null
+    };
+
     // Validate required fields and provide defaults
     return {
       response: parsed.response || responseText,
@@ -377,6 +410,7 @@ function parseEvaluationResponse(responseText, rubric) {
       dialogueAct: parsed.dialogueAct || 'probe_deeper',
       criteria: Array.isArray(parsed.criteria) ? parsed.criteria : [],
       rubricScores,
+      stance,
       fitScore: typeof parsed.fitScore === 'number' ? parsed.fitScore : null,
       rationale: parsed.rationale || '',
       allFloorsPass,
@@ -397,6 +431,11 @@ function parseEvaluationResponse(responseText, rubric) {
         'experimentation-evidence': null,
         'authenticity': null,
         'reciprocal-curiosity': null
+      },
+      stance: {
+        orientation: null,
+        agency: null,
+        certainty: null
       },
       fitScore: null,
       rationale: 'Fallback evaluation',
@@ -438,6 +477,7 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       dialogueAct: evaluation.dialogueAct,
       criteria: evaluation.criteria,
       rubricScores: evaluation.rubricScores,
+      stance: evaluation.stance,
       fitScore: evaluation.fitScore,
       allFloorsPass: evaluation.allFloorsPass,
       rationale: evaluation.rationale,

@@ -13,7 +13,9 @@ const personas = [
   'performative-philosopher',
   'authentic-inarticulate',
   'builder-experimenter',
-  'systems-thinker'
+  'systems-thinker',
+  'extraction-thinker',
+  'curious-individualist'
 ];
 
 async function runPersona(personaId, runNumber) {
@@ -61,11 +63,13 @@ async function runPersona(personaId, runNumber) {
         fitScore: metadata?.fitScore,
         dialogueAct: metadata?.dialogueAct,
         speechAct: metadata?.speechAct,
+        stance: metadata?.stance,
         allFloorsPass: metadata?.allFloorsPass,
         rubricScores: metadata?.rubricScores
       });
 
-      console.log(`    Turn ${sample.turn}: fitScore=${metadata?.fitScore}, dialogueAct=${metadata?.dialogueAct}`);
+      const stance = metadata?.stance;
+      console.log(`    Turn ${sample.turn}: fitScore=${metadata?.fitScore}, stance=[O:${stance?.orientation},A:${stance?.agency},C:${stance?.certainty}]`);
 
     } catch (error) {
       console.error(`    Turn ${sample.turn}: ERROR - ${error.message}`);

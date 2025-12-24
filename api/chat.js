@@ -1,7 +1,7 @@
 // Vercel serverless function - handles chat streaming + continuous inline evaluation + Postgres storage
 // ARCHITECTURE: Single LLM call returns response + speechAct + dialogueAct + criteria + rubricScores + fitScore every turn
 import OpenAI from 'openai';
-import { storeTurn } from '../lib/db.js';
+import { storeTurn, getOrCreateSession } from '../lib/db.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -27,9 +27,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Load unified LLM config (configurable via env var or query param)
-    const configId = req.query?.config || process.env.LLM_CONFIG || 'live-in-collaborator';
-    const configPath = path.join(process.cwd(), 'data', `llm-config-${configId}.json`);
+    // 1. Get or create session with cohort assignment
+    // Priority: query param > env var > random assignment
+    const forceCohort = req.query?.config || process.env.LLM_CONFIG || null;
+    const session = isMockMode(req)
+      ? { cohort: forceCohort || 'live-in-collaborator', config_id: `llm-config-${forceCohort || 'live-in-collaborator'}.json` }
+      : await getOrCreateSession(sessionId, forceCohort);
+
+    const configPath = path.join(process.cwd(), 'data', `llm-config-${session.cohort}.json`);
 
     if (!fs.existsSync(configPath)) {
       throw new Error(`LLM config not found: ${configPath}. Available: live-in-collaborator, educator-facilitator`);
@@ -104,6 +109,7 @@ export default async function handler(req, res) {
     // 8. Send evaluation metadata EVERY turn (continuous evaluation)
     const metadata = {
       type: 'metadata',
+      cohort: session.cohort,  // A/B test variant
       speechAct: evaluation.speechAct,
       dialogueAct: evaluation.dialogueAct,
       criteria: evaluation.criteria,
@@ -122,7 +128,7 @@ export default async function handler(req, res) {
 
     // 9. Store conversation to database (must await in serverless)
     try {
-      await storeConversation(req, sessionId, email, messages, response, evaluation, voiceSignals);
+      await storeConversation(req, sessionId, email, messages, response, evaluation, voiceSignals, session.cohort);
     } catch (err) {
       console.error('DB storage error:', err.message);
       // Don't break the response - storage failure shouldn't stop the chat
@@ -488,7 +494,7 @@ function parseEvaluationResponse(responseText, rubric) {
 
 // ========== DATABASE STORAGE FUNCTIONS ==========
 
-async function storeConversation(req, sessionId, email, messages, aiMessage, evaluation, voiceSignals = null) {
+async function storeConversation(req, sessionId, email, messages, aiMessage, evaluation, voiceSignals = null, cohort = null) {
   // In mock mode, use in-memory store
   if (isMockMode(req)) {
     const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
@@ -499,10 +505,11 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       speechAct: evaluation.speechAct,
       dialogueAct: evaluation.dialogueAct,
       fitScore: evaluation.fitScore,
+      cohort,
       voiceSignals
     });
     testStore.set(sessionId, existing);
-    console.log(`[MOCK DB] Stored turn ${existing.length} for session ${sessionId}`);
+    console.log(`[MOCK DB] Stored turn ${existing.length} for session ${sessionId} (cohort: ${cohort})`);
     return;
   }
 
@@ -526,9 +533,9 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       voiceSignals  // Raw voice signals from Whisper
     };
 
-    // Store to Postgres
-    const result = await storeTurn(sessionId, email, turnData);
-    console.log(`[DB] Stored turn ${result.turnNumber} for session ${sessionId}, fitScore: ${evaluation.fitScore}`);
+    // Store to Postgres with cohort metadata
+    const result = await storeTurn(sessionId, email, turnData, cohort);
+    console.log(`[DB] Stored turn ${result.turnNumber} for session ${sessionId} (cohort: ${cohort}), fitScore: ${evaluation.fitScore}`);
   } catch (error) {
     // Log but don't break chat - storage failure shouldn't stop conversation
     console.error('[DB] Storage failed:', error.message);

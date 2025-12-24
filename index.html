@@ -166,11 +166,11 @@
 
     <!-- Voice Signal Display (floating) -->
     <div id="voice-signal-display" class="voice-signal hidden">
-        <div class="voice-emoji" id="signal-emoji">😐</div>
+        <div class="voice-emoji" id="signal-emoji">💭</div>
         <div class="voice-metrics">
-            <div><span class="text-slate-400">Pace:</span> <span id="signal-wpm">--</span> WPM</div>
-            <div><span class="text-slate-400">Pauses:</span> <span id="signal-pauses">--</span></div>
-            <div><span class="text-slate-400">Confidence:</span> <span id="signal-confidence">--</span></div>
+            <div><span class="text-slate-400">Pace:</span> <span id="signal-pace">--</span></div>
+            <div><span class="text-slate-400">Flow:</span> <span id="signal-flow">--</span></div>
+            <div><span class="text-slate-400">Audio:</span> <span id="signal-clarity">--</span></div>
         </div>
         <div class="voice-interpretation" id="signal-interpretation">Listening...</div>
     </div>
@@ -492,13 +492,19 @@
                                         fitScore: parsed.fitScore,
                                         allFloorsPass: parsed.allFloorsPass,
                                         rationale: parsed.rationale,
-                                        canUnlockEmail: parsed.canUnlockEmail
+                                        canUnlockEmail: parsed.canUnlockEmail,
+                                        vibe: parsed.vibe
                                     };
 
                                     // Expose metadata in message element for Playwright
                                     if (messageDiv) {
                                         messageDiv.setAttribute('data-metadata', JSON.stringify(lastMetadata));
                                         messageDiv.setAttribute('data-role', 'assistant');
+                                    }
+
+                                    // Update vibe display if present (voice mode)
+                                    if (parsed.vibe) {
+                                        updateVibe(parsed.vibe);
                                     }
 
                                     fitScore = parsed.fitScore;
@@ -810,8 +816,8 @@
 
                 const result = await response.json();
 
-                // Update voice signal display
-                updateVoiceSignalDisplay(result);
+                // Update voice signal display (vibe comes later from chat.js)
+                updateVoiceSignalDisplay(result.signals);
 
                 // If we got a transcript, send it as a message
                 if (result.transcript && result.transcript.trim()) {
@@ -839,23 +845,37 @@
             }
         }
 
-        function updateVoiceSignalDisplay(result) {
+        // Store current voice signals for vibe update later
+        let currentVoiceSignals = null;
+
+        function updateVoiceSignalDisplay(signals, vibe = null) {
             const display = document.getElementById('voice-signal-display');
             display.classList.remove('hidden');
 
-            // Update emoji
-            document.getElementById('signal-emoji').textContent = result.emoji || '😐';
+            // Store signals for later vibe update
+            if (signals) currentVoiceSignals = signals;
+            const s = signals || currentVoiceSignals || {};
 
-            // Update metrics
-            document.getElementById('signal-wpm').textContent = result.signals?.wpm || '--';
-            document.getElementById('signal-pauses').textContent =
-                result.signals?.pauses?.count || 0;
-            document.getElementById('signal-confidence').textContent =
-                result.signals?.confidence || '--';
+            // Update emoji (from vibe if available, placeholder otherwise)
+            document.getElementById('signal-emoji').textContent = vibe?.emoji || '💭';
 
-            // Update interpretation
+            // Pace: show WPM with category
+            const pace = s.paceCategory
+                ? `${s.wpm || '--'} (${s.paceCategory})`
+                : (s.wpm ? `${s.wpm} WPM` : '--');
+            document.getElementById('signal-pace').textContent = pace;
+
+            // Flow: natural/choppy/continuous with pause count
+            const flow = s.flowCategory || '--';
+            const pauseInfo = s.pauses?.count > 0 ? ` (${s.pauses.count} pauses)` : '';
+            document.getElementById('signal-flow').textContent = flow + pauseInfo;
+
+            // Clarity: clear/moderate/unclear from Whisper confidence
+            document.getElementById('signal-clarity').textContent = s.clarity || '--';
+
+            // Update interpretation (from vibe if available)
             document.getElementById('signal-interpretation').textContent =
-                result.interpretation || 'Analyzing...';
+                vibe?.observation || (vibe ? 'Sensing...' : 'Analyzing...');
 
             // Auto-hide after 10 seconds
             setTimeout(() => {
@@ -863,6 +883,13 @@
                     display.classList.add('hidden');
                 }
             }, 10000);
+        }
+
+        function updateVibe(vibe) {
+            if (vibe && vibe.emoji) {
+                document.getElementById('signal-emoji').textContent = vibe.emoji;
+                document.getElementById('signal-interpretation').textContent = vibe.observation || '';
+            }
         }
 
         async function getAIResponse(voiceSignals = null) {
@@ -932,12 +959,18 @@
                                         fitScore: parsed.fitScore,
                                         allFloorsPass: parsed.allFloorsPass,
                                         rationale: parsed.rationale,
-                                        canUnlockEmail: parsed.canUnlockEmail
+                                        canUnlockEmail: parsed.canUnlockEmail,
+                                        vibe: parsed.vibe
                                     };
 
                                     if (messageDiv) {
                                         messageDiv.setAttribute('data-metadata', JSON.stringify(lastMetadata));
                                         messageDiv.setAttribute('data-role', 'assistant');
+                                    }
+
+                                    // Update vibe display if present (voice mode)
+                                    if (parsed.vibe) {
+                                        updateVibe(parsed.vibe);
                                     }
 
                                     fitScore = parsed.fitScore;

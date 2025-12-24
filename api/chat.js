@@ -88,7 +88,7 @@ export default async function handler(req, res) {
     res.write(`data: ${JSON.stringify({ text: response })}\n\n`);
 
     // 8. Send evaluation metadata EVERY turn (continuous evaluation)
-    res.write(`data: ${JSON.stringify({
+    const metadata = {
       type: 'metadata',
       speechAct: evaluation.speechAct,
       dialogueAct: evaluation.dialogueAct,
@@ -98,11 +98,16 @@ export default async function handler(req, res) {
       rationale: evaluation.rationale,
       allFloorsPass: evaluation.allFloorsPass,
       canUnlockEmail: evaluation.fitScore !== null && evaluation.fitScore >= 60 && evaluation.allFloorsPass
-    })}\n\n`);
+    };
+    // Include vibe if present (voice mode)
+    if (evaluation.vibe) {
+      metadata.vibe = evaluation.vibe;
+    }
+    res.write(`data: ${JSON.stringify(metadata)}\n\n`);
 
     // 9. Store conversation to database (must await in serverless)
     try {
-      await storeConversation(req, sessionId, email, messages, response, evaluation);
+      await storeConversation(req, sessionId, email, messages, response, evaluation, voiceSignals);
     } catch (err) {
       console.error('DB storage error:', err.message);
       // Don't break the response - storage failure shouldn't stop the chat
@@ -192,21 +197,27 @@ function getMockGroqResponse(messages) {
 function buildSystemPrompt(rubric, voiceSignals = null) {
   // Build voice context if voice signals are present
   let voiceContext = '';
-  if (voiceSignals && voiceSignals.confidence) {
-    const { wpm, confidence, pauses, hesitations } = voiceSignals;
+  let hasVoice = voiceSignals && (voiceSignals.paceCategory || voiceSignals.clarity || voiceSignals.wpm);
+
+  if (hasVoice) {
+    const { wpm, paceCategory, flowCategory, clarity, speechPattern, pauses, hesitations } = voiceSignals;
+
     voiceContext = `
 ===== VOICE SIGNALS FOR THIS TURN =====
 The person is speaking (not typing). Here's how they sound:
-- Pace: ${wpm || '--'} words per minute
-- Pauses: ${pauses?.count || 0} pauses (longest: ${pauses?.maxSec || 0}s)
-- Hesitations: ${hesitations?.count || 0} filler words (${hesitations?.markers?.slice(0, 3).join(', ') || 'none'})
-- Overall confidence: ${confidence}
+- Pace: ${wpm || '--'} WPM (${paceCategory || 'unknown'})
+- Flow: ${flowCategory || 'unknown'} (${pauses?.count || 0} pauses, longest ${pauses?.maxSec || 0}s)
+- Audio clarity: ${clarity || 'unknown'}
+- Filler words: ${hesitations?.count || 0} (${hesitations?.density || 0}% density)
+${speechPattern && speechPattern !== 'normal' ? `- Speech pattern: ${speechPattern}` : ''}
 
-${confidence === 'low' ? 'They seem to be thinking carefully or feeling uncertain. Be warm and patient. Give them space.' : ''}
-${confidence === 'high' ? 'They sound clear and confident. You can be more direct.' : ''}
-${confidence === 'moderate' ? 'They\'re working through their thoughts. Stay curious and engaged.' : ''}
+Based on these signals, sense their speaking VIBE (not content quality - how they're communicating).
+Pick an emoji that captures their energy: 🔥 💭 🌊 ⚡ 🤔 😌 💪 🌱 ✨ 🎯
+- 🔥 passionate, energized | 💭 thoughtful, reflective | 🌊 calm, steady
+- ⚡ quick, sharp | 🤔 working through something | 😌 relaxed, at ease
+- 💪 determined, focused | 🌱 tentative but growing | ✨ expressive | 🎯 precise
 
-Adapt your tone to match how they're communicating. If they're hesitant, don't overwhelm them. If they're flowing, match their energy.
+Adapt your tone to match how they're communicating.
 =====
 
 `;
@@ -312,7 +323,11 @@ RESPOND WITH ONLY THIS JSON STRUCTURE (no markdown, no extra text):
     "reciprocal-curiosity": 1-10
   },
   "fitScore": 0-100,
-  "rationale": "Brief 1-2 sentence explanation"
+  "rationale": "Brief 1-2 sentence explanation"${hasVoice ? `,
+  "vibe": {
+    "emoji": "One emoji from the palette above",
+    "observation": "Brief 1-sentence observation about how they're communicating (not what they said)"
+  }` : ''}
 }
 
 KEY DEFINITIONS:
@@ -364,7 +379,8 @@ function parseEvaluationResponse(responseText, rubric) {
       rubricScores,
       fitScore: typeof parsed.fitScore === 'number' ? parsed.fitScore : null,
       rationale: parsed.rationale || '',
-      allFloorsPass
+      allFloorsPass,
+      vibe: parsed.vibe || null  // { emoji, observation } if voice mode
     };
   } catch (error) {
     console.warn('[EVAL] Failed to parse response, using fallback:', error.message);
@@ -384,14 +400,15 @@ function parseEvaluationResponse(responseText, rubric) {
       },
       fitScore: null,
       rationale: 'Fallback evaluation',
-      allFloorsPass: false
+      allFloorsPass: false,
+      vibe: null
     };
   }
 }
 
 // ========== DATABASE STORAGE FUNCTIONS ==========
 
-async function storeConversation(req, sessionId, email, messages, aiMessage, evaluation) {
+async function storeConversation(req, sessionId, email, messages, aiMessage, evaluation, voiceSignals = null) {
   // In mock mode, use in-memory store
   if (isMockMode(req)) {
     const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
@@ -401,7 +418,8 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       response: aiMessage,
       speechAct: evaluation.speechAct,
       dialogueAct: evaluation.dialogueAct,
-      fitScore: evaluation.fitScore
+      fitScore: evaluation.fitScore,
+      voiceSignals
     });
     testStore.set(sessionId, existing);
     console.log(`[MOCK DB] Stored turn ${existing.length} for session ${sessionId}`);
@@ -422,7 +440,9 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       rubricScores: evaluation.rubricScores,
       fitScore: evaluation.fitScore,
       allFloorsPass: evaluation.allFloorsPass,
-      rationale: evaluation.rationale
+      rationale: evaluation.rationale,
+      vibe: evaluation.vibe,  // LLM-interpreted vibe (voice mode only)
+      voiceSignals  // Raw voice signals from Whisper
     };
 
     // Store to Postgres

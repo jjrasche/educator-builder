@@ -1,5 +1,5 @@
-// Vercel serverless function - retrieves session data from KV for session recovery
-import { kv } from '@vercel/kv';
+// Session recovery endpoint - retrieves conversation from Postgres
+import { getConversation } from '../lib/db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -13,46 +13,40 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Get conversation turns from KV
-    const kvKey = `conversation:${sessionId}`;
-    const turns = await kv.get(kvKey);
+    const conversation = await getConversation(sessionId);
 
-    if (!turns || !Array.isArray(turns) || turns.length === 0) {
+    if (!conversation.turns || conversation.turns.length === 0) {
       return res.status(200).json({
         found: false,
-        turns: [],
-        metadata: null
+        chatHistory: [],
+        exchanges: 0
       });
     }
 
-    // Get metadata
-    const metadataKey = `metadata:${sessionId}`;
-    const metadata = await kv.get(metadataKey);
-
     // Convert turns to chat history format
     const chatHistory = [];
-    for (const turn of turns) {
-      if (turn.userMessage) {
-        chatHistory.push({ role: 'user', content: turn.userMessage });
+    for (const turn of conversation.turns) {
+      if (turn.user_message) {
+        chatHistory.push({ role: 'user', content: turn.user_message });
       }
-      if (turn.response) {
-        chatHistory.push({ role: 'assistant', content: turn.response });
+      if (turn.ai_response) {
+        chatHistory.push({ role: 'assistant', content: turn.ai_response });
       }
     }
 
-    // Get latest evaluation data
-    const lastTurn = turns[turns.length - 1];
+    // Get latest evaluation from last turn
+    const lastTurn = conversation.turns[conversation.turns.length - 1];
+    const evaluation = lastTurn.evaluation || {};
 
     res.status(200).json({
       found: true,
       chatHistory,
-      exchanges: turns.length,
+      exchanges: conversation.turnCount,
       lastMetadata: {
-        fitScore: lastTurn.fitScore,
-        allFloorsPass: lastTurn.allFloorsPass,
-        canUnlockEmail: lastTurn.fitScore >= 60 && lastTurn.allFloorsPass
-      },
-      metadata
+        fitScore: evaluation.fitScore || null,
+        allFloorsPass: evaluation.allFloorsPass || false,
+        canUnlockEmail: (evaluation.fitScore >= 60 && evaluation.allFloorsPass) || false
+      }
     });
 
   } catch (error) {

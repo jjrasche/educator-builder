@@ -53,7 +53,8 @@ export default async function handler(req, res) {
         rubricScores: { 'depth-of-questioning': 5 },
         fitScore: 50,
         allFloorsPass: true,
-        rationale: 'Test rationale'
+        rationale: 'Test rationale',
+        voiceSignals: { wpm: 120, paceCategory: 'measured', clarity: 'clear' }
       };
 
       await storeTurn(testSessionId, null, testTurn);
@@ -108,7 +109,6 @@ export default async function handler(req, res) {
         sessionId,
         turnCount: conversation.turnCount,
         turns: conversation.turns,
-        metadata: conversation.metadata,
         dbConfigured: true
       });
     }

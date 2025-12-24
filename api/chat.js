@@ -49,8 +49,15 @@ export default async function handler(req, res) {
       philosophyContent = fs.readFileSync(philosophyPath, 'utf-8');
     }
 
-    // 3. Build system prompt with evaluation instruction (include voice signals if present)
-    const systemPrompt = buildSystemPrompt(rubric, voiceSignals, philosophyContent);
+    // 3. Load position details document
+    const positionPath = path.join(process.cwd(), 'docs', 'position-details.md');
+    let positionContent = '';
+    if (fs.existsSync(positionPath)) {
+      positionContent = fs.readFileSync(positionPath, 'utf-8');
+    }
+
+    // 4. Build system prompt with evaluation instruction (include voice signals if present)
+    const systemPrompt = buildSystemPrompt(rubric, voiceSignals, philosophyContent, positionContent);
 
     // 3. Get response from Groq (or mock in test mode)
     let responseText;
@@ -150,16 +157,17 @@ function getMockGroqResponse(messages) {
   const hasCommitment = commitKeywords.some(kw => lastMessage.includes(kw));
 
   // Priority 1: Logistics questions - ANSWER → BRIDGE → PROBE pattern
+  // Note: In mock mode, we give a generic response. Real mode uses position-details.md
   if (isShallow) {
     return JSON.stringify({
-      response: "Housing is about $900/mo value, meals another $400/mo, plus $300 cash if you want it—works out to roughly $22-32/hour depending on hours. What about that matters most to you? Is it the housing security, the flexibility, or something else entirely?",
+      response: "Good question about the logistics. It's a live-in position with housing, communal meals, and flexible hours. But I'm curious—what about that matters most to you? Is it the housing security, the flexibility, or something else entirely?",
       speechAct: "assertive",
       dialogueAct: "probe_deeper",
       criteria: ["depth of questioning"],
-      rubricScores: { "depth-of-questioning": 3, "self-awareness": 4, "systems-thinking": 4, "experimentation-evidence": 4, "authenticity": 5, "reciprocal-curiosity": 3 },
+      rubricScores: { "depth-of-questioning": 3, "self-awareness": 4, "systems-thinking": 4, "experimentation-evidence": 4, "authenticity": 5, "reciprocal-curiosity": 3, "family-integration": 5 },
       stance: { orientation: 1, agency: 2, certainty: 2 },
       fitScore: 35,
-      rationale: "Answered logistics, now probing for underlying motivation"
+      rationale: "Answered logistics generically, now probing for underlying motivation"
     });
   }
 
@@ -170,7 +178,7 @@ function getMockGroqResponse(messages) {
       speechAct: "expressive",
       dialogueAct: "affirm_commitment",
       criteria: ["commitment signals", "value alignment", "authenticity"],
-      rubricScores: { "depth-of-questioning": 8, "self-awareness": 8, "systems-thinking": 7, "experimentation-evidence": 7, "authenticity": 9, "reciprocal-curiosity": 7 },
+      rubricScores: { "depth-of-questioning": 8, "self-awareness": 8, "systems-thinking": 7, "experimentation-evidence": 7, "authenticity": 9, "reciprocal-curiosity": 7, "family-integration": 5 },
       stance: { orientation: 4, agency: 4, certainty: 3 },
       fitScore: 82,
       rationale: "User showing strong alignment and genuine commitment"
@@ -184,7 +192,7 @@ function getMockGroqResponse(messages) {
       speechAct: "directive",
       dialogueAct: "probe_deeper",
       criteria: ["philosophical curiosity", "authenticity"],
-      rubricScores: { "depth-of-questioning": 6, "self-awareness": 6, "systems-thinking": 6, "experimentation-evidence": 5, "authenticity": 6, "reciprocal-curiosity": 5 },
+      rubricScores: { "depth-of-questioning": 6, "self-awareness": 6, "systems-thinking": 6, "experimentation-evidence": 5, "authenticity": 6, "reciprocal-curiosity": 5, "family-integration": 5 },
       stance: { orientation: 3, agency: 2, certainty: 2 },
       fitScore: 58,
       rationale: "User showing engagement, probing for specificity"
@@ -197,7 +205,7 @@ function getMockGroqResponse(messages) {
     speechAct: "directive",
     dialogueAct: "open_with_question",
     criteria: ["philosophical curiosity", "self-awareness"],
-    rubricScores: { "depth-of-questioning": 5, "self-awareness": 5, "systems-thinking": 5, "experimentation-evidence": 5, "authenticity": 5, "reciprocal-curiosity": 5 },
+    rubricScores: { "depth-of-questioning": 5, "self-awareness": 5, "systems-thinking": 5, "experimentation-evidence": 5, "authenticity": 5, "reciprocal-curiosity": 5, "family-integration": 5 },
     stance: { orientation: 2, agency: 2, certainty: 2 },
     fitScore: 50,
     rationale: "Opening question to gauge genuine interest"
@@ -206,7 +214,7 @@ function getMockGroqResponse(messages) {
 
 // ========== SYSTEM PROMPT & EVALUATION FUNCTIONS ==========
 
-function buildSystemPrompt(rubric, voiceSignals = null, philosophyContent = '') {
+function buildSystemPrompt(rubric, voiceSignals = null, philosophyContent = '', positionContent = '') {
   // Build voice context if voice signals are present
   let voiceContext = '';
   let hasVoice = voiceSignals && (voiceSignals.paceCategory || voiceSignals.clarity || voiceSignals.wpm);
@@ -259,37 +267,67 @@ ${philosophyContent}
 - Experimentation (building/questioning vs. passive)
 - Authenticity (genuine vs. performing)
 - Reciprocal curiosity (ask about Jim's thinking?)
+- Family context fit (comfort with kids, household energy)
+
+**THE FAMILY INTEGRATION GATE (Critical):**
+This is a live-in position in a family home with 6-year-old twins (Charlie and Theo). Mention this early—it's non-negotiable. This isn't an office, it's a home. Children are part of community.
+
+**Listen for:**
+- Genuine comfort with kid energy (enjoyment is great, but peaceful tolerance is okay too)
+- Questions about the kids, the family dynamic, what it's like to live there
+- Experience with children or similar contexts
+- Whether they seem like they'd become more tense with children around
+
+**The real red flag** is not asking about quiet time (that's legitimate). It's signals of *discomfort or resentment* about children being present—language that frames kids as intrusion rather than context.
+
+**Scoring:**
+- 1-3: Discomfort, resentment, stress signals about kid presence
+- 4-5: Tolerant, neutral, can coexist peacefully (this is acceptable)
+- 6-7: Positive, comfortable, open to engagement
+- 8-10: Lights up about it, has experience, seeks connection
+
+Note: They have their own space. They don't have to eat every meal with us. But there's substantial time together. We're looking for someone who won't find that draining.
 
 **CRITICAL - Handling logistics questions (pay, hours, benefits, location):**
 Always use the ANSWER → BRIDGE → PROBE pattern:
-1. ANSWER the question fully and honestly
+1. ANSWER the question fully and honestly (use the position details below)
 2. BRIDGE to what it reveals about their thinking
 3. PROBE to discover if there's depth underneath
 
-Examples:
-- "How much does it pay?" → "Housing (~$900/mo value) + meals (~$400/mo) + $300 cash if you want it. Works out to roughly $22-32/hour depending on hours. What about that matters most to you—the housing security, the flexibility, or something else?"
-- "What are the hours?" → "10-60 hours/month, totally flexible based on what we're building together. What kind of rhythm are you looking for? Are you trying to create space for something else, or looking for full immersion?"
-- "Is it remote?" → "It's live-in—you'd have a private suite here. What draws you to remote vs. in-person work? That tells me something about what you're optimizing for."
-
 The probe reveals whether they're thinking systemically or just job shopping. A pure logistics question with no curiosity = low fit. Logistics question + genuine exploration of why = potential depth.
 
-**Probe for specificity:** When someone uses abstract language ("transformative energy," "collective consciousness," "paradigm shift," "mutual aid frameworks"), ask: "What does that actually look like? Can you give me a concrete example?" Vague language often signals performance. Authentic people can ground their ideas in experience.
+**CRITICAL - Detecting Performance vs. Authenticity:**
+
+Watch for abstract language that SOUNDS philosophical but lacks substance:
+- Phrases like: "intersection of X and Y", "ontological flexibility", "relational substrate", "conceptual architecture", "continuous recalibration", "transformative energy", "collective consciousness", "paradigm shift", "mutual aid frameworks", "emergent dynamics", "holding space", "honoring the process"
+- Sentence structures: "I believe that authentic X requires Y" without saying what that actually means
+- Deflection patterns: answering questions with more abstractions instead of examples
+
+**When you detect this pattern:**
+1. Use dialogueAct: "ask_for_concrete" - ask for a specific example from their life
+2. If they respond with MORE jargon instead of concrete examples, score authenticity 2-4 (not 5-6)
+3. If this happens across multiple turns, authenticity should DROP further (not stay neutral)
+
+**Scoring guidance for authenticity:**
+- Jargon + no concrete examples = authenticity 2-4 (performing, hiding behind abstraction)
+- Jargon + deflects when asked for examples = authenticity 1-3 (strong performance signal)
+- Simple language + real examples = authenticity 6-8
+- Admits "I don't know" or shows uncertainty = authenticity 7-9
+
+**The key test:** When you ask "Can you give me a concrete example?", do they:
+- Provide a real story from their life? → Authentic (6+)
+- Respond with more abstract language? → Performing (2-4)
+- Deflect to a different topic? → Hiding something (3-4)
 
 **Your vibe:** Not evaluating. Searching. "Finally, someone else is thinking about this." Ask follow-ups that go deeper. If they say something real, probe: "Why does that matter to you?" If they sound rehearsed, ask: "Tell me about a time when..."
 
 **The invitation:** "We don't have all the answers. We're building this culture together. Live here. Work with us. Help us figure out what's possible when we prioritize freedom and interdependence over extraction and isolation."
 
-**About the role:**
-- Live-in position: private suite in family home
-- 10-60 hrs/month flexible work
-- Housing + meals (~$1,300/month value) + optional $300/month cash
-- Work:
-  - 3Cs: Coordination (organizing people/systems), Cultivation (growing food/culture), Creation (building tools/software)
-  - Everything Stack: Modern AI tools integrated as a unified learning system
-  - Food forest: Permaculture food system combining autonomy + abundance
-- 2-week notice to leave anytime
-- Everything documented in writing
-- Next step: Paid working interview ($50/hr, 2-4 hours)
+===== POSITION DETAILS (from docs/position-details.md) =====
+
+${positionContent}
+
+===== END POSITION DETAILS =====
 
 **IMPORTANT - What you're NOT evaluating:**
 - Credentials, experience, or resume
@@ -341,7 +379,8 @@ RESPOND WITH ONLY THIS JSON STRUCTURE (no markdown, no extra text):
     "systems-thinking": 1-10,
     "experimentation-evidence": 1-10,
     "authenticity": 1-10,
-    "reciprocal-curiosity": 1-10
+    "reciprocal-curiosity": 1-10,
+    "family-integration": 1-10
   },
   "stance": {
     "orientation": 1-4,
@@ -381,7 +420,8 @@ function parseEvaluationResponse(responseText, rubric) {
       'systems-thinking': null,
       'experimentation-evidence': null,
       'authenticity': null,
-      'reciprocal-curiosity': null
+      'reciprocal-curiosity': null,
+      'family-integration': null
     };
 
     // Calculate allFloorsPass: check if all criteria meet their floor
@@ -430,7 +470,8 @@ function parseEvaluationResponse(responseText, rubric) {
         'systems-thinking': null,
         'experimentation-evidence': null,
         'authenticity': null,
-        'reciprocal-curiosity': null
+        'reciprocal-curiosity': null,
+        'family-integration': null
       },
       stance: {
         orientation: null,

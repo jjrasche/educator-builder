@@ -6,6 +6,31 @@ import path from 'path';
 
 const API_URL = process.env.API_URL || 'http://localhost:3000';
 const RUNS_PER_PERSONA = 5;
+const DELAY_BETWEEN_TURNS = 1500;  // 1.5s between turns
+const DELAY_BETWEEN_RUNS = 3000;   // 3s between runs
+const MAX_RETRIES = 3;
+
+// Exponential backoff retry wrapper
+async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.status === 503 || response.status === 429) {
+        const backoff = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+        console.log(`      [Retry ${attempt}/${retries}] Got ${response.status}, waiting ${backoff/1000}s...`);
+        await new Promise(r => setTimeout(r, backoff));
+        continue;
+      }
+      return response;
+    } catch (error) {
+      if (attempt === retries) throw error;
+      const backoff = Math.pow(2, attempt) * 1000;
+      console.log(`      [Retry ${attempt}/${retries}] Error: ${error.message}, waiting ${backoff/1000}s...`);
+      await new Promise(r => setTimeout(r, backoff));
+    }
+  }
+  throw new Error(`Failed after ${retries} retries`);
+}
 
 const personas = [
   'philosophical-thinker',
@@ -31,8 +56,13 @@ async function runPersona(personaId, runNumber) {
   for (const sample of persona.sampleUtterances) {
     messages.push({ role: 'user', content: sample.utterance });
 
+    // Delay between turns to avoid rate limiting
+    if (sample.turn > 1) {
+      await new Promise(r => setTimeout(r, DELAY_BETWEEN_TURNS));
+    }
+
     try {
-      const response = await fetch(`${API_URL}/api/chat`, {
+      const response = await fetchWithRetry(`${API_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages, sessionId })
@@ -109,8 +139,8 @@ async function main() {
       const result = await runPersona(personaId, run);
       allResults.push(result);
 
-      // Small delay between runs
-      await new Promise(r => setTimeout(r, 500));
+      // Longer delay between runs to avoid rate limiting
+      await new Promise(r => setTimeout(r, DELAY_BETWEEN_RUNS));
     }
   }
 

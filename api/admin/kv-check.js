@@ -10,12 +10,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { sessionId, test, init, recent } = req.query;
+  const { sessionId, test, init, recent, force } = req.query;
 
   try {
-    // Initialize schema
+    // Initialize schema (force=true drops and recreates)
     if (init === 'true') {
-      const result = await initSchema();
+      const result = await initSchema(force === 'true');
       return res.status(200).json({
         status: 'INITIALIZED',
         ...result

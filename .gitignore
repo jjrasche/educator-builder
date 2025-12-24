@@ -9,3 +9,8 @@ logs/
 playwright/transcripts/
 playwright/screenshots/
 test-results/
+
+# Ephemeral test outputs (persona runs, results snapshots)
+testing/persona-runs-*.json
+testing/test-results-*.json
+test/results.json

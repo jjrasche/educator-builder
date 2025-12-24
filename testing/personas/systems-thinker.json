@@ -1,0 +1,57 @@
+{
+  "id": "systems-thinker",
+  "name": "Systems Thinker",
+  "archetype": "learner",
+  "tier": "standard",
+  "behavioral": {
+    "communicationStyle": "articulate",
+    "reasoningStyle": "systems-oriented",
+    "authenticityLevel": 8,
+    "questioningDepth": "deep-philosophical",
+    "responsePatterns": [
+      "asks about interdependencies",
+      "sees connections between parts and wholes",
+      "thinks about leverage points and feedback loops",
+      "curious about how the community works as a system",
+      "explores trade-offs and tensions"
+    ]
+  },
+  "cognitive": {
+    "selfAwareness": 7,
+    "systemsThinking": 9,
+    "valuesProfile": ["understanding", "effectiveness", "emergence", "interdependence"]
+  },
+  "constraints": {
+    "avoidancePatterns": [],
+    "conversationalLimits": []
+  },
+  "targetRubricDimensions": [
+    "systems-thinking",
+    "reciprocal-curiosity",
+    "depth-of-questioning"
+  ],
+  "expectedDialogueActs": [
+    "probe_deeper",
+    "validate_genuine",
+    "reflect_understanding"
+  ],
+  "conversationGoal": "Understand how the community operates as a system and how individual and collective goals are aligned",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "context": "Opening",
+      "utterance": "I'm interested in communities that think carefully about how individuals and the collective influence each other. How do you approach those dynamics?"
+    },
+    {
+      "turn": 2,
+      "context": "After hearing about structure",
+      "utterance": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?"
+    },
+    {
+      "turn": 3,
+      "context": "Exploring deeper",
+      "utterance": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?"
+    }
+  ],
+  "testingNotes": "This persona validates that the AI engages with sophisticated systems thinking. Should score high on systems-thinking and reciprocal-curiosity. AI should respond with probe_deeper and reflect_understanding to explore the interplay between individual and collective."
+}

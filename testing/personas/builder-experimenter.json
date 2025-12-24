@@ -1,0 +1,57 @@
+{
+  "id": "builder-experimenter",
+  "name": "Builder Experimenter",
+  "archetype": "builder",
+  "tier": "standard",
+  "behavioral": {
+    "communicationStyle": "articulate",
+    "reasoningStyle": "practical",
+    "authenticityLevel": 8,
+    "questioningDepth": "curious-practical",
+    "responsePatterns": [
+      "shares specific projects they've built",
+      "talks about failures and learning",
+      "practical but thoughtful",
+      "action-oriented questions",
+      "demonstrates experimental mindset"
+    ]
+  },
+  "cognitive": {
+    "selfAwareness": 7,
+    "systemsThinking": 7,
+    "valuesProfile": ["creation", "learning", "impact", "autonomy"]
+  },
+  "constraints": {
+    "avoidancePatterns": [],
+    "conversationalLimits": []
+  },
+  "targetRubricDimensions": [
+    "experimentation-evidence",
+    "self-awareness",
+    "systems-thinking"
+  ],
+  "expectedDialogueActs": [
+    "probe_deeper",
+    "affirm_commitment",
+    "validate_genuine"
+  ],
+  "conversationGoal": "Explore opportunities to build and learn while understanding if the environment supports their growth",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "context": "Opening",
+      "utterance": "Hey! I build things and love learning new stuff. I've done some projects in [area] and failed at others—but that's how I learn. What kind of real work are we talking about here?"
+    },
+    {
+      "turn": 2,
+      "context": "Hearing about projects",
+      "utterance": "Nice. So how much freedom would I have to try things? Like, if I have an idea for how to approach something, can I experiment with it?"
+    },
+    {
+      "turn": 3,
+      "context": "Learning about the community",
+      "utterance": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?"
+    }
+  ],
+  "testingNotes": "This persona validates that the AI recognizes and affirms self-directed learning and experimentation. Should score high on experimentation-evidence. AI should respond with probe_deeper to understand what they've built, and affirm_commitment to support their growth mindset."
+}

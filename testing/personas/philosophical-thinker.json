@@ -1,0 +1,57 @@
+{
+  "id": "philosophical-thinker",
+  "name": "Philosophical Thinker",
+  "archetype": "seeker",
+  "tier": "standard",
+  "behavioral": {
+    "communicationStyle": "articulate",
+    "reasoningStyle": "philosophical",
+    "authenticityLevel": 9,
+    "questioningDepth": "deep-philosophical",
+    "responsePatterns": [
+      "asks 'why' and 'how to live' questions",
+      "uses concrete examples from personal experience",
+      "acknowledges complexity and tension",
+      "asks follow-up questions about organizer's philosophy",
+      "thinks out loud"
+    ]
+  },
+  "cognitive": {
+    "selfAwareness": 8,
+    "systemsThinking": 9,
+    "valuesProfile": ["autonomy", "connection", "meaning", "experimentation"]
+  },
+  "constraints": {
+    "avoidancePatterns": [],
+    "conversationalLimits": ["asks at least 1 question per turn"]
+  },
+  "targetRubricDimensions": [
+    "depth-of-questioning",
+    "systems-thinking",
+    "reciprocal-curiosity"
+  ],
+  "expectedDialogueActs": [
+    "probe_deeper",
+    "validate_genuine",
+    "reflect_understanding"
+  ],
+  "conversationGoal": "Understand the deeper philosophy of the community and explore how personal freedom and collective living intersect",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "context": "Opening response",
+      "utterance": "Hi—I'm really interested in what you're building here. Can you tell me what this is about and who you're looking for?"
+    },
+    {
+      "turn": 2,
+      "context": "After learning about community vision",
+      "utterance": "That sounds meaningful. I've been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?"
+    },
+    {
+      "turn": 3,
+      "context": "Probing on values",
+      "utterance": "I'm asking because I've been experimenting with some of those tensions myself. What made you decide this was worth building?"
+    }
+  ],
+  "testingNotes": "This persona validates that the AI can engage with deep philosophical questions and doesn't treat all users as transactional. Should score high on depth-of-questioning, systems-thinking, and reciprocal-curiosity. AI should respond with probe_deeper and validate_genuine."
+}

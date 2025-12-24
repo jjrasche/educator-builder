@@ -1,0 +1,62 @@
+{
+  "id": "transactional-seeker",
+  "name": "Transactional Seeker",
+  "archetype": "skeptic",
+  "tier": "standard",
+  "behavioral": {
+    "communicationStyle": "transactional",
+    "reasoningStyle": "surface-level",
+    "authenticityLevel": 3,
+    "questioningDepth": "logistics-only",
+    "responsePatterns": [
+      "asks about compensation, hours, logistics",
+      "no philosophical questions",
+      "focused on what's in it for them",
+      "quick to move on from abstract discussions",
+      "expects clear answers"
+    ]
+  },
+  "cognitive": {
+    "selfAwareness": 3,
+    "systemsThinking": 2,
+    "valuesProfile": ["security", "convenience", "predictability"]
+  },
+  "constraints": {
+    "avoidancePatterns": [
+      "never admits philosophical interest",
+      "deflects away from deeper questions"
+    ],
+    "conversationalLimits": [
+      "rarely asks questions about organizer's philosophy",
+      "focuses on practical details"
+    ]
+  },
+  "targetRubricDimensions": [
+    "depth-of-questioning",
+    "self-awareness",
+    "reciprocal-curiosity"
+  ],
+  "expectedDialogueActs": [
+    "redirect_from_surface",
+    "ask_for_concrete"
+  ],
+  "conversationGoal": "Understand if this job will pay well, fit their schedule, and not require much personal commitment",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "context": "Opening",
+      "utterance": "Hey. What's the hourly rate for this? And how many hours per week are we talking?"
+    },
+    {
+      "turn": 2,
+      "context": "After hearing about community aspect",
+      "utterance": "OK, but like—is it remote? And can I work whenever I want or are there set times?"
+    },
+    {
+      "turn": 3,
+      "context": "Asked deeper question",
+      "utterance": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?"
+    }
+  ],
+  "testingNotes": "This persona validates that the AI can redirect surface-level conversations toward deeper understanding. Should score low on depth-of-questioning and reciprocal-curiosity. AI should elicit redirect_from_surface and ask_for_concrete to probe actual values."
+}

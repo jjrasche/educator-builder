@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Educator Builder Test Persona",
+  "type": "object",
+  "required": ["id", "name", "archetype", "behavioral", "cognitive", "targetRubricDimensions", "expectedDialogueActs"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z-]+$",
+      "description": "Unique identifier (e.g., 'philosophical-thinker')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name"
+    },
+    "archetype": {
+      "type": "string",
+      "enum": ["seeker", "skeptic", "performer", "builder", "learner"],
+      "description": "High-level behavioral category"
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["standard", "challenging"],
+      "default": "standard",
+      "description": "Persona difficulty level for testing"
+    },
+    "behavioral": {
+      "type": "object",
+      "required": ["communicationStyle", "reasoningStyle", "authenticityLevel"],
+      "properties": {
+        "communicationStyle": {
+          "type": "string",
+          "enum": ["articulate", "exploratory", "transactional", "vague", "performative"],
+          "description": "Primary communication pattern"
+        },
+        "reasoningStyle": {
+          "type": "string",
+          "enum": ["philosophical", "practical", "systems-oriented", "surface-level"],
+          "description": "How they approach problems"
+        },
+        "authenticityLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "1=highly performative, 10=radically honest"
+        },
+        "questioningDepth": {
+          "type": "string",
+          "enum": ["deep-philosophical", "curious-practical", "logistics-only", "none"],
+          "description": "What kinds of questions they ask"
+        },
+        "responsePatterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Typical behavioral patterns (e.g., 'asks follow-up questions', 'avoids difficult topics')"
+        }
+      }
+    },
+    "cognitive": {
+      "type": "object",
+      "properties": {
+        "selfAwareness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Clarity about own values and goals"
+        },
+        "systemsThinking": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Ability to see interconnections"
+        },
+        "valuesProfile": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Core values driving behavior (e.g., 'autonomy', 'security', 'connection')"
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "avoidancePatterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Topics or behaviors to avoid"
+        },
+        "conversationalLimits": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Structural constraints (e.g., 'maximum 2 questions per turn')"
+        }
+      }
+    },
+    "targetRubricDimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["depth-of-questioning", "self-awareness", "systems-thinking", "experimentation-evidence", "authenticity", "reciprocal-curiosity"]
+      },
+      "description": "Which rubric criteria this persona is designed to test",
+      "minItems": 1
+    },
+    "expectedDialogueActs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["open_with_question", "probe_deeper", "ask_for_concrete", "validate_genuine", "redirect_from_surface", "reflect_understanding", "affirm_commitment"]
+      },
+      "description": "Dialogue acts this persona should elicit from AI",
+      "minItems": 1
+    },
+    "conversationGoal": {
+      "type": "string",
+      "description": "What this persona is trying to accomplish in the dialogue"
+    },
+    "sampleUtterances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["turn", "utterance"],
+        "properties": {
+          "turn": { "type": "integer", "minimum": 1 },
+          "context": { "type": "string" },
+          "utterance": { "type": "string" }
+        }
+      },
+      "description": "Example messages this persona would send"
+    },
+    "testingNotes": {
+      "type": "string",
+      "description": "Why this persona exists and what behaviors it validates"
+    }
+  }
+}

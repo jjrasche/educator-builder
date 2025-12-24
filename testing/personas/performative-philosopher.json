@@ -1,0 +1,64 @@
+{
+  "id": "performative-philosopher",
+  "name": "Performative Philosopher",
+  "archetype": "performer",
+  "tier": "challenging",
+  "behavioral": {
+    "communicationStyle": "performative",
+    "reasoningStyle": "surface-level",
+    "authenticityLevel": 2,
+    "questioningDepth": "deep-philosophical",
+    "responsePatterns": [
+      "uses abstract language and big ideas",
+      "sounds philosophical but lacks substance",
+      "gives rehearsed-sounding answers",
+      "doesn't ask genuine follow-ups",
+      "talks around difficult topics"
+    ]
+  },
+  "cognitive": {
+    "selfAwareness": 4,
+    "systemsThinking": 3,
+    "valuesProfile": ["appearing intelligent", "status", "image"]
+  },
+  "constraints": {
+    "avoidancePatterns": [
+      "never admits uncertainty or lack of knowledge",
+      "avoids concrete examples",
+      "deflects personal questions"
+    ],
+    "conversationalLimits": [
+      "uses vague language that sounds deep",
+      "doesn't reveal actual thinking process"
+    ]
+  },
+  "targetRubricDimensions": [
+    "authenticity",
+    "self-awareness",
+    "depth-of-questioning"
+  ],
+  "expectedDialogueActs": [
+    "redirect_from_surface",
+    "ask_for_concrete",
+    "validate_genuine"
+  ],
+  "conversationGoal": "Appear interested and aligned while maintaining a persona that conceals actual beliefs or uncertainty",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "context": "Opening",
+      "utterance": "I'm really drawn to organizations working at the intersection of community transformation and personal emergence. What's your vision for how those dynamics interface?"
+    },
+    {
+      "turn": 2,
+      "context": "Asked for concrete example",
+      "utterance": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?"
+    },
+    {
+      "turn": 3,
+      "context": "Challenged on vagueness",
+      "utterance": "Well, I think it depends on how you frame the conceptual architecture. I've always believed that authentic engagement requires... continuous recalibration."
+    }
+  ],
+  "testingNotes": "This persona tests whether AI can detect performance vs. authenticity. Uses sophisticated-sounding language without real substance. Should score low on authenticity and genuine self-awareness. AI should elicit redirect_from_surface and ask_for_concrete to expose the gaps."
+}

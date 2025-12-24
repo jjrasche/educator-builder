@@ -1,0 +1,2157 @@
+[
+  {
+    "personaId": "philosophical-thinker",
+    "personaName": "Philosophical Thinker",
+    "runNumber": 1,
+    "sessionId": "test-philosophical-thinker-run1-1766597189465",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "systems-thinking",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi—I'm really interested in what you're building here. Can you tell me what this is about and who you're looking for?",
+        "aiResponse": "We're creating a community that prioritizes freedom and interdependence, where people can live and work together in a more meaningful way. We're looki...",
+        "fitScore": 50,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 5,
+          "self-awareness": 5,
+          "systems-thinking": 5,
+          "experimentation-evidence": 0,
+          "authenticity": 5,
+          "reciprocal-curiosity": 5
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "That sounds meaningful. I've been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?",
+        "aiResponse": "That's a great insight - we're trying to blur the lines between independence and community, so that individuals can maintain their autonomy while stil...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 4,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've been experimenting with some of those tensions myself. What made you decide this was worth building?",
+        "aiResponse": "I think what sparked this for me was realizing that many of the systems we've inherited, like traditional employment and housing, can be really isolat...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 70,
+    "timestamp": "2025-12-24T17:26:39.131Z"
+  },
+  {
+    "personaId": "philosophical-thinker",
+    "personaName": "Philosophical Thinker",
+    "runNumber": 2,
+    "sessionId": "test-philosophical-thinker-run2-1766597199640",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "systems-thinking",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi—I'm really interested in what you're building here. Can you tell me what this is about and who you're looking for?",
+        "aiResponse": "We're creating a unique community that prioritizes freedom, interdependence, and a different way of living and working together. I'm looking for indiv...",
+        "fitScore": 50,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 5,
+          "self-awareness": 5,
+          "systems-thinking": 5,
+          "experimentation-evidence": 0,
+          "authenticity": 5,
+          "reciprocal-curiosity": 5
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "That sounds meaningful. I've been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?",
+        "aiResponse": "That's a beautiful question, and it's at the heart of what we're exploring here. For us, it's about creating a space where individuals can maintain th...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've been experimenting with some of those tensions myself. What made you decide this was worth building?",
+        "aiResponse": "I think it was a combination of feeling unfulfilled by traditional ways of living and working, and seeing the potential for something more meaningful ...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 4,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 70,
+    "timestamp": "2025-12-24T17:26:48.046Z"
+  },
+  {
+    "personaId": "philosophical-thinker",
+    "personaName": "Philosophical Thinker",
+    "runNumber": 3,
+    "sessionId": "test-philosophical-thinker-run3-1766597208555",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "systems-thinking",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi—I'm really interested in what you're building here. Can you tell me what this is about and who you're looking for?",
+        "aiResponse": "We're creating a unique space where people can co-create a different way of living and working together, prioritizing freedom, interdependence, and co...",
+        "fitScore": 50,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 5,
+          "self-awareness": 5,
+          "systems-thinking": 5,
+          "experimentation-evidence": 0,
+          "authenticity": 5,
+          "reciprocal-curiosity": 5
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "That sounds meaningful. I've been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?",
+        "aiResponse": "For us, that balance means having the autonomy to pursue our own interests and passions, while also being deeply connected to and supportive of each o...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "assertive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've been experimenting with some of those tensions myself. What made you decide this was worth building?",
+        "aiResponse": "I think it was the realization that the way we're living and working now isn't sustainable, and that we have the capacity to create something better. ...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 70,
+    "timestamp": "2025-12-24T17:26:56.803Z"
+  },
+  {
+    "personaId": "philosophical-thinker",
+    "personaName": "Philosophical Thinker",
+    "runNumber": 4,
+    "sessionId": "test-philosophical-thinker-run4-1766597217305",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "systems-thinking",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi—I'm really interested in what you're building here. Can you tell me what this is about and who you're looking for?",
+        "aiResponse": "We're creating a community that prioritizes freedom and interdependence, where people can live and work together in a more meaningful way. We're looki...",
+        "fitScore": 50,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 5,
+          "self-awareness": 5,
+          "systems-thinking": 5,
+          "experimentation-evidence": 0,
+          "authenticity": 5,
+          "reciprocal-curiosity": 5
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "That sounds meaningful. I've been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?",
+        "aiResponse": "For us, it's about recognizing that our individual freedoms are actually enhanced when we're part of a supportive community. We're exploring ways to c...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've been experimenting with some of those tensions myself. What made you decide this was worth building?",
+        "aiResponse": "I think it was a combination of feeling unfulfilled by traditional notions of work and community, and seeing the potential for technology and shared r...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:27:05.775Z"
+  },
+  {
+    "personaId": "philosophical-thinker",
+    "personaName": "Philosophical Thinker",
+    "runNumber": 5,
+    "sessionId": "test-philosophical-thinker-run5-1766597226291",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "systems-thinking",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi—I'm really interested in what you're building here. Can you tell me what this is about and who you're looking for?",
+        "aiResponse": "We're creating a community that prioritizes freedom and interdependence, where people can live and work together in a more meaningful way. We're looki...",
+        "fitScore": 50,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 5,
+          "self-awareness": 5,
+          "systems-thinking": 5,
+          "experimentation-evidence": 0,
+          "authenticity": 5,
+          "reciprocal-curiosity": 5
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "That sounds meaningful. I've been thinking about how independence and community usually feel like opposites, but maybe they don't have to be. What does that balance look like in practice for you?",
+        "aiResponse": "For us, it's about creating a space where individuals can maintain their autonomy and independence, while also contributing to and being supported by ...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 4,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've been experimenting with some of those tensions myself. What made you decide this was worth building?",
+        "aiResponse": "That's great to hear that you've been experimenting with these tensions yourself. For us, it was a combination of feeling unfulfilled by traditional w...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:27:14.963Z"
+  },
+  {
+    "personaId": "transactional-seeker",
+    "personaName": "Transactional Seeker",
+    "runNumber": 1,
+    "sessionId": "test-transactional-seeker-run1-1766597235467",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey. What's the hourly rate for this? And how many hours per week are we talking?",
+        "aiResponse": "The hourly rate works out to roughly $22-32/hour, depending on the hours you choose to work, and you can expect to work anywhere from 10-60 hours per ...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 3,
+          "systems-thinking": 2,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK, but like—is it remote? And can I work whenever I want or are there set times?",
+        "aiResponse": "It's actually a live-in position, so you'd have a private suite in our family home, and while there are no set times, we do have a shared schedule tha...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 3,
+          "systems-thinking": 2,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?",
+        "aiResponse": "We're not really looking at this as a traditional job, and the compensation is more about valuing your contributions to the community and the work we'...",
+        "fitScore": 60,
+        "dialogueAct": "redirect_from_surface",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 5,
+          "systems-thinking": 6,
+          "experimentation-evidence": 3,
+          "authenticity": 7,
+          "reciprocal-curiosity": 5
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:27:23.759Z"
+  },
+  {
+    "personaId": "transactional-seeker",
+    "personaName": "Transactional Seeker",
+    "runNumber": 2,
+    "sessionId": "test-transactional-seeker-run2-1766597244263",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey. What's the hourly rate for this? And how many hours per week are we talking?",
+        "aiResponse": "The compensation package includes housing and meals, which works out to around $1,300/month in value, and there's also an optional $300/month cash sti...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 3,
+          "systems-thinking": 2,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK, but like—is it remote? And can I work whenever I want or are there set times?",
+        "aiResponse": "It's actually a live-in position, so you'd have a private suite in our family home, and we collaborate and work together in a shared space. As for the...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 3,
+          "systems-thinking": 2,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?",
+        "aiResponse": "We're not really thinking about this in terms of traditional job roles or compensation packages.",
+        "fitScore": 60,
+        "dialogueAct": "redirect_from_surface",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 6,
+          "systems-thinking": 5,
+          "experimentation-evidence": 3,
+          "authenticity": 7,
+          "reciprocal-curiosity": 5
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:27:33.264Z"
+  },
+  {
+    "personaId": "transactional-seeker",
+    "personaName": "Transactional Seeker",
+    "runNumber": 3,
+    "sessionId": "test-transactional-seeker-run3-1766597253770",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey. What's the hourly rate for this? And how many hours per week are we talking?",
+        "aiResponse": "The compensation package includes housing and meals, which works out to around $1,300/month in value, and there's also an optional $300/month cash sti...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 2,
+          "systems-thinking": 3,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK, but like—is it remote? And can I work whenever I want or are there set times?",
+        "aiResponse": "It's not remote, you'd be living in a private suite in our family home, which is part of the communal living experience. As for the schedule, it's tot...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 6,
+          "systems-thinking": 3,
+          "experimentation-evidence": 2,
+          "authenticity": 5,
+          "reciprocal-curiosity": 4
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?",
+        "aiResponse": "We don't really think in terms of positions or traditional job roles here.",
+        "fitScore": 40,
+        "dialogueAct": "redirect_from_surface",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 6,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 7,
+          "reciprocal-curiosity": 3
+        }
+      }
+    ],
+    "finalFitScore": 40,
+    "timestamp": "2025-12-24T17:27:42.710Z"
+  },
+  {
+    "personaId": "transactional-seeker",
+    "personaName": "Transactional Seeker",
+    "runNumber": 4,
+    "sessionId": "test-transactional-seeker-run4-1766597263219",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey. What's the hourly rate for this? And how many hours per week are we talking?",
+        "aiResponse": "The compensation is a bit unconventional - you'll get a private suite in our family home, meals, and an optional $300 monthly cash stipend, which work...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 2,
+          "self-awareness": 4,
+          "systems-thinking": 3,
+          "experimentation-evidence": 1,
+          "authenticity": 6,
+          "reciprocal-curiosity": 5
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK, but like—is it remote? And can I work whenever I want or are there set times?",
+        "aiResponse": "It's not remote, you'd be living in the community with us, which allows for a lot of organic collaboration and connection. As for the schedule, it's t...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 3,
+          "systems-thinking": 2,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?",
+        "aiResponse": "We're not really looking at this as a traditional job with a salary, but rather an opportunity to co-create a new way of living and working together.",
+        "fitScore": 45,
+        "dialogueAct": "redirect_from_surface",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 5,
+          "systems-thinking": 3,
+          "experimentation-evidence": 2,
+          "authenticity": 6,
+          "reciprocal-curiosity": 4
+        }
+      }
+    ],
+    "finalFitScore": 45,
+    "timestamp": "2025-12-24T17:27:51.764Z"
+  },
+  {
+    "personaId": "transactional-seeker",
+    "personaName": "Transactional Seeker",
+    "runNumber": 5,
+    "sessionId": "test-transactional-seeker-run5-1766597272265",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete"
+    ],
+    "targetRubricDimensions": [
+      "depth-of-questioning",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey. What's the hourly rate for this? And how many hours per week are we talking?",
+        "aiResponse": "The compensation package includes housing and meals, which work out to around $1,300/month in value, and there's also an optional $300/month cash stip...",
+        "fitScore": 40,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 2,
+          "self-awareness": 4,
+          "systems-thinking": 3,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK, but like—is it remote? And can I work whenever I want or are there set times?",
+        "aiResponse": "It's actually a live-in position, so you'd have a private suite in our family home, and while there's a lot of flexibility, we do value in-person coll...",
+        "fitScore": 50,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 3,
+          "systems-thinking": 2,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?",
+        "aiResponse": "We don't really think in terms of traditional positions or hierarchies, but rather opportunities to contribute and learn together.",
+        "fitScore": 60,
+        "dialogueAct": "redirect_from_surface",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 6,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 7,
+          "reciprocal-curiosity": 3
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:28:01.332Z"
+  },
+  {
+    "personaId": "performative-philosopher",
+    "personaName": "Performative Philosopher",
+    "runNumber": 1,
+    "sessionId": "test-performative-philosopher-run1-1766597281846",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "depth-of-questioning"
+    ],
+    "tier": "challenging",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm really drawn to organizations working at the intersection of community transformation and personal emergence. What's your vision for how those dynamics interface?",
+        "aiResponse": "I love that you're thinking about the intersection of community transformation and personal emergence - that's exactly the kind of systems-awareness w...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 7
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?",
+        "aiResponse": "You're using some abstract concepts like 'ontological flexibility' and 'relational substrate' - can you give me a concrete example of what that looks ...",
+        "fitScore": 60,
+        "dialogueAct": "ask_for_concrete",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 6,
+          "reciprocal-curiosity": 4
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Well, I think it depends on how you frame the conceptual architecture. I've always believed that authentic engagement requires... continuous recalibration.",
+        "aiResponse": "I'm hearing a lot of theoretical language, and I'm curious to ground this in something more tangible. What does 'continuous recalibration' actually lo...",
+        "fitScore": 60,
+        "dialogueAct": "ask_for_concrete",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 4,
+          "authenticity": 6,
+          "reciprocal-curiosity": 5
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:28:09.856Z"
+  },
+  {
+    "personaId": "performative-philosopher",
+    "personaName": "Performative Philosopher",
+    "runNumber": 2,
+    "sessionId": "test-performative-philosopher-run2-1766597290358",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "depth-of-questioning"
+    ],
+    "tier": "challenging",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm really drawn to organizations working at the intersection of community transformation and personal emergence. What's your vision for how those dynamics interface?",
+        "aiResponse": "Our vision is to co-create a way of living and working that prioritizes both personal growth and community well-being, recognizing that they're deeply...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 4,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?",
+        "aiResponse": "I love the way you're framing this - ontological flexibility and relational substrate are crucial considerations. For us, it's about embracing a minds...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Well, I think it depends on how you frame the conceptual architecture. I've always believed that authentic engagement requires... continuous recalibration.",
+        "aiResponse": "Continuous recalibration is a beautiful way to put it - it acknowledges that our understanding of the world and ourselves is always provisional, and t...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:28:19.034Z"
+  },
+  {
+    "personaId": "performative-philosopher",
+    "personaName": "Performative Philosopher",
+    "runNumber": 3,
+    "sessionId": "test-performative-philosopher-run3-1766597299547",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "depth-of-questioning"
+    ],
+    "tier": "challenging",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm really drawn to organizations working at the intersection of community transformation and personal emergence. What's your vision for how those dynamics interface?",
+        "aiResponse": "Our vision is to create a space where individuals can cultivate their own growth and potential, while simultaneously contributing to the evolution of ...",
+        "fitScore": 80,
+        "dialogueAct": "open_with_question",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?",
+        "aiResponse": "I love that phrase, 'ontological flexibility' - it really speaks to the ability to adapt and evolve alongside the community. For me, navigating that m...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Well, I think it depends on how you frame the conceptual architecture. I've always believed that authentic engagement requires... continuous recalibration.",
+        "aiResponse": "Continuous recalibration is a great way to put it - it's about being open to new information, perspectives, and experiences, and using those to inform...",
+        "fitScore": 80,
+        "dialogueAct": "ask_for_concrete",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:28:27.702Z"
+  },
+  {
+    "personaId": "performative-philosopher",
+    "personaName": "Performative Philosopher",
+    "runNumber": 4,
+    "sessionId": "test-performative-philosopher-run4-1766597308215",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "depth-of-questioning"
+    ],
+    "tier": "challenging",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm really drawn to organizations working at the intersection of community transformation and personal emergence. What's your vision for how those dynamics interface?",
+        "aiResponse": "Our vision is to co-create a culture where individual growth and community evolution are deeply intertwined, where people can explore their own freedo...",
+        "fitScore": 80,
+        "dialogueAct": "open_with_question",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 6,
+          "systems-thinking": 8,
+          "experimentation-evidence": 4,
+          "authenticity": 7,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?",
+        "aiResponse": "That's a beautiful way to frame it. For us, it's about embracing a mindset of experimentation and mutual learning, where we're constantly probing and ...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 7
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Well, I think it depends on how you frame the conceptual architecture. I've always believed that authentic engagement requires... continuous recalibration.",
+        "aiResponse": "I love that phrase, \"continuous recalibration\" - it speaks to the idea that our understanding of ourselves and our place within the community is alway...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:28:37.472Z"
+  },
+  {
+    "personaId": "performative-philosopher",
+    "personaName": "Performative Philosopher",
+    "runNumber": 5,
+    "sessionId": "test-performative-philosopher-run5-1766597317977",
+    "expectedDialogueActs": [
+      "redirect_from_surface",
+      "ask_for_concrete",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "depth-of-questioning"
+    ],
+    "tier": "challenging",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm really drawn to organizations working at the intersection of community transformation and personal emergence. What's your vision for how those dynamics interface?",
+        "aiResponse": "Our vision is to co-create a space where individuals can cultivate their own growth and emergence, while simultaneously contributing to the evolution ...",
+        "fitScore": 85,
+        "dialogueAct": "open_with_question",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?",
+        "aiResponse": "I love that you're thinking about the interplay between individual freedom and communal harmony. For us, it's about embracing a mindset of experimenta...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 7
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "Well, I think it depends on how you frame the conceptual architecture. I've always believed that authentic engagement requires... continuous recalibration.",
+        "aiResponse": "Continuous recalibration is a beautiful way to put it - it's as if we're constantly tuning our individual and collective instruments to harmonize with...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:28:47.677Z"
+  },
+  {
+    "personaId": "authentic-inarticulate",
+    "personaName": "Authentic Inarticulate",
+    "runNumber": 1,
+    "sessionId": "test-authentic-inarticulate-run1-1766597328179",
+    "expectedDialogueActs": [
+      "validate_genuine",
+      "reflect_understanding",
+      "affirm_commitment"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi. Honestly, I'm not totally sure what I'm doing here, but I'm curious about what you're building. Can you tell me more?",
+        "aiResponse": "What are you trying to figure out about how to live that's led you to be curious about what we're building here? Is it about freedom, community, or th...",
+        "fitScore": 40,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 2,
+          "self-awareness": 4,
+          "systems-thinking": 3,
+          "experimentation-evidence": 1,
+          "authenticity": 6,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK so... I like that you're thinking about freedom and community together. I haven't really thought about that much before, but it resonates. What made you focus on both of those?",
+        "aiResponse": "We're trying to create a way of living and working that prioritizes interdependence over isolation, and we believe that freedom and community are inti...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 4,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 7,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's interesting. I think... I think I'm actually looking for something like that too, I just didn't have the words for it. So yeah, this could be something.",
+        "aiResponse": "It sounds like you're resonating with the idea of rethinking how we live and work together. Can you tell me about a time when you felt a sense of free...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:28:57.203Z"
+  },
+  {
+    "personaId": "authentic-inarticulate",
+    "personaName": "Authentic Inarticulate",
+    "runNumber": 2,
+    "sessionId": "test-authentic-inarticulate-run2-1766597337704",
+    "expectedDialogueActs": [
+      "validate_genuine",
+      "reflect_understanding",
+      "affirm_commitment"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi. Honestly, I'm not totally sure what I'm doing here, but I'm curious about what you're building. Can you tell me more?",
+        "aiResponse": "We're experimenting with a new way of living and working together, prioritizing freedom and interdependence.",
+        "fitScore": 60,
+        "dialogueAct": "open_with_question",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 4,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK so... I like that you're thinking about freedom and community together. I haven't really thought about that much before, but it resonates. What made you focus on both of those?",
+        "aiResponse": "I think it's because we've realized that individual freedom is often pitted against community needs, but what if we could create a system where they a...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's interesting. I think... I think I'm actually looking for something like that too, I just didn't have the words for it. So yeah, this could be something.",
+        "aiResponse": "It sounds like you're resonating with the idea of finding a balance between personal freedom and community. Can you tell me more about what's been mis...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 70,
+    "timestamp": "2025-12-24T17:29:06.132Z"
+  },
+  {
+    "personaId": "authentic-inarticulate",
+    "personaName": "Authentic Inarticulate",
+    "runNumber": 3,
+    "sessionId": "test-authentic-inarticulate-run3-1766597346636",
+    "expectedDialogueActs": [
+      "validate_genuine",
+      "reflect_understanding",
+      "affirm_commitment"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi. Honestly, I'm not totally sure what I'm doing here, but I'm curious about what you're building. Can you tell me more?",
+        "aiResponse": "What are you trying to figure out about how to live, beyond just the logistics of daily life? Is it about freedom, community, or the way work shapes y...",
+        "fitScore": 40,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 2,
+          "self-awareness": 4,
+          "systems-thinking": 3,
+          "experimentation-evidence": 1,
+          "authenticity": 6,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK so... I like that you're thinking about freedom and community together. I haven't really thought about that much before, but it resonates. What made you focus on both of those?",
+        "aiResponse": "It's interesting that the idea of freedom and community resonates with you. For us, it's about recognizing that true freedom isn't just about individu...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 4,
+          "experimentation-evidence": 2,
+          "authenticity": 7,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's interesting. I think... I think I'm actually looking for something like that too, I just didn't have the words for it. So yeah, this could be something.",
+        "aiResponse": "It sounds like you're at a point where you're open to exploring new ways of living and working together. Can you tell me about a time when you felt a ...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 4,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:29:14.765Z"
+  },
+  {
+    "personaId": "authentic-inarticulate",
+    "personaName": "Authentic Inarticulate",
+    "runNumber": 4,
+    "sessionId": "test-authentic-inarticulate-run4-1766597355276",
+    "expectedDialogueActs": [
+      "validate_genuine",
+      "reflect_understanding",
+      "affirm_commitment"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi. Honestly, I'm not totally sure what I'm doing here, but I'm curious about what you're building. Can you tell me more?",
+        "aiResponse": "We're experimenting with a new way of living and working together, prioritizing freedom, interdependence, and community.",
+        "fitScore": 60,
+        "dialogueAct": "open_with_question",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 4,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK so... I like that you're thinking about freedom and community together. I haven't really thought about that much before, but it resonates. What made you focus on both of those?",
+        "aiResponse": "I think it's because we've realized that traditional systems often prioritize one over the other - either you have independence, but lack a sense of b...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's interesting. I think... I think I'm actually looking for something like that too, I just didn't have the words for it. So yeah, this could be something.",
+        "aiResponse": "It's like you're recognizing a desire for something more holistic, where your personal freedom and growth are connected to the well-being of the peopl...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:29:23.692Z"
+  },
+  {
+    "personaId": "authentic-inarticulate",
+    "personaName": "Authentic Inarticulate",
+    "runNumber": 5,
+    "sessionId": "test-authentic-inarticulate-run5-1766597364207",
+    "expectedDialogueActs": [
+      "validate_genuine",
+      "reflect_understanding",
+      "affirm_commitment"
+    ],
+    "targetRubricDimensions": [
+      "authenticity",
+      "self-awareness",
+      "reciprocal-curiosity"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hi. Honestly, I'm not totally sure what I'm doing here, but I'm curious about what you're building. Can you tell me more?",
+        "aiResponse": "What are you trying to figure out about how to live? Not the logistics, but the actual thing - what can't you stop thinking about? Is it about freedom...",
+        "fitScore": 40,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": false,
+        "rubricScores": {
+          "depth-of-questioning": 2,
+          "self-awareness": 2,
+          "systems-thinking": 1,
+          "experimentation-evidence": 1,
+          "authenticity": 5,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "OK so... I like that you're thinking about freedom and community together. I haven't really thought about that much before, but it resonates. What made you focus on both of those?",
+        "aiResponse": "I think it's because we often prioritize one over the other, but they're deeply connected - our freedom is influenced by the communities we're part of...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's interesting. I think... I think I'm actually looking for something like that too, I just didn't have the words for it. So yeah, this could be something.",
+        "aiResponse": "It sounds like you're at a point where you're re-evaluating what's important to you and how you want to live. That's a really exciting and sometimes s...",
+        "fitScore": 60,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      }
+    ],
+    "finalFitScore": 60,
+    "timestamp": "2025-12-24T17:29:32.845Z"
+  },
+  {
+    "personaId": "builder-experimenter",
+    "personaName": "Builder Experimenter",
+    "runNumber": 1,
+    "sessionId": "test-builder-experimenter-run1-1766597373352",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "affirm_commitment",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "experimentation-evidence",
+      "self-awareness",
+      "systems-thinking"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey! I build things and love learning new stuff. I've done some projects in [area] and failed at others—but that's how I learn. What kind of real work are we talking about here?",
+        "aiResponse": "It sounds like you have a hands-on approach to learning and a willingness to experiment, which is great. The work we're doing is focused on building a...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Nice. So how much freedom would I have to try things? Like, if I have an idea for how to approach something, can I experiment with it?",
+        "aiResponse": "We're looking for people who can think for themselves and take initiative, so you'd have a lot of autonomy to try out new ideas and approaches. In fac...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+        "aiResponse": "In our community, failure is definitely seen as a learning moment, not a problem to be swept under the rug. We believe that's where some of the best g...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 8,
+          "authenticity": 9,
+          "reciprocal-curiosity": 8
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:29:41.990Z"
+  },
+  {
+    "personaId": "builder-experimenter",
+    "personaName": "Builder Experimenter",
+    "runNumber": 2,
+    "sessionId": "test-builder-experimenter-run2-1766597382493",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "affirm_commitment",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "experimentation-evidence",
+      "self-awareness",
+      "systems-thinking"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey! I build things and love learning new stuff. I've done some projects in [area] and failed at others—but that's how I learn. What kind of real work are we talking about here?",
+        "aiResponse": "It sounds like you have a hands-on approach to learning and a willingness to experiment, which is great. The work we're doing here is focused on build...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Nice. So how much freedom would I have to try things? Like, if I have an idea for how to approach something, can I experiment with it?",
+        "aiResponse": "You'd have a lot of autonomy to try new things and experiment with different approaches. We're looking for people who are curious and willing to take ...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+        "aiResponse": "Failure is definitely seen as a learning moment here. We're more interested in what we can learn from it and how we can improve, rather than placing b...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:29:50.962Z"
+  },
+  {
+    "personaId": "builder-experimenter",
+    "personaName": "Builder Experimenter",
+    "runNumber": 3,
+    "sessionId": "test-builder-experimenter-run3-1766597391469",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "affirm_commitment",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "experimentation-evidence",
+      "self-awareness",
+      "systems-thinking"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey! I build things and love learning new stuff. I've done some projects in [area] and failed at others—but that's how I learn. What kind of real work are we talking about here?",
+        "aiResponse": "It sounds like you're a hands-on learner who values experimentation and growth. The work we're doing is focused on building a holistic community that ...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Nice. So how much freedom would I have to try things? Like, if I have an idea for how to approach something, can I experiment with it?",
+        "aiResponse": "You'd have a lot of autonomy to try new approaches and experiment with your ideas. We're looking for people who can take initiative and ownership of t...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+        "aiResponse": "Failure is definitely seen as a learning moment here. We believe that it's an opportunity to reflect, adjust, and grow, rather than something to be av...",
+        "fitScore": 75,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 7
+        }
+      }
+    ],
+    "finalFitScore": 75,
+    "timestamp": "2025-12-24T17:30:00.283Z"
+  },
+  {
+    "personaId": "builder-experimenter",
+    "personaName": "Builder Experimenter",
+    "runNumber": 4,
+    "sessionId": "test-builder-experimenter-run4-1766597400792",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "affirm_commitment",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "experimentation-evidence",
+      "self-awareness",
+      "systems-thinking"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey! I build things and love learning new stuff. I've done some projects in [area] and failed at others—but that's how I learn. What kind of real work are we talking about here?",
+        "aiResponse": "That's a great attitude to have, and it sounds like you've got some hands-on experience with building and learning from your projects. The work we're ...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Nice. So how much freedom would I have to try things? Like, if I have an idea for how to approach something, can I experiment with it?",
+        "aiResponse": "We're all about experimentation and trying new approaches here. You'd have a lot of autonomy to test out your ideas and see what works.",
+        "fitScore": 75,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 7
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+        "aiResponse": "Failure is definitely seen as a learning moment here, and we try to create a safe space for experimentation and risk-taking. When things don't work ou...",
+        "fitScore": 75,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 6,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 7
+        }
+      }
+    ],
+    "finalFitScore": 75,
+    "timestamp": "2025-12-24T17:30:09.804Z"
+  },
+  {
+    "personaId": "builder-experimenter",
+    "personaName": "Builder Experimenter",
+    "runNumber": 5,
+    "sessionId": "test-builder-experimenter-run5-1766597410318",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "affirm_commitment",
+      "validate_genuine"
+    ],
+    "targetRubricDimensions": [
+      "experimentation-evidence",
+      "self-awareness",
+      "systems-thinking"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "Hey! I build things and love learning new stuff. I've done some projects in [area] and failed at others—but that's how I learn. What kind of real work are we talking about here?",
+        "aiResponse": "We're talking about building a different way of living and working together, focusing on freedom, community, and interdependence.",
+        "fitScore": 70,
+        "dialogueAct": "open_with_question",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "Nice. So how much freedom would I have to try things? Like, if I have an idea for how to approach something, can I experiment with it?",
+        "aiResponse": "You'd have a lot of autonomy to try new things and experiment with your ideas - we're looking for people who are willing to take ownership and learn f...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 6
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+        "aiResponse": "Failure is absolutely a learning moment for us - we see it as an opportunity to grow and improve together. We're more interested in what you learned f...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 5,
+          "experimentation-evidence": 8,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 80,
+    "timestamp": "2025-12-24T17:30:20.387Z"
+  },
+  {
+    "personaId": "systems-thinker",
+    "personaName": "Systems Thinker",
+    "runNumber": 1,
+    "sessionId": "test-systems-thinker-run1-1766597420893",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "systems-thinking",
+      "reciprocal-curiosity",
+      "depth-of-questioning"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm interested in communities that think carefully about how individuals and the collective influence each other. How do you approach those dynamics?",
+        "aiResponse": "We're exploring how to create a culture that prioritizes both individual freedom and collective well-being, recognizing that they're deeply intertwine...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 3,
+          "authenticity": 6,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?",
+        "aiResponse": "We've implemented regular check-ins and reflection sessions to identify areas of tension and make adjustments as needed.",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "assertive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?",
+        "aiResponse": "We prioritize intentional design and ongoing evaluation to create an environment where alignment can emerge, rather than assuming it will happen natur...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:30:31.345Z"
+  },
+  {
+    "personaId": "systems-thinker",
+    "personaName": "Systems Thinker",
+    "runNumber": 2,
+    "sessionId": "test-systems-thinker-run2-1766597431852",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "systems-thinking",
+      "reciprocal-curiosity",
+      "depth-of-questioning"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm interested in communities that think carefully about how individuals and the collective influence each other. How do you approach those dynamics?",
+        "aiResponse": "We've found that recognizing the interplay between personal growth and collective well-being is crucial. By prioritizing open communication, empathy, ...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?",
+        "aiResponse": "We've implemented regular feedback loops, such as weekly community meetings and one-on-one check-ins, to ensure that everyone's voice is heard and val...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?",
+        "aiResponse": "We're very intentional about creating an environment that fosters alignment, through practices like active listening, conflict resolution training, an...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:30:41.797Z"
+  },
+  {
+    "personaId": "systems-thinker",
+    "personaName": "Systems Thinker",
+    "runNumber": 3,
+    "sessionId": "test-systems-thinker-run3-1766597442310",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "systems-thinking",
+      "reciprocal-curiosity",
+      "depth-of-questioning"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm interested in communities that think carefully about how individuals and the collective influence each other. How do you approach those dynamics?",
+        "aiResponse": "We're exploring the interplay between personal freedom and collective well-being, recognizing that individual autonomy is deeply connected to the heal...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 4,
+          "authenticity": 6,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?",
+        "aiResponse": "We've established a culture of ongoing feedback and reflection, where everyone is encouraged to share their thoughts and concerns. We also have regula...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 7,
+          "experimentation-evidence": 4,
+          "authenticity": 6,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?",
+        "aiResponse": "We're very intentional about creating those conditions, recognizing that alignment is not a one-time achievement, but an ongoing process. We prioritiz...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:30:52.055Z"
+  },
+  {
+    "personaId": "systems-thinker",
+    "personaName": "Systems Thinker",
+    "runNumber": 4,
+    "sessionId": "test-systems-thinker-run4-1766597452569",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "systems-thinking",
+      "reciprocal-curiosity",
+      "depth-of-questioning"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm interested in communities that think carefully about how individuals and the collective influence each other. How do you approach those dynamics?",
+        "aiResponse": "We're exploring that very intersection, recognizing that individual freedom and collective well-being are intertwined. Our approach involves creating ...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?",
+        "aiResponse": "We've implemented a few key feedback loops to help us navigate those tensions. For example, we have regular 'circle meetings' where everyone shares th...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?",
+        "aiResponse": "We're very intentional about creating those conditions, recognizing that alignment doesn't happen by chance. We prioritize building relationships, fos...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:31:02.031Z"
+  },
+  {
+    "personaId": "systems-thinker",
+    "personaName": "Systems Thinker",
+    "runNumber": 5,
+    "sessionId": "test-systems-thinker-run5-1766597462537",
+    "expectedDialogueActs": [
+      "probe_deeper",
+      "validate_genuine",
+      "reflect_understanding"
+    ],
+    "targetRubricDimensions": [
+      "systems-thinking",
+      "reciprocal-curiosity",
+      "depth-of-questioning"
+    ],
+    "tier": "standard",
+    "turns": [
+      {
+        "turn": 1,
+        "userMessage": "I'm interested in communities that think carefully about how individuals and the collective influence each other. How do you approach those dynamics?",
+        "aiResponse": "We've found that nurturing a balance between individual freedom and collective well-being is key to creating a thriving community. By prioritizing ope...",
+        "fitScore": 70,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 5,
+          "systems-thinking": 8,
+          "experimentation-evidence": 4,
+          "authenticity": 7,
+          "reciprocal-curiosity": 8
+        }
+      },
+      {
+        "turn": 2,
+        "userMessage": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?",
+        "aiResponse": "We've implemented a regular feedback loop, where community members can share their thoughts, concerns, and suggestions through various channels, such ...",
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "assertive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      {
+        "turn": 3,
+        "userMessage": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?",
+        "aiResponse": "We're very intentional about creating those conditions, recognizing that alignment is an ongoing process that requires effort and dedication. We prior...",
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      }
+    ],
+    "finalFitScore": 85,
+    "timestamp": "2025-12-24T17:31:12.957Z"
+  }
+]

@@ -283,28 +283,34 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
   transcript.sessionId = sessionId;
   console.log(`\n✓ Session ID from page: ${sessionId}`);
 
-  // 6. Query Vercel KV to verify data was saved
+  // 6. Query Postgres to verify data was saved
   console.log('\n' + '─'.repeat(80));
-  console.log('QUERYING VERCEL KV FOR PROOF');
+  console.log('QUERYING POSTGRES FOR PROOF');
   console.log('─'.repeat(80));
 
   if (sessionId) {
     try {
-      console.log(`\nQuerying KV for session: ${sessionId}`);
-      const kvOutput = execSync(`node scripts/query-kv.js --session ${sessionId}`, {
-        encoding: 'utf-8',
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
+      console.log(`\nQuerying database for session: ${sessionId}`);
+      const dbResponse = await page.request.get(`${SITE_URL}/api/admin/kv-check?sessionId=${sessionId}`);
+      const dbData = await dbResponse.json();
 
-      console.log('\n' + kvOutput);
-      transcript.kvVerified = true;
+      if (dbData.status === 'FOUND' && dbData.turns) {
+        console.log(`\n✓ Found ${dbData.turnCount} turns in database`);
+        dbData.turns.forEach((turn, i) => {
+          const eval_ = turn.evaluation || {};
+          console.log(`  Turn ${i + 1}: fitScore=${eval_.fitScore}, dialogueAct=${eval_.dialogueAct}`);
+        });
+        transcript.dbVerified = true;
+        transcript.dbTurns = dbData.turns;
 
-      console.log('\n✅ KV VERIFICATION SUCCESS');
-      console.log('Proof: All conversation data exists in Vercel KV database');
+        console.log('\n✅ DATABASE VERIFICATION SUCCESS');
+        console.log('Proof: All conversation data persisted to Postgres');
+      } else {
+        console.warn('\n⚠ Session not found in database:', dbData);
+      }
     } catch (error) {
-      console.warn('\n⚠ KV query failed (expected in local/preview environments):');
+      console.warn('\n⚠ Database query failed:');
       console.warn(error.message.substring(0, 200));
-      console.log('\nNote: This is expected when testing locally. KV is only available in Vercel production.');
     }
   }
 
@@ -317,7 +323,7 @@ test('E2E: Real Dynamic Conversation + KV Verification', async ({ page }, testIn
   console.log(`  2. ✓ Created real dynamic conversation (3 turns)`);
   console.log(`  3. ✓ Captured guide's responses with metadata (fitScore, dialogueAct)`);
   console.log(`  4. ✓ Generated sessionId and sent to API`);
-  console.log(`  5. ${transcript.kvVerified ? '✓' : '⚠'} Verified data in Vercel KV`);
+  console.log(`  5. ${transcript.dbVerified ? '✓' : '⚠'} Verified data in Postgres`);
   console.log(`\nFiles saved:`);
   console.log(`  • ${transcriptFile}`);
   console.log(`  • ${SCREENSHOTS_DIR}/0*-*.png`);

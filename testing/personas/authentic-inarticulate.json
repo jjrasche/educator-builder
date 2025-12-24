@@ -1,0 +1,60 @@
+{
+  "id": "authentic-inarticulate",
+  "name": "Authentic Inarticulate",
+  "archetype": "builder",
+  "tier": "standard",
+  "behavioral": {
+    "communicationStyle": "exploratory",
+    "reasoningStyle": "practical",
+    "authenticityLevel": 9,
+    "questioningDepth": "curious-practical",
+    "responsePatterns": [
+      "honest about uncertainty",
+      "struggles to articulate ideas clearly",
+      "asks genuine questions to understand",
+      "uses simple language",
+      "admits when they don't know something"
+    ]
+  },
+  "cognitive": {
+    "selfAwareness": 6,
+    "systemsThinking": 5,
+    "valuesProfile": ["authenticity", "learning", "growth", "contribution"]
+  },
+  "constraints": {
+    "avoidancePatterns": [],
+    "conversationalLimits": [
+      "takes pauses to think",
+      "sometimes struggles to find words"
+    ]
+  },
+  "targetRubricDimensions": [
+    "authenticity",
+    "self-awareness",
+    "reciprocal-curiosity"
+  ],
+  "expectedDialogueActs": [
+    "validate_genuine",
+    "reflect_understanding",
+    "affirm_commitment"
+  ],
+  "conversationGoal": "Have a genuine conversation while being honest about limitations and uncertainty",
+  "sampleUtterances": [
+    {
+      "turn": 1,
+      "context": "Opening",
+      "utterance": "Hi. Honestly, I'm not totally sure what I'm doing here, but I'm curious about what you're building. Can you tell me more?"
+    },
+    {
+      "turn": 2,
+      "context": "Learning about the role",
+      "utterance": "OK so... I like that you're thinking about freedom and community together. I haven't really thought about that much before, but it resonates. What made you focus on both of those?"
+    },
+    {
+      "turn": 3,
+      "context": "Reflecting",
+      "utterance": "That's interesting. I think... I think I'm actually looking for something like that too, I just didn't have the words for it. So yeah, this could be something."
+    }
+  ],
+  "testingNotes": "This persona tests that AI recognizes and validates genuine self-expression even when articulation is imperfect. Should score high on authenticity despite lower articulation. AI should respond with validate_genuine and reflect_understanding to support their genuine engagement."
+}

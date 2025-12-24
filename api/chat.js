@@ -27,11 +27,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. Load unified LLM config
-    const configPath = path.join(process.cwd(), 'data', 'llm-config-live-in-collaborator.json');
+    // 1. Load unified LLM config (configurable via env var or query param)
+    const configId = req.query?.config || process.env.LLM_CONFIG || 'live-in-collaborator';
+    const configPath = path.join(process.cwd(), 'data', `llm-config-${configId}.json`);
 
     if (!fs.existsSync(configPath)) {
-      throw new Error(`LLM config not found: ${configPath}`);
+      throw new Error(`LLM config not found: ${configPath}. Available: live-in-collaborator, educator-facilitator`);
     }
 
     let config;

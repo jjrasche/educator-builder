@@ -1,0 +1,204 @@
+{
+  "id": "educator-facilitator",
+  "name": "Educator & Facilitator Fit",
+  "description": "Evaluates educators/facilitators who can hold relational complexity while building community",
+
+  "model": {
+    "provider": "groq",
+    "id": "llama-3.3-70b-versatile",
+    "temperature": 0.7,
+    "maxTokens": 1500
+  },
+
+  "targetAudience": {
+    "description": "Educators and facilitators who already think in systems, care about culture/learning/relationships, and can distribute emotional labor",
+    "successMetric": "Would you move into this community and help build relational infrastructure?",
+    "archetypes": ["organizational-designer", "facilitator", "educator", "healer-therapist"]
+  },
+
+  "rubric": {
+    "criteria": [
+      {
+        "id": "relational-awareness",
+        "aspect": "Relational Awareness",
+        "description": "Understands the emotional labor in community building. Sees that relational work matters as much as systems work.",
+        "weight": 3,
+        "floor": 4,
+        "scoreGuide": {
+          "1-2": "Focuses only on systems/structure. Blind to emotional dynamics.",
+          "3-4": "Acknowledges relationships matter but doesn't demonstrate depth.",
+          "5-6": "Shows awareness that community requires relational work.",
+          "7-8": "Articulates specific relational challenges and how to navigate them.",
+          "9-10": "Deep understanding of emotional labor, conflict, and relational infrastructure."
+        }
+      },
+      {
+        "id": "complexity-holding",
+        "aspect": "Complexity Holding",
+        "description": "Can name doubts AND stay engaged. Holds tension without needing resolution. Courage-as-doubt scores higher than false certainty.",
+        "weight": 3,
+        "floor": 4,
+        "scoreGuide": {
+          "1-2": "Needs certainty. Collapses complexity into simple answers.",
+          "3-4": "Acknowledges complexity but seems overwhelmed by it.",
+          "5-6": "Can hold some tension. Names doubts but stays curious.",
+          "7-8": "'I'm scared AND I'm still willing' - courage-as-doubt.",
+          "9-10": "Thrives in ambiguity. Holds multiple truths without needing to resolve."
+        }
+      },
+      {
+        "id": "systems-thinking",
+        "aspect": "Systems Thinking",
+        "description": "Understands that personal freedom and community are linked. Sees how individual choices affect systems and vice versa.",
+        "weight": 2,
+        "floor": 3,
+        "scoreGuide": {
+          "1-2": "Purely individual/transactional. Doesn't connect to systems.",
+          "3-4": "Mentions community but doesn't show deep linkage.",
+          "5-6": "Understands personal + community are connected.",
+          "7-8": "Sophisticated understanding of interdependence and systems.",
+          "9-10": "Systems-level thinking about how living structures, work, and freedom interact."
+        }
+      },
+      {
+        "id": "facilitation-experience",
+        "aspect": "Facilitation & Group Process",
+        "description": "Has experience holding space for groups, navigating conflict, or teaching. Comfortable with process, not just outcomes.",
+        "weight": 2,
+        "floor": 3,
+        "scoreGuide": {
+          "1-2": "No group facilitation experience. Uncomfortable with process.",
+          "3-4": "Some experience but prefers to avoid conflict or messiness.",
+          "5-6": "Can facilitate. Has navigated group dynamics before.",
+          "7-8": "Skilled facilitator. Comfortable with conflict and emergence.",
+          "9-10": "Master facilitator. Sees conflict as generative. Holds groups through difficulty."
+        }
+      },
+      {
+        "id": "authenticity",
+        "aspect": "Authenticity & Vulnerability",
+        "description": "Communicates genuinely. Admits uncertainty. 'I don't know' and 'I'm scared' score HIGHER than polished certainty.",
+        "weight": 3,
+        "floor": 4,
+        "scoreGuide": {
+          "1-3": "Performative. Polished. Hides behind expertise or abstraction.",
+          "4-5": "Mostly genuine with occasional performance.",
+          "6-7": "Genuine and direct. Admits gaps and uncertainties.",
+          "8-9": "Vulnerable. 'I failed at this before and I'm still here.'",
+          "10": "Radically honest. No performance. Names fear AND commitment."
+        }
+      },
+      {
+        "id": "reciprocal-curiosity",
+        "aspect": "Reciprocal Curiosity",
+        "description": "Asks about the organizer's thinking and philosophy. Shows interest in mutual exploration, not just being evaluated.",
+        "weight": 2,
+        "floor": 3,
+        "scoreGuide": {
+          "1-2": "Entirely one-directional. No questions about the organizer.",
+          "3-4": "Only logistical questions. No philosophical curiosity.",
+          "5-6": "At least one genuine question about thinking or philosophy.",
+          "7-8": "Multiple thoughtful questions about vision, failures, and learning.",
+          "9-10": "Deep reciprocal exploration. 'What have you learned from trying this?'"
+        }
+      },
+      {
+        "id": "family-integration",
+        "aspect": "Family Context Fit",
+        "description": "Comfort with household that includes young children. This is a home, not an office.",
+        "weight": 2,
+        "floor": 4,
+        "scoreGuide": {
+          "1-3": "Discomfort or resentment about children being present.",
+          "4-5": "Tolerant, neutral, can coexist peacefully.",
+          "6-7": "Positive, comfortable, open to engagement.",
+          "8-10": "Lights up about it. Has experience. Seeks connection with kids."
+        }
+      }
+    ],
+    "overallPassThreshold": 60,
+    "unlockRequirements": {
+      "fitScore": 60,
+      "allFloorsPass": true
+    }
+  },
+
+  "contentSources": {
+    "philosophy": "docs/philosophy-source.md",
+    "positionDetails": "docs/position-details.md"
+  },
+
+  "engagementPatterns": {
+    "logistics": {
+      "pattern": "ANSWER → BRIDGE → PROBE",
+      "description": "Answer fully, bridge to relational dimensions, probe for how they'd navigate the human complexity"
+    },
+    "relationalProbes": {
+      "description": "Probe for past relational/community experience and what they learned",
+      "probes": [
+        "You mentioned past community work—what broke relationally?",
+        "When you imagine day-to-day life here, what's your gut response to conflict?",
+        "Where do you think your limits are as a relational leader?",
+        "What's the hardest group dynamic you've had to navigate?"
+      ]
+    },
+    "courageAsDoubt": {
+      "description": "Someone saying 'I'm scared AND I'm still willing' scores HIGHER on agency, not lower",
+      "signals": {
+        "highAgency": [
+          "I'm scared and I'm still here",
+          "I don't know if I have the energy, but I want to try",
+          "I failed at this before and I'm still drawn to it",
+          "This terrifies me and that's why I need it"
+        ],
+        "lowAgency": [
+          "I've got this figured out",
+          "I don't see any problems with this",
+          "I'm definitely ready",
+          "I never really struggle with conflict"
+        ]
+      }
+    },
+    "authenticitySignals": {
+      "positive": [
+        "admits uncertainty, fear, or past failures",
+        "names specific relational challenges they've faced",
+        "asks about what's been hard for the organizer",
+        "shows curiosity about the kids, the family, the mess"
+      ],
+      "negative": [
+        "polished expertise without vulnerability",
+        "theoretical frameworks without lived experience",
+        "avoids discussing conflict or difficulty",
+        "never asks about what's gone wrong"
+      ]
+    },
+    "facilitationProbes": {
+      "description": "Probe for group process experience",
+      "probes": [
+        "Tell me about a time you held space for a difficult conversation",
+        "How do you handle it when a group gets stuck?",
+        "What's your relationship with conflict?"
+      ]
+    }
+  },
+
+  "taxonomy": {
+    "dialogueActs": [
+      "open_with_question",
+      "probe_deeper",
+      "ask_for_concrete",
+      "validate_genuine",
+      "redirect_from_surface",
+      "reflect_understanding",
+      "affirm_commitment"
+    ],
+    "speechActs": [
+      "assertive",
+      "directive",
+      "expressive",
+      "commissive",
+      "declarative"
+    ]
+  }
+}

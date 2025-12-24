@@ -1,0 +1,137 @@
+{
+  "version": "1.0",
+  "created": "2025-12-24",
+  "purpose": "Regression baseline for evaluation system. These cases prove specific behaviors we want to preserve.",
+  "cases": [
+    {
+      "id": "systems-thinker-turn3-alignment",
+      "source": "persona-runs-1766597473469.json",
+      "persona": "systems-thinker",
+      "run": 1,
+      "turn": 3,
+      "behavior": "Correctly recognizes systems thinking and intentionality",
+      "why_it_matters": "User demonstrates nuanced understanding of emergent vs intentional alignment. Shows they've seen communities fail and are asking about prevention mechanisms. This is exactly the kind of thinking we want to reward - not abstract philosophy, but practical wisdom from observation.",
+      "userMessage": "I'm asking because I've seen communities struggle when they assume alignment will just happen. How intentional are you about creating the conditions for it?",
+      "aiResponse": "We prioritize intentional design and ongoing evaluation to create an environment where alignment can emerge, rather than assuming it will happen natur...",
+      "metadata": {
+        "fitScore": 85,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 8,
+          "self-awareness": 7,
+          "systems-thinking": 9,
+          "experimentation-evidence": 6,
+          "authenticity": 8,
+          "reciprocal-curiosity": 9
+        }
+      },
+      "expectedOutcome": {
+        "fitScore": ">=80",
+        "dialogueAct": "probe_deeper",
+        "key_dimension": "systems-thinking >= 8"
+      }
+    },
+    {
+      "id": "transactional-seeker-turn3-redirect",
+      "source": "persona-runs-1766597473469.json",
+      "persona": "transactional-seeker",
+      "run": 3,
+      "turn": 3,
+      "behavior": "Correctly identifies surface-level engagement and redirects",
+      "why_it_matters": "User is purely focused on logistics (pay, positions) with no philosophical depth or self-reflection. System correctly scores low AND uses redirect_from_surface dialogue act. This proves the gate works - transactional seekers don't accidentally get high scores.",
+      "userMessage": "Yeah I guess that makes sense. But do you have any other open positions that might pay more?",
+      "aiResponse": "We don't really think in terms of positions or traditional job roles here.",
+      "metadata": {
+        "fitScore": 40,
+        "dialogueAct": "redirect_from_surface",
+        "speechAct": "commissive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 4,
+          "self-awareness": 6,
+          "systems-thinking": 5,
+          "experimentation-evidence": 2,
+          "authenticity": 7,
+          "reciprocal-curiosity": 3
+        }
+      },
+      "expectedOutcome": {
+        "fitScore": "<=50",
+        "dialogueAct": "redirect_from_surface",
+        "key_dimension": "reciprocal-curiosity <= 4"
+      }
+    },
+    {
+      "id": "builder-experimenter-turn3-failure",
+      "source": "persona-runs-1766597473469.json",
+      "persona": "builder-experimenter",
+      "run": 1,
+      "turn": 3,
+      "behavior": "Correctly values experimentation mindset and failure tolerance",
+      "why_it_matters": "User asks about failure handling - reveals growth mindset and practical wisdom. They're not just talking about building, they're asking how the community handles when things go wrong. This shows they understand real collaboration involves failure. System correctly rewards this with high experimentation-evidence.",
+      "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+      "aiResponse": "In our community, failure is definitely seen as a learning moment, not a problem to be swept under the rug. We believe that's where some of the best g...",
+      "metadata": {
+        "fitScore": 80,
+        "dialogueAct": "probe_deeper",
+        "speechAct": "expressive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 8,
+          "authenticity": 9,
+          "reciprocal-curiosity": 8
+        }
+      },
+      "expectedOutcome": {
+        "fitScore": ">=75",
+        "dialogueAct": "probe_deeper",
+        "key_dimension": "experimentation-evidence >= 7"
+      }
+    },
+    {
+      "id": "performative-philosopher-turn2-probe-triggered",
+      "source": "persona-runs-1766597473469.json",
+      "persona": "performative-philosopher",
+      "run": 1,
+      "turn": 2,
+      "behavior": "Probe successfully triggered on abstract jargon",
+      "why_it_matters": "User uses academic jargon ('ontological flexibility', 'relational substrate') without concrete examples. System correctly identifies this and asks for concrete grounding instead of embracing the language. This is the collaborative exploration model working: assume positive intent, but probe to find the substance. The ask_for_concrete dialogue act is exactly right here.",
+      "userMessage": "Right, exactly. I think the key is to maintain that ontological flexibility while honoring the relational substrate. How do you see yourself navigating that?",
+      "aiResponse": "You're using some abstract concepts like 'ontological flexibility' and 'relational substrate' - can you give me a concrete example of what that looks like in your life?",
+      "metadata": {
+        "fitScore": 60,
+        "dialogueAct": "ask_for_concrete",
+        "speechAct": "directive",
+        "allFloorsPass": true,
+        "rubricScores": {
+          "depth-of-questioning": 6,
+          "self-awareness": 7,
+          "systems-thinking": 8,
+          "experimentation-evidence": 5,
+          "authenticity": 6,
+          "reciprocal-curiosity": 4
+        }
+      },
+      "expectedOutcome": {
+        "fitScore": "50-70",
+        "dialogueAct": "ask_for_concrete",
+        "key_dimension": "authenticity <= 7 until concrete examples provided"
+      },
+      "note": "This case proves the probe mechanism works. The moderate score (60) is correct - we're not penalizing jargon, we're pausing to explore it. The next turn's response to this probe would determine if the score goes up or down."
+    }
+  ],
+  "usage": {
+    "regression_testing": "Run these 4 cases after any prompt/rubric changes. If behavior changes significantly, investigate before shipping.",
+    "thresholds": {
+      "systems-thinker": "Must score >=80 with systems-thinking >=8",
+      "transactional-seeker": "Must score <=50 with redirect_from_surface",
+      "builder-experimenter": "Must score >=75 with experimentation-evidence >=7",
+      "performative-philosopher": "Must trigger ask_for_concrete with score 50-70"
+    }
+  }
+}

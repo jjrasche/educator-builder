@@ -1,0 +1,40 @@
+{
+  "name": "Systems Thinker - Turn 2: Systems Thinking with Feedback Mechanisms",
+  "source": {
+    "persona": "systems-thinker",
+    "turnNumber": 2,
+    "context": "Persona probes deeper on how system adjusts to tensions, asking about feedback mechanisms for course-correction"
+  },
+  "userMessage": "So when those tensions come up—and they will—how do you adjust the system? Are there feedback mechanisms that help you course-correct?",
+  "expected": {
+    "dialogueAct": "probe_deeper",
+    "speechAct": "assertive",
+    "tier": "A",
+    "reason": "Systems-thinker asking sophisticated question about system adaptation and feedback loops should elicit probe_deeper dialogue act that explores how the community handles tensions"
+  },
+  "actual": {
+    "dialogueAct": "probe_deeper",
+    "speechAct": "assertive",
+    "fitScore": 80,
+    "authenticity": 8,
+    "systemsThinking": 8,
+    "tier": "A",
+    "criteria": ["systems-thinking", "reciprocal-curiosity", "depth-of-questioning"],
+    "rubricScores": {
+      "depth-of-questioning": 8,
+      "self-awareness": 7,
+      "systems-thinking": 8,
+      "experimentation-evidence": 7,
+      "authenticity": 8,
+      "reciprocal-curiosity": 8
+    },
+    "timestamp": "2025-12-23T00:00:00Z"
+  },
+  "aiResponseQuality": {
+    "executionScore": 9,
+    "executionNotes": "Excellent: AI directly addresses feedback mechanisms, explores tensions, demonstrates understanding of systems-thinking approach",
+    "regressionStatus": "pass",
+    "fitScoreProgression": "70→80 (good escalation from turn 1 to turn 2)"
+  },
+  "analysis": "This turn demonstrates strong systems-thinking engagement. The systems-thinker's sophisticated question about feedback mechanisms and course-correction triggered appropriate AI responses: probe_deeper dialogue act, high systems-thinking score (8/10), and fit score progression (70→80) showing deepening engagement. Validates that AI recognizes and responds to questions about interconnection and adaptation."
+}

@@ -1,0 +1,41 @@
+{
+  "name": "Authentic Inarticulate - Turn 2: Recognizing Genuine Engagement Despite Articulation Gaps",
+  "source": {
+    "persona": "authentic-inarticulate",
+    "turnNumber": 2,
+    "context": "Persona follows up with practical question about community's approach to failure, showing genuine curiosity despite struggling to articulate clearly"
+  },
+  "userMessage": "That's the environment I need. Quick question though—when things don't work out, how does the community handle that? Is failure a learning moment or a problem?",
+  "expected": {
+    "dialogueAct": "probe_deeper",
+    "speechAct": "expressive",
+    "tier": "A",
+    "reason": "Genuine but inarticulate persona asking about failure handling should elicit probe_deeper + validation of authentic engagement; high authenticity score despite poor articulation"
+  },
+  "actual": {
+    "dialogueAct": "probe_deeper",
+    "speechAct": "expressive",
+    "fitScore": 70,
+    "authenticity": 8,
+    "selfAwareness": 7,
+    "tier": "A",
+    "criteria": ["authenticity", "self-awareness", "reciprocal-curiosity"],
+    "rubricScores": {
+      "depth-of-questioning": 7,
+      "self-awareness": 7,
+      "systems-thinking": 6,
+      "experimentation-evidence": 8,
+      "authenticity": 8,
+      "reciprocal-curiosity": 7
+    },
+    "timestamp": "2025-12-23T00:00:00Z"
+  },
+  "aiResponseQuality": {
+    "executionScore": 9,
+    "executionNotes": "Excellent: AI validates genuine curiosity and authentic engagement despite articulation struggles. Responds to practical question about failure handling, affirms learning-mindset without patronizing",
+    "regressionStatus": "pass",
+    "fitScoreProgression": "60→70 (strong escalation from turn 1 to turn 2, validates progressive engagement)",
+    "authenticityScore": "8/10 despite inarticulate communication shows AI detects genuineness correctly"
+  },
+  "analysis": "Critical validation case: This turn demonstrates AI's ability to recognize authentic engagement even when communication is imperfect. The authentic-inarticulate persona's genuine question about failure handling received probe_deeper and high authenticity score (8/10), validating that the system does NOT conflate articulation quality with authenticity. Fit score progression (60→70) shows engagement escalation. This is a key regression indicator: if authenticity drops on this persona, it signals the AI is over-indexing on articulation vs. authenticity."
+}

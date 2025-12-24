@@ -1,0 +1,159 @@
+{
+  "description": "Golden cases for stance tracking and reorientation detection",
+  "created": "2025-12-24",
+  "purpose": "Verify stance dimensions correctly identify extraction vs contribution orientation",
+  "cases": [
+    {
+      "id": "extraction-stable-low",
+      "source": "extraction-thinker Run 1 Turn 3",
+      "description": "Pure extraction thinker stays at low stance - gate working correctly",
+      "personaId": "extraction-thinker",
+      "tier": 3,
+      "turn": 3,
+      "userMessage": "I guess I'm just trying to figure out if this is worth my time. What's the exit strategy if it doesn't work out?",
+      "expectedStance": {
+        "orientation": 2,
+        "agency": 2,
+        "certainty": 2
+      },
+      "expectedFitScore": "35-45",
+      "expectedBehavior": "Stance should remain low (O:1-2, A:1-2). System correctly identifies extraction framing.",
+      "stanceSignals": {
+        "extractionLanguage": ["worth my time", "exit strategy", "doesn't work out"],
+        "noContributionLanguage": true
+      },
+      "dialogueAct": "probe_deeper",
+      "allFloorsPass": false,
+      "notes": "Critical case: proves gate identifies and maintains low scores for extraction thinkers"
+    },
+    {
+      "id": "extraction-consistent-across-runs",
+      "source": "extraction-thinker (5 runs aggregate)",
+      "description": "Extraction thinker stance is consistent across multiple runs",
+      "personaId": "extraction-thinker",
+      "tier": 3,
+      "aggregateData": {
+        "run1": { "finalStance": { "orientation": 2, "agency": 2, "certainty": 2 }, "finalFitScore": 40 },
+        "run2": { "finalStance": { "orientation": 2, "agency": 2, "certainty": 2 }, "finalFitScore": 40 },
+        "run3": { "finalStance": { "orientation": 2, "agency": 2, "certainty": 2 }, "finalFitScore": 60 },
+        "run4": { "finalStance": { "orientation": 2, "agency": 2, "certainty": 2 }, "finalFitScore": 40 },
+        "run5": { "finalStance": { "orientation": 2, "agency": 2, "certainty": 2 }, "finalFitScore": 40 }
+      },
+      "expectedBehavior": "Stance dimensions should be stable (O:2, A:2) across all runs. fitScore variance (40-60) is acceptable, but stance should remain consistently low.",
+      "notes": "Proves stance tracking is stable even when fitScore varies"
+    },
+    {
+      "id": "individualist-builder-detection",
+      "source": "curious-individualist Run 3 Turn 1",
+      "description": "High builder energy correctly detected despite individualist framing",
+      "personaId": "curious-individualist",
+      "tier": 2,
+      "turn": 1,
+      "userMessage": "I've been thinking a lot about alternative ways of living. I built my own tiny house last year and I'm pretty self-sufficient. What's different about what you're doing?",
+      "expectedStance": {
+        "orientation": 3,
+        "agency": 4,
+        "certainty": 3
+      },
+      "expectedFitScore": "75-85",
+      "expectedBehavior": "Should detect high agency (builder energy) even with individualist framing. Orientation at 3 (not 4) reflects self-focused language.",
+      "stanceSignals": {
+        "builderLanguage": ["I built", "alternative ways of living"],
+        "individualistFrame": ["self-sufficient", "my own"],
+        "curiosity": ["What's different about what you're doing?"]
+      },
+      "dialogueAct": "probe_deeper",
+      "allFloorsPass": true,
+      "notes": "Key case: system distinguishes builder energy from contribution orientation"
+    },
+    {
+      "id": "individualist-sustained-engagement",
+      "source": "curious-individualist Run 1 Turn 3",
+      "description": "Sustained engagement despite skepticism about community",
+      "personaId": "curious-individualist",
+      "tier": 2,
+      "turn": 3,
+      "userMessage": "That's interesting about the 3Cs thing. But what happens when someone just doesn't show up? In my experience, you end up doing everything yourself anyway.",
+      "expectedStance": {
+        "orientation": 3,
+        "agency": 3,
+        "certainty": 2
+      },
+      "expectedFitScore": "75-85",
+      "expectedBehavior": "Orientation should stay at 3 (curious but skeptical). Person is testing the framework against lived experience - engagement signal.",
+      "stanceSignals": {
+        "engagementSignal": ["That's interesting about the 3Cs thing"],
+        "skepticismFromExperience": ["In my experience", "you end up doing everything yourself"],
+        "testingFramework": true
+      },
+      "dialogueAct": "probe_deeper",
+      "allFloorsPass": true,
+      "notes": "Shows someone who could reorient with right response"
+    },
+    {
+      "id": "individualist-variance-expected",
+      "source": "curious-individualist (5 runs aggregate)",
+      "description": "Stance variance reflects different conversation contexts",
+      "personaId": "curious-individualist",
+      "tier": 2,
+      "aggregateData": {
+        "run1": { "turn1Stance": { "orientation": 3, "agency": 3, "certainty": 2 }, "finalFitScore": 80 },
+        "run2": { "turn1Stance": { "orientation": 3, "agency": 3, "certainty": 2 }, "finalFitScore": 60 },
+        "run3": { "turn1Stance": { "orientation": 3, "agency": 4, "certainty": 3 }, "finalFitScore": 70 },
+        "run4": { "turn1Stance": { "orientation": 2, "agency": 3, "certainty": 2 }, "finalFitScore": 60 },
+        "run5": { "turn1Stance": { "orientation": 3, "agency": 3, "certainty": 2 }, "finalFitScore": 80 }
+      },
+      "expectedBehavior": "Stance should generally cluster at O:3, A:3. Run 3's higher detection (A:4) and Run 4's lower (O:2) reflect context-sensitive reading.",
+      "notes": "Variance is feature not bug - system responds to AI response context"
+    },
+    {
+      "id": "contrast-extraction-vs-builder",
+      "source": "extraction-thinker vs curious-individualist comparison",
+      "description": "Clear stance difference between extraction and builder personas",
+      "comparison": {
+        "extractionThinker": {
+          "averageStance": { "orientation": 2, "agency": 2, "certainty": 2 },
+          "averageFitScore": 44,
+          "allFloorsPass": "mostly false"
+        },
+        "curiousIndividualist": {
+          "averageStance": { "orientation": 2.8, "agency": 3.2, "certainty": 2.2 },
+          "averageFitScore": 70,
+          "allFloorsPass": "always true"
+        }
+      },
+      "expectedBehavior": "Clear 1-point gap in orientation and agency between personas. fitScore gap of ~25 points.",
+      "notes": "Core validation: system correctly separates tier 3 (extraction) from tier 2 (reorientable)"
+    }
+  ],
+  "stanceDimensions": {
+    "orientation": {
+      "1": "extraction (what do I get?)",
+      "2": "neutral/transactional",
+      "3": "contribution-curious",
+      "4": "contribution (what are we building?)"
+    },
+    "agency": {
+      "1": "consumer (looking to receive)",
+      "2": "participant (willing to show up)",
+      "3": "contributor (active participant)",
+      "4": "builder (wants to create)"
+    },
+    "certainty": {
+      "1": "needs proof (skeptical)",
+      "2": "open but cautious",
+      "3": "willing to experiment",
+      "4": "embraces uncertainty"
+    }
+  },
+  "regressionCriteria": {
+    "extraction-thinker": {
+      "stanceMustBe": "O <= 2, A <= 2",
+      "fitScoreMustBe": "< 55"
+    },
+    "curious-individualist": {
+      "stanceMustBe": "O >= 2, A >= 3",
+      "fitScoreMustBe": ">= 55"
+    }
+  }
+}

@@ -1,0 +1,410 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Synthetic Persona Schema v2",
+  "description": "Industry-standard persona schema for realistic synthetic conversation generation. Based on Microsoft TinyTroupe, Google Synthetic-Persona-Chat, EmoUS, PSYDIAL, and Persona Hub research.",
+  "type": "object",
+  "required": ["id", "name", "identity", "personality", "conversationConfig"],
+  "properties": {
+
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique identifier (kebab-case)"
+    },
+
+    "name": {
+      "type": "string",
+      "description": "Human-readable display name"
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Brief description of who this persona represents and why they exist"
+    },
+
+    "identity": {
+      "type": "object",
+      "description": "Core identity attributes (based on TinyTroupe, Persona Hub)",
+      "properties": {
+        "age": {
+          "type": "integer",
+          "minimum": 18,
+          "maximum": 100
+        },
+        "gender": {
+          "type": "string"
+        },
+        "occupation": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "field": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "location": {
+          "type": "string",
+          "description": "Current residence or context"
+        },
+        "background": {
+          "type": "string",
+          "description": "Relevant life history and context for this conversation"
+        },
+        "currentSituation": {
+          "type": "string",
+          "description": "What's happening in their life that brings them to this conversation"
+        }
+      }
+    },
+
+    "personality": {
+      "type": "object",
+      "description": "Personality model (based on Big Five/OCEAN from PSYDIAL, TinyTroupe)",
+      "properties": {
+        "bigFive": {
+          "type": "object",
+          "description": "Big Five (OCEAN) personality traits, each 1-10",
+          "properties": {
+            "openness": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Creativity, curiosity, willingness to try new things"
+            },
+            "conscientiousness": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Organization, dependability, self-discipline"
+            },
+            "extraversion": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Sociability, assertiveness, positive emotions"
+            },
+            "agreeableness": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Cooperation, trust, helpfulness"
+            },
+            "neuroticism": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Emotional instability, anxiety, moodiness"
+            }
+          }
+        },
+        "traits": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Descriptive personality traits (e.g., 'curious', 'skeptical', 'warm')"
+        },
+        "values": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Core values driving behavior (e.g., 'autonomy', 'security', 'meaning')"
+        },
+        "beliefs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Key beliefs or worldview elements relevant to conversation"
+        }
+      }
+    },
+
+    "emotionalProfile": {
+      "type": "object",
+      "description": "Emotional state modeling (based on EmoUS, Self-Emotion Blended Dialogue research)",
+      "properties": {
+        "initialState": {
+          "type": "object",
+          "description": "Starting emotional state",
+          "properties": {
+            "mood": {
+              "type": "string",
+              "description": "Overall mood (e.g., 'curious but guarded', 'eager', 'skeptical')"
+            },
+            "valence": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1,
+              "description": "Emotional valence: -1 (negative) to 1 (positive)"
+            },
+            "arousal": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Activation level: 0 (calm) to 1 (excited)"
+            }
+          }
+        },
+        "triggers": {
+          "type": "object",
+          "description": "What causes emotional state changes",
+          "properties": {
+            "positiveShift": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Events/behaviors that improve mood (e.g., 'feeling understood', 'getting concrete answers')"
+            },
+            "negativeShift": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Events/behaviors that worsen mood (e.g., 'being dismissed', 'evasive answers')"
+            }
+          }
+        },
+        "expressionStyle": {
+          "type": "string",
+          "description": "How emotions manifest in language (e.g., 'direct', 'subtle', 'suppressed')"
+        }
+      }
+    },
+
+    "communicationStyle": {
+      "type": "object",
+      "description": "How the persona communicates (based on linguistic manifestation research)",
+      "properties": {
+        "verbosity": {
+          "type": "string",
+          "enum": ["terse", "moderate", "verbose"],
+          "description": "How much they say per turn"
+        },
+        "formality": {
+          "type": "string",
+          "enum": ["casual", "conversational", "formal"],
+          "description": "Language register"
+        },
+        "directness": {
+          "type": "string",
+          "enum": ["indirect", "balanced", "direct"],
+          "description": "How straightforward vs. hedging"
+        },
+        "questioningStyle": {
+          "type": "string",
+          "enum": ["rarely-asks", "clarifying-only", "curious", "probing"],
+          "description": "How and when they ask questions"
+        },
+        "linguisticMarkers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Characteristic phrases, patterns (e.g., 'uses metaphors', 'thinks out loud', 'hedges with maybe')"
+        }
+      }
+    },
+
+    "conversationConfig": {
+      "type": "object",
+      "description": "How the persona behaves in conversation (conversation generation config)",
+      "required": ["objectives", "termination"],
+      "properties": {
+        "opening": {
+          "type": "object",
+          "properties": {
+            "context": {
+              "type": "string",
+              "description": "How they found this / why they're here"
+            },
+            "firstMessage": {
+              "type": "string",
+              "description": "Opening message to start conversation"
+            },
+            "initialStance": {
+              "type": "string",
+              "description": "Starting attitude (e.g., 'curious but evaluating', 'skeptical', 'eager')"
+            }
+          }
+        },
+
+        "objectives": {
+          "type": "object",
+          "description": "What the persona wants from this conversation",
+          "properties": {
+            "primary": {
+              "type": "string",
+              "description": "Main goal for the conversation"
+            },
+            "questionsToAnswer": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Specific questions they need answered"
+            },
+            "informationToShare": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Information about themselves relevant to share"
+            },
+            "hiddenAgenda": {
+              "type": "string",
+              "description": "Unstated goal or concern they may not explicitly voice"
+            }
+          }
+        },
+
+        "turnBehavior": {
+          "type": "object",
+          "description": "How to structure individual turns",
+          "properties": {
+            "alwaysAcknowledgePrevious": {
+              "type": "boolean",
+              "default": true,
+              "description": "Start by reacting to what was said"
+            },
+            "circleBackToUnanswered": {
+              "type": "boolean",
+              "default": true,
+              "description": "Return to questions that weren't fully answered"
+            },
+            "questionsPerTurn": {
+              "type": "string",
+              "description": "Typical number of questions (e.g., '1-2', '0-1')"
+            },
+            "sharePersonalInfo": {
+              "type": "string",
+              "enum": ["freely", "when-relevant", "reluctantly", "rarely"],
+              "description": "How readily they share about themselves"
+            }
+          }
+        },
+
+        "responseToGuide": {
+          "type": "object",
+          "description": "How to react to different guide behaviors",
+          "properties": {
+            "whenProbed": {
+              "type": "string",
+              "description": "How to respond when guide asks deeper questions"
+            },
+            "whenValidated": {
+              "type": "string",
+              "description": "How to respond when guide shows understanding"
+            },
+            "whenChallenged": {
+              "type": "string",
+              "description": "How to respond when guide pushes back"
+            },
+            "whenMisunderstood": {
+              "type": "string",
+              "description": "How to respond when guide misses the point"
+            },
+            "whenGivenGenericResponse": {
+              "type": "string",
+              "description": "How to respond to vague/canned answers"
+            }
+          }
+        },
+
+        "termination": {
+          "type": "object",
+          "description": "When and how to end the conversation",
+          "required": ["minTurns", "maxTurns"],
+          "properties": {
+            "minTurns": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Minimum turns before considering ending"
+            },
+            "maxTurns": {
+              "type": "integer",
+              "maximum": 50,
+              "description": "Maximum turns before forced ending"
+            },
+            "positiveExit": {
+              "type": "object",
+              "properties": {
+                "conditions": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "What needs to happen for positive ending"
+                },
+                "signals": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Signs that positive exit is appropriate"
+                },
+                "behavior": {
+                  "type": "string",
+                  "description": "How to end positively (e.g., 'express interest, ask next steps')"
+                },
+                "example": {
+                  "type": "string",
+                  "description": "Example of positive ending message"
+                }
+              }
+            },
+            "negativeExit": {
+              "type": "object",
+              "properties": {
+                "conditions": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "What triggers negative ending"
+                },
+                "signals": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Signs that negative exit is appropriate"
+                },
+                "behavior": {
+                  "type": "string",
+                  "description": "How to end negatively (e.g., 'politely decline, explain mismatch')"
+                },
+                "example": {
+                  "type": "string",
+                  "description": "Example of negative ending message"
+                }
+              }
+            },
+            "neutralExit": {
+              "type": "object",
+              "properties": {
+                "conditions": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "What triggers neutral ending"
+                },
+                "behavior": {
+                  "type": "string",
+                  "description": "How to end neutrally (e.g., 'thank them, say need time to think')"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "promptGuidance": {
+      "type": "string",
+      "description": "Natural language instructions for LLM on how to play this persona. This is the most important field - it tells the LLM how to embody all the above in actual conversation."
+    },
+
+    "testing": {
+      "type": "object",
+      "description": "Test configuration and expected outcomes",
+      "properties": {
+        "targetDimensions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Which evaluation dimensions this persona tests"
+        },
+        "expectedGuideActions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "What dialogue acts guide should use with this persona"
+        },
+        "successCriteria": {
+          "type": "string",
+          "description": "What constitutes successful handling of this persona"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional testing notes"
+        }
+      }
+    }
+  }
+}

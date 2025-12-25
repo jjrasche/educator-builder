@@ -1,0 +1,350 @@
+<!--
+DIALOGUE ACT GRADING INTERFACE
+
+PREREQUISITE: This interface grades dialogue acts from existing conversations.
+The turns table must have data from /api/chat before this queue will have any turns.
+
+To populate the turns table:
+1. Have conversations in the main chat interface (/index.html)
+2. Each conversation generates turns with evaluation metadata (including dialogueAct)
+3. Then return to /grade.html to grade those turns
+
+If the queue is empty on load, it means there are no conversations yet.
+
+WORKFLOW:
+1. Load this page: /grade.html
+2. Queue loads 30 random ungraded turns from the last 30 days
+3. For each turn: See user message + AI's dialogue act choice
+4. Tap the dialogue act YOU would have chosen
+5. If it matches AI's choice: ✓ Approved, next card
+6. If it doesn't match: → Correction, next card
+7. Swipe right to skip rare edge cases
+8. After all 30: Export JSON
+9. Review JSON manually for patterns
+10. Update system prompt based on patterns
+11. Repeat
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade Dialogue Acts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    button {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .fade-enter {
+      animation: fadeIn 0.2s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .button-press {
+      animation: buttonPress 0.2s ease-out;
+    }
+    @keyframes buttonPress {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+    .feedback-text {
+      animation: feedbackSlide 0.3s ease-out forwards;
+    }
+    @keyframes feedbackSlide {
+      from {
+        opacity: 1;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <!-- Progress -->
+    <div id="progress" class="text-center text-sm text-slate-400 mb-6 font-mono">
+      0/0
+    </div>
+
+    <!-- Card Container -->
+    <div id="card-container" class="bg-slate-800 rounded-lg p-6 shadow-lg">
+      <div id="card" class="min-h-96 flex flex-col">
+        <!-- Placeholder during load -->
+        <div class="flex-1 flex items-center justify-center">
+          <p class="text-slate-400">Loading queue...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hint at bottom -->
+    <div class="text-center text-xs text-slate-500 mt-4">
+      Swipe right to skip
+    </div>
+  </div>
+
+  <script>
+    const DIALOGUE_ACTS = [
+      'open_with_question',
+      'probe_deeper',
+      'ask_for_concrete',
+      'validate_genuine',
+      'redirect_from_surface',
+      'reflect_understanding',
+      'affirm_commitment'
+    ];
+
+    let queue = [];
+    let currentIndex = 0;
+
+    // Load queue on page load
+    async function init() {
+      try {
+        const res = await fetch('/api/admin/grading-queue?limit=30');
+        if (!res.ok) throw new Error('Failed to load queue');
+        queue = await res.json();
+
+        if (queue.length === 0) {
+          showNoMore();
+          return;
+        }
+
+        renderCard(0);
+      } catch (error) {
+        console.error('Error loading queue:', error);
+        document.getElementById('card').innerHTML = `
+          <div class="flex flex-col items-center justify-center h-full">
+            <p class="text-red-400 mb-4">Error loading queue</p>
+            <button
+              onclick="location.reload()"
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+            >
+              Retry
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // Render current card
+    function renderCard(index) {
+      if (index >= queue.length) {
+        showComplete();
+        return;
+      }
+
+      const card = queue[index];
+      const progress = `${index + 1}/${queue.length}`;
+      document.getElementById('progress').textContent = progress;
+
+      const html = `
+        <div class="fade-enter flex flex-col gap-6">
+          <!-- User Message -->
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">User Message</p>
+            <div class="bg-slate-700 rounded p-4 text-sm leading-relaxed text-slate-100">
+              "${card.user_message}"
+            </div>
+          </div>
+
+          <!-- AI Choice -->
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-2">AI chose</p>
+            <div class="inline-block bg-slate-600 rounded-full px-3 py-1 text-sm font-mono">
+              ${card.dialogue_act}
+            </div>
+          </div>
+
+          <!-- Your Choice -->
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-wider mb-3">What would YOU choose?</p>
+            <div class="grid grid-cols-1 gap-2">
+              ${DIALOGUE_ACTS.map(act => {
+                const isAiChoice = act === card.dialogue_act;
+                return `
+                  <button
+                    onclick="selectAct('${act}')"
+                    class="w-full py-3 px-4 rounded transition font-mono text-sm text-left ${
+                      isAiChoice
+                        ? 'bg-slate-500 border-2 border-slate-300 font-semibold'
+                        : 'bg-slate-700 hover:bg-slate-600'
+                    }"
+                  >
+                    ${act}
+                    ${isAiChoice ? ' ← AI chose this' : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Feedback container -->
+          <div id="feedback-container" class="h-6"></div>
+        </div>
+      `;
+
+      document.getElementById('card').innerHTML = html;
+      setupTouchListeners();
+    }
+
+    // User taps a dialogue act button
+    async function selectAct(selected) {
+      const card = queue[currentIndex];
+      const matched = selected === card.dialogue_act;
+
+      // Disable buttons during save
+      document.querySelectorAll('button').forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch('/api/admin/grade-turn', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            turn_id: card.turn_id,
+            session_id: card.session_id,
+            user_message: card.user_message,
+            original_dialogue_act: card.dialogue_act,
+            selected_dialogue_act: selected,
+            matched,
+            skipped: false
+          })
+        });
+
+        if (!res.ok) throw new Error('Failed to save grade');
+
+        // Visual feedback
+        showFeedback(matched ? '✓' : '→');
+
+        // Advance to next card
+        setTimeout(() => {
+          currentIndex++;
+          renderCard(currentIndex);
+        }, 300);
+      } catch (error) {
+        console.error('Error saving grade:', error);
+        document.querySelectorAll('button').forEach(b => b.disabled = false);
+      }
+    }
+
+    // Show feedback message
+    function showFeedback(message) {
+      const container = document.getElementById('feedback-container');
+      if (!container) return;
+
+      const feedback = document.createElement('div');
+      feedback.className = 'feedback-text text-2xl text-center font-bold ' + (
+        message === '✓' ? 'text-green-400' : 'text-blue-400'
+      );
+      feedback.textContent = message;
+      container.appendChild(feedback);
+    }
+
+    // Setup touch listeners for swipe
+    function setupTouchListeners() {
+      let startX = 0;
+
+      document.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+      }, { once: true });
+
+      document.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const diff = endX - startX;
+
+        if (diff > 100) {
+          skipCard();
+        }
+      }, { once: true });
+    }
+
+    // Skip card (swipe right)
+    async function skipCard() {
+      const card = queue[currentIndex];
+
+      document.querySelectorAll('button').forEach(b => b.disabled = true);
+
+      try {
+        const res = await fetch('/api/admin/grade-turn', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            turn_id: card.turn_id,
+            session_id: card.session_id,
+            user_message: card.user_message,
+            original_dialogue_act: card.dialogue_act,
+            selected_dialogue_act: null,
+            matched: false,
+            skipped: true
+          })
+        });
+
+        if (!res.ok) throw new Error('Failed to skip');
+
+        currentIndex++;
+        renderCard(currentIndex);
+      } catch (error) {
+        console.error('Error skipping card:', error);
+        document.querySelectorAll('button').forEach(b => b.disabled = false);
+      }
+    }
+
+    // Show "no more" screen
+    function showNoMore() {
+      document.getElementById('card').innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full gap-4">
+          <p class="text-lg">No more turns to grade</p>
+          <button
+            onclick="location.reload()"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+          >
+            Load more
+          </button>
+        </div>
+      `;
+    }
+
+    // Show completion screen
+    function showComplete() {
+      const dialogueActsDisplay = DIALOGUE_ACTS.slice(0, 3).join(', ') + '...';
+      document.getElementById('card').innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full gap-6">
+          <div class="text-4xl">✓</div>
+          <h2 class="text-2xl font-bold">Done!</h2>
+          <p class="text-slate-400 text-center">
+            You graded ${queue.length} turns.
+          </p>
+          <div class="flex gap-3 flex-col w-full">
+            <button
+              onclick="location.reload()"
+              class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 rounded font-mono text-sm"
+            >
+              Load 30 more
+            </button>
+            <a
+              href="/api/admin/export-graded"
+              download
+              class="w-full py-3 px-4 bg-slate-700 hover:bg-slate-600 rounded font-mono text-sm text-center"
+            >
+              Export JSON
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

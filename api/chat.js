@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages, sessionId, email, voiceSignals } = req.body;
+  const { messages, sessionId, email, voiceSignals, source } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Invalid messages format' });
@@ -533,9 +533,9 @@ async function storeConversation(req, sessionId, email, messages, aiMessage, eva
       voiceSignals  // Raw voice signals from Whisper
     };
 
-    // Store to Postgres with cohort metadata
-    const result = await storeTurn(sessionId, email, turnData, cohort);
-    console.log(`[DB] Stored turn ${result.turnNumber} for session ${sessionId} (cohort: ${cohort}), fitScore: ${evaluation.fitScore}`);
+    // Store to Postgres with cohort metadata and source
+    const result = await storeTurn(sessionId, email, turnData, cohort, source || 'real');
+    console.log(`[DB] Stored turn ${result.turnNumber} for session ${sessionId} (cohort: ${cohort}, source: ${source || 'real'}), fitScore: ${evaluation.fitScore}`);
   } catch (error) {
     // Log but don't break chat - storage failure shouldn't stop conversation
     console.error('[DB] Storage failed:', error.message);

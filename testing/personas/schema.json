@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Educator Builder Test Persona",
   "type": "object",
-  "required": ["id", "name", "archetype", "behavioral", "cognitive", "targetRubricDimensions", "expectedDialogueActs"],
+  "required": ["id", "name", "archetype", "behavioral", "cognitive", "objectives", "conversationStyle", "termination", "opening", "targetRubricDimensions", "expectedDialogueActs"],
   "properties": {
     "id": {
       "type": "string",
@@ -111,22 +111,102 @@
       "description": "Dialogue acts this persona should elicit from AI",
       "minItems": 1
     },
-    "conversationGoal": {
-      "type": "string",
-      "description": "What this persona is trying to accomplish in the dialogue"
-    },
-    "sampleUtterances": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["turn", "utterance"],
-        "properties": {
-          "turn": { "type": "integer", "minimum": 1 },
-          "context": { "type": "string" },
-          "utterance": { "type": "string" }
+    "objectives": {
+      "type": "object",
+      "required": ["primary", "mustAnswer"],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "description": "The main goal this persona is pursuing in the conversation"
+        },
+        "mustAnswer": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Critical questions that must be answered for satisfaction",
+          "minItems": 1
+        },
+        "satisfactionSignals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Signals that indicate the persona is getting what they need",
+          "examples": ["concrete examples", "acknowledgment of tension", "genuine response"]
+        },
+        "dissatisfactionSignals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Red flags that indicate misalignment",
+          "examples": ["vague answers", "sales pressure", "dismissal of concerns"]
         }
-      },
-      "description": "Example messages this persona would send"
+      }
+    },
+    "conversationStyle": {
+      "type": "object",
+      "required": ["promptGuidance"],
+      "properties": {
+        "turnStructure": {
+          "type": "object",
+          "properties": {
+            "alwaysReactFirst": {
+              "type": "boolean",
+              "description": "Should this persona acknowledge what was said before asking new questions?"
+            },
+            "circleBackToUnanswered": {
+              "type": "boolean",
+              "description": "Should persona keep returning to unanswered critical questions?"
+            },
+            "questionsPerTurn": {
+              "type": "string",
+              "description": "Expected number of questions per turn (e.g., '1-2')"
+            }
+          }
+        },
+        "promptGuidance": {
+          "type": "string",
+          "description": "High-level guidance for how the LLM should generate this persona's responses"
+        }
+      }
+    },
+    "termination": {
+      "type": "object",
+      "required": ["minTurns", "maxTurns"],
+      "properties": {
+        "minTurns": {
+          "type": "integer",
+          "minimum": 2,
+          "description": "Minimum number of turns before conversation can end"
+        },
+        "maxTurns": {
+          "type": "integer",
+          "minimum": 3,
+          "description": "Maximum number of turns before conversation must end"
+        },
+        "positiveExit": {
+          "type": "string",
+          "description": "Condition for ending conversation with agreement/alignment"
+        },
+        "negativeExit": {
+          "type": "string",
+          "description": "Condition for ending conversation with rejection/misalignment"
+        },
+        "neutralExit": {
+          "type": "string",
+          "description": "Condition for ending conversation without clear resolution"
+        }
+      }
+    },
+    "opening": {
+      "type": "object",
+      "required": ["firstMessage"],
+      "properties": {
+        "firstMessage": {
+          "type": "string",
+          "description": "The exact first message from this persona"
+        },
+        "initialMood": {
+          "type": "string",
+          "description": "Emotional/conversational tone for the opening (e.g., 'curious but evaluating')"
+        }
+      }
     },
     "testingNotes": {
       "type": "string",

@@ -110,9 +110,10 @@
                 <div class="chat-bubble flex gap-3 mb-4">
                     <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-xs font-semibold">AI</div>
                     <div class="bg-slate-700 rounded-lg p-3 max-w-[85%]">
-                        <p class="text-sm">Hey! I'm here to help you figure out if this is a fit.</p>
-                        <p class="text-sm mt-2">This is a live-in collaborator role in West Michigan. Minimum 10 hrs/week, up to 60 hrs/month. You'd work on real projects—AI tools, modular housing, food systems—and be part of a family experiment in living + working together.</p>
-                        <p class="text-sm mt-2 text-slate-400">What are you curious about?</p>
+                        <p class="text-sm text-slate-300">Grand Rapids. 10 hrs/week. Be part of a household.<br>Passion over credentials.</p>
+                        <p class="text-sm mt-3 font-medium">An experiment in living and building together.</p>
+                        <p class="text-sm mt-3">Technology that amplifies what you can do.<br>Systems that enable real collaboration.<br>Infrastructure for abundance—housing, food, water, energy.</p>
+                        <p class="text-sm mt-3 text-slate-400">If you were 10x more productive tomorrow, what would you build first?</p>
                     </div>
                 </div>
             </div>
@@ -129,14 +130,14 @@
             <div class="flex justify-between items-center mb-2">
                 <div class="flex gap-2">
                     <button onclick="toggleInputMode()" id="input-mode-btn"
-                        class="px-3 py-1 rounded text-xs font-mono bg-slate-700 hover:bg-slate-600 flex items-center gap-1">
-                        <span id="input-mode-icon">⌨️</span>
-                        <span id="input-mode-text">Type</span>
+                        class="px-3 py-1 rounded text-xs font-mono bg-red-600 hover:bg-red-500 flex items-center gap-1">
+                        <span id="input-mode-icon">🎤</span>
+                        <span id="input-mode-text">Speak</span>
                     </button>
                     <button onclick="toggleOutputMode()" id="output-mode-btn"
-                        class="px-3 py-1 rounded text-xs font-mono bg-slate-700 hover:bg-slate-600 flex items-center gap-1">
-                        <span id="output-mode-icon">📝</span>
-                        <span id="output-mode-text">Read</span>
+                        class="px-3 py-1 rounded text-xs font-mono bg-red-600 hover:bg-red-500 flex items-center gap-1">
+                        <span id="output-mode-icon">🔊</span>
+                        <span id="output-mode-text">Listen</span>
                     </button>
                 </div>
                 <div id="recording-status" class="hidden flex items-center gap-2 text-red-400 text-xs">
@@ -147,13 +148,13 @@
 
             <!-- Input controls -->
             <div class="flex gap-2">
-                <div id="text-input-container" class="flex-1 flex gap-2">
-                    <input type="text" id="chat-input" placeholder="Ask anything..."
+                <div id="text-input-container" class="hidden flex-1 flex gap-2">
+                    <input type="text" id="chat-input" placeholder="What would you build first?"
                         class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
                         onkeypress="if(event.key==='Enter')sendMessage()">
                     <button onclick="sendMessage()" id="send-btn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-semibold">Send</button>
                 </div>
-                <div id="voice-input-container" class="hidden flex-1">
+                <div id="voice-input-container" class="flex-1">
                     <button onclick="toggleRecording()" id="record-btn"
                         class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2">
                         <span id="record-icon">🎤</span>
@@ -259,8 +260,8 @@
         let projectsUnlocked = false;
 
         // Modality state
-        let inputModality = 'text';  // 'text' or 'voice'
-        let outputModality = 'text'; // 'text' or 'voice'
+        let inputModality = 'voice';  // 'text' or 'voice'
+        let outputModality = 'voice'; // 'text' or 'voice'
 
         // Voice recording state
         let mediaRecorder = null;
@@ -624,13 +625,13 @@
                 outputModality = 'voice';
                 document.getElementById('output-mode-icon').textContent = '🔊';
                 document.getElementById('output-mode-text').textContent = 'Listen';
-                document.getElementById('output-mode-btn').classList.add('bg-blue-600');
+                document.getElementById('output-mode-btn').classList.add('bg-red-600');
                 document.getElementById('output-mode-btn').classList.remove('bg-slate-700');
             } else {
                 outputModality = 'text';
                 document.getElementById('output-mode-icon').textContent = '📝';
                 document.getElementById('output-mode-text').textContent = 'Read';
-                document.getElementById('output-mode-btn').classList.remove('bg-blue-600');
+                document.getElementById('output-mode-btn').classList.remove('bg-red-600');
                 document.getElementById('output-mode-btn').classList.add('bg-slate-700');
                 // Stop any ongoing speech
                 stopSpeaking();

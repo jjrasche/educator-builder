@@ -74,8 +74,13 @@ WORKFLOW:
 <body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-md">
     <!-- Progress -->
-    <div id="progress" class="text-center text-sm text-slate-400 mb-6 font-mono">
-      0/0
+    <div class="text-center mb-6">
+      <div id="progress" class="text-sm text-slate-400 mb-1 font-mono">
+        0/0
+      </div>
+      <div id="source-badge" class="text-xs px-2 py-1 rounded inline-block" style="background-color: #1e3a3a; color: #7dd3c0;">
+        real
+      </div>
     </div>
 
     <!-- Card Container -->
@@ -107,11 +112,15 @@ WORKFLOW:
 
     let queue = [];
     let currentIndex = 0;
+    let currentSource = 'real'; // 'real' or 'synthetic'
 
     // Load queue on page load
     async function init() {
       try {
-        const res = await fetch('/api/admin/grading-queue?limit=30');
+        const sourceParam = new URLSearchParams(window.location.search).get('source') || 'real';
+        currentSource = sourceParam;
+
+        const res = await fetch(`/api/admin/grading-queue?limit=30&source=${sourceParam}`);
         if (!res.ok) throw new Error('Failed to load queue');
         queue = await res.json();
 
@@ -147,6 +156,14 @@ WORKFLOW:
       const card = queue[index];
       const progress = `${index + 1}/${queue.length}`;
       document.getElementById('progress').textContent = progress;
+
+      // Update source badge
+      const sourceColor = currentSource === 'synthetic' ? '#3a1e1e' : '#1e3a3a';
+      const sourceBgColor = currentSource === 'synthetic' ? '#d97d7d' : '#7dd3c0';
+      const sourceBadge = document.getElementById('source-badge');
+      sourceBadge.textContent = currentSource;
+      sourceBadge.style.backgroundColor = sourceColor;
+      sourceBadge.style.color = sourceBgColor;
 
       const html = `
         <div class="fade-enter flex flex-col gap-6">

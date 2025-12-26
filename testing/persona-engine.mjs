@@ -584,6 +584,79 @@ IMPORTANT: Output ONLY the JSON object, no additional text.`;
 }
 
 /**
+ * Build LLM prompt using JSON structured format (for A/B testing)
+ *
+ * STUB: This is a placeholder for the JSON-structured prompt variant.
+ * The hypothesis is that raw JSON may be more or less effective than
+ * natural language persona cards for roleplay tasks.
+ *
+ * @param {Object} persona - Persona configuration
+ * @param {Array} messages - Conversation history
+ * @param {Object} state - Current emotional state
+ * @returns {string} Complete prompt for LLM
+ */
+export function buildJsonPrompt(persona, messages, state) {
+  // Extract relevant persona fields for prompt
+  const personaData = {
+    name: persona.name,
+    demographics: persona.demographics,
+    values: persona.values,
+    behavioral: persona.behavioral,
+    constraints: persona.constraints,
+    objectives: {
+      primary: persona.objectives.primary,
+      mustAnswer: persona.objectives.mustAnswer,
+      unanswered: persona.objectives.mustAnswer.filter(
+        q => !(state.mustAnswerCovered || []).includes(q)
+      )
+    },
+    conversationStyle: persona.conversationStyle.promptGuidance
+  };
+
+  // Current emotional state as numbers
+  const emotionalState = {
+    questionsAnswered: state.questionsAnswered,
+    feltHeard: state.feltHeard,
+    trust: state.trust,
+    engagement: state.engagement,
+    frustration: state.frustration,
+    connection: state.connection,
+    goalProgress: state.goalProgress,
+    novelty: state.novelty
+  };
+
+  return `You are role-playing as the following persona. Stay in character.
+
+=== PERSONA (JSON) ===
+${JSON.stringify(personaData, null, 2)}
+
+=== EMOTIONAL STATE (0-1 scale) ===
+${JSON.stringify(emotionalState, null, 2)}
+
+=== CONVERSATION ===
+${messages.map(m => `${m.role === 'user' ? 'You' : 'Guide'}: ${m.content}`).join('\n')}
+
+=== TASK ===
+Generate your next message AND your honest reaction to what the Guide just said.
+
+You MUST respond with valid JSON in this exact format:
+{
+  "message": "Your next message as ${persona.name}",
+  "reaction": {
+    "theyAddressedMyQuestion": true or false,
+    "theyUnderstoodMe": true or false,
+    "theyFeltGenuine": true or false,
+    "theyDeflected": true or false,
+    "theyRepeated": true or false,
+    "iWantToContinue": true or false,
+    "thisWasNewInformation": true or false
+  }
+}
+
+IMPORTANT: Output ONLY the JSON object, no additional text.`;
+}
+
+/**
  * Convert communicationStyle enum to natural language
  */
 function describeCommunicationStyle(style) {

@@ -50,6 +50,12 @@ export const EXIT_TYPES = [
   'max_turns'
 ];
 
+// Thresholds for emotional state descriptions
+export const EMOTIONAL_HIGH = 0.7;
+export const EMOTIONAL_LOW = 0.3;
+export const FRUSTRATION_HIGH = 0.6;
+export const FRUSTRATION_MODERATE = 0.4;
+
 // Required reaction keys that personas must define weights for
 export const REQUIRED_REACTION_KEYS = [
   'theyAddressedMyQuestion',
@@ -706,50 +712,43 @@ function describeQuestioningDepth(depth) {
 export function describeEmotionalState(state, persona) {
   const lines = [];
 
-  // Satisfaction level
-  if (state.questionsAnswered > 0.7) {
+  if (state.questionsAnswered > EMOTIONAL_HIGH) {
     lines.push("You feel like your questions are being addressed well.");
-  } else if (state.questionsAnswered < 0.3) {
+  } else if (state.questionsAnswered < EMOTIONAL_LOW) {
     lines.push("You feel like your main questions haven't been answered yet.");
   }
 
-  // Felt heard
-  if (state.feltHeard > 0.7) {
+  if (state.feltHeard > EMOTIONAL_HIGH) {
     lines.push("You feel understood and heard.");
-  } else if (state.feltHeard < 0.3) {
+  } else if (state.feltHeard < EMOTIONAL_LOW) {
     lines.push("You feel like they're not really getting what you're saying.");
   }
 
-  // Trust
-  if (state.trust > 0.7) {
+  if (state.trust > EMOTIONAL_HIGH) {
     lines.push("This feels genuine and authentic to you.");
-  } else if (state.trust < 0.3) {
+  } else if (state.trust < EMOTIONAL_LOW) {
     lines.push("Something feels off - this doesn't feel entirely genuine.");
   }
 
-  // Engagement
-  if (state.engagement < 0.3) {
+  if (state.engagement < EMOTIONAL_LOW) {
     lines.push("You're losing interest. Your responses might be shorter, more pointed.");
-  } else if (state.engagement > 0.7) {
+  } else if (state.engagement > EMOTIONAL_HIGH) {
     lines.push("You're engaged and want to explore deeper.");
   }
 
-  // Frustration
-  if (state.frustration > 0.6) {
+  if (state.frustration > FRUSTRATION_HIGH) {
     lines.push("You're getting frustrated. You might be more direct or even curt.");
-  } else if (state.frustration > 0.4) {
+  } else if (state.frustration > FRUSTRATION_MODERATE) {
     lines.push("You're feeling some frustration building.");
   }
 
-  // Connection
-  if (state.connection > 0.7) {
+  if (state.connection > EMOTIONAL_HIGH) {
     lines.push("You feel a real connection forming.");
-  } else if (state.connection < 0.3) {
+  } else if (state.connection < EMOTIONAL_LOW) {
     lines.push("You don't feel much connection with this person.");
   }
 
-  // Novelty
-  if (state.novelty < 0.3) {
+  if (state.novelty < EMOTIONAL_LOW) {
     lines.push("This conversation feels repetitive - nothing new is being said.");
   }
 

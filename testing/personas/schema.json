@@ -1,42 +1,71 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Educator Builder Test Persona",
+  "title": "Educator Builder Persona v2.0",
+  "description": "Schema for synthetic personas with emotional state tracking",
   "type": "object",
-  "required": ["id", "name", "archetype", "behavioral", "cognitive", "objectives", "conversationStyle", "termination", "opening", "targetRubricDimensions", "expectedDialogueActs"],
+  "required": ["id", "name", "behavioral", "objectives", "conversationStyle", "termination", "opening"],
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z-]+$",
-      "description": "Unique identifier (e.g., 'philosophical-thinker')"
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique identifier (e.g., 'jordan-taylor')"
     },
     "name": {
       "type": "string",
-      "description": "Human-readable name"
+      "description": "Full name of the persona"
     },
     "archetype": {
       "type": "string",
       "enum": ["seeker", "skeptic", "performer", "builder", "learner"],
-      "description": "High-level behavioral category"
+      "description": "High-level behavioral category (for grouping)"
     },
     "tier": {
       "type": "string",
       "enum": ["standard", "challenging"],
-      "default": "standard",
-      "description": "Persona difficulty level for testing"
+      "default": "standard"
     },
+
+    "demographics": {
+      "type": "object",
+      "description": "Background information for consistent persona behavior",
+      "properties": {
+        "age": { "type": "integer", "minimum": 18, "maximum": 80 },
+        "location": { "type": "string" },
+        "occupation": { "type": "string" },
+        "education": { "type": "string" },
+        "familySituation": { "type": "string" },
+        "livingContext": { "type": "string" }
+      }
+    },
+
+    "values": {
+      "type": "object",
+      "description": "Core values and dealbreakers",
+      "properties": {
+        "ranked": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Values in order of priority"
+        },
+        "dealbreakers": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Things that would cause immediate exit"
+        }
+      }
+    },
+
     "behavioral": {
       "type": "object",
       "required": ["communicationStyle", "reasoningStyle", "authenticityLevel"],
       "properties": {
         "communicationStyle": {
           "type": "string",
-          "enum": ["articulate", "exploratory", "transactional", "vague", "performative"],
-          "description": "Primary communication pattern"
+          "enum": ["articulate", "exploratory", "transactional", "vague", "performative"]
         },
         "reasoningStyle": {
           "type": "string",
-          "enum": ["philosophical", "practical", "systems-oriented", "surface-level"],
-          "description": "How they approach problems"
+          "enum": ["philosophical", "practical", "systems-oriented", "surface-level"]
         },
         "authenticityLevel": {
           "type": "integer",
@@ -46,99 +75,43 @@
         },
         "questioningDepth": {
           "type": "string",
-          "enum": ["deep-philosophical", "curious-practical", "logistics-only", "none"],
-          "description": "What kinds of questions they ask"
+          "enum": ["deep-philosophical", "curious-practical", "logistics-only", "none"]
         },
         "responsePatterns": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Typical behavioral patterns (e.g., 'asks follow-up questions', 'avoids difficult topics')"
+          "items": { "type": "string" }
         }
       }
     },
+
     "cognitive": {
       "type": "object",
       "properties": {
-        "selfAwareness": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 10,
-          "description": "Clarity about own values and goals"
-        },
-        "systemsThinking": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 10,
-          "description": "Ability to see interconnections"
-        },
-        "valuesProfile": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Core values driving behavior (e.g., 'autonomy', 'security', 'connection')"
-        }
+        "selfAwareness": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "systemsThinking": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "valuesProfile": { "type": "array", "items": { "type": "string" } }
       }
     },
+
     "constraints": {
       "type": "object",
       "properties": {
-        "avoidancePatterns": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Topics or behaviors to avoid"
-        },
-        "conversationalLimits": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Structural constraints (e.g., 'maximum 2 questions per turn')"
-        }
+        "avoidancePatterns": { "type": "array", "items": { "type": "string" } },
+        "conversationalLimits": { "type": "array", "items": { "type": "string" } }
       }
     },
-    "targetRubricDimensions": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": ["depth-of-questioning", "self-awareness", "systems-thinking", "experimentation-evidence", "authenticity", "reciprocal-curiosity"]
-      },
-      "description": "Which rubric criteria this persona is designed to test",
-      "minItems": 1
-    },
-    "expectedDialogueActs": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": ["open_with_question", "probe_deeper", "ask_for_concrete", "validate_genuine", "redirect_from_surface", "reflect_understanding", "affirm_commitment"]
-      },
-      "description": "Dialogue acts this persona should elicit from AI",
-      "minItems": 1
-    },
+
     "objectives": {
       "type": "object",
       "required": ["primary", "mustAnswer"],
       "properties": {
-        "primary": {
-          "type": "string",
-          "description": "The main goal this persona is pursuing in the conversation"
-        },
-        "mustAnswer": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Critical questions that must be answered for satisfaction",
-          "minItems": 1
-        },
-        "satisfactionSignals": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Signals that indicate the persona is getting what they need",
-          "examples": ["concrete examples", "acknowledgment of tension", "genuine response"]
-        },
-        "dissatisfactionSignals": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Red flags that indicate misalignment",
-          "examples": ["vague answers", "sales pressure", "dismissal of concerns"]
-        }
+        "primary": { "type": "string" },
+        "mustAnswer": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "satisfactionSignals": { "type": "array", "items": { "type": "string" } },
+        "dissatisfactionSignals": { "type": "array", "items": { "type": "string" } }
       }
     },
+
     "conversationStyle": {
       "type": "object",
       "required": ["promptGuidance"],
@@ -146,71 +119,150 @@
         "turnStructure": {
           "type": "object",
           "properties": {
-            "alwaysReactFirst": {
-              "type": "boolean",
-              "description": "Should this persona acknowledge what was said before asking new questions?"
-            },
-            "circleBackToUnanswered": {
-              "type": "boolean",
-              "description": "Should persona keep returning to unanswered critical questions?"
-            },
-            "questionsPerTurn": {
-              "type": "string",
-              "description": "Expected number of questions per turn (e.g., '1-2')"
-            }
+            "alwaysReactFirst": { "type": "boolean" },
+            "circleBackToUnanswered": { "type": "boolean" },
+            "questionsPerTurn": { "type": "string" }
           }
         },
         "promptGuidance": {
           "type": "string",
-          "description": "High-level guidance for how the LLM should generate this persona's responses"
+          "description": "High-level guidance for LLM to roleplay this persona"
         }
       }
     },
+
     "termination": {
       "type": "object",
       "required": ["minTurns", "maxTurns"],
       "properties": {
-        "minTurns": {
-          "type": "integer",
-          "minimum": 2,
-          "description": "Minimum number of turns before conversation can end"
-        },
-        "maxTurns": {
-          "type": "integer",
-          "minimum": 3,
-          "description": "Maximum number of turns before conversation must end"
-        },
-        "positiveExit": {
-          "type": "string",
-          "description": "Condition for ending conversation with agreement/alignment"
-        },
-        "negativeExit": {
-          "type": "string",
-          "description": "Condition for ending conversation with rejection/misalignment"
-        },
-        "neutralExit": {
-          "type": "string",
-          "description": "Condition for ending conversation without clear resolution"
-        }
+        "minTurns": { "type": "integer", "minimum": 2 },
+        "maxTurns": { "type": "integer", "minimum": 3 },
+        "positiveExit": { "type": "string" },
+        "negativeExit": { "type": "string" },
+        "neutralExit": { "type": "string" }
       }
     },
+
     "opening": {
       "type": "object",
       "required": ["firstMessage"],
       "properties": {
-        "firstMessage": {
-          "type": "string",
-          "description": "The exact first message from this persona"
+        "firstMessage": { "type": "string" },
+        "initialMood": { "type": "string" }
+      }
+    },
+
+    "emotionalDefaults": {
+      "type": "object",
+      "description": "Initial values for the 8 emotional factors (0-1 scale)",
+      "properties": {
+        "questionsAnswered": { "type": "number", "minimum": 0, "maximum": 1 },
+        "feltHeard": { "type": "number", "minimum": 0, "maximum": 1 },
+        "trust": { "type": "number", "minimum": 0, "maximum": 1 },
+        "engagement": { "type": "number", "minimum": 0, "maximum": 1 },
+        "frustration": { "type": "number", "minimum": 0, "maximum": 1 },
+        "connection": { "type": "number", "minimum": 0, "maximum": 1 },
+        "goalProgress": { "type": "number", "minimum": 0, "maximum": 1 },
+        "novelty": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "emotionalInertia": {
+      "type": "object",
+      "description": "How much previous emotional state persists (0-1). Higher = slower to change.",
+      "properties": {
+        "positive": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.4 },
+        "negative": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.6 }
+      }
+    },
+
+    "reactionWeights": {
+      "type": "object",
+      "description": "How LLM reactions affect emotional factors. Keys are reaction flags, values are factor deltas.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "type": "number" }
+      }
+    },
+
+    "decayRates": {
+      "type": "object",
+      "description": "Per-turn decay for factors (negative values)",
+      "properties": {
+        "engagement": { "type": "number" },
+        "novelty": { "type": "number" }
+      }
+    },
+
+    "exitThresholds": {
+      "type": "object",
+      "description": "Conditions and probabilities for each exit type",
+      "properties": {
+        "satisfied": {
+          "type": "object",
+          "properties": {
+            "conditions": { "type": "object", "additionalProperties": { "type": "number" } },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
         },
-        "initialMood": {
-          "type": "string",
-          "description": "Emotional/conversational tone for the opening (e.g., 'curious but evaluating')"
+        "frustrated": {
+          "type": "object",
+          "properties": {
+            "conditions": { "type": "object", "additionalProperties": { "type": "number" } },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "bored": {
+          "type": "object",
+          "properties": {
+            "conditions": { "type": "object", "additionalProperties": { "type": "number" } },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "disconnected": {
+          "type": "object",
+          "properties": {
+            "conditions": { "type": "object", "additionalProperties": { "type": "number" } },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "ghosted": {
+          "type": "object",
+          "properties": {
+            "conditions": { "type": "object", "additionalProperties": { "type": "number" } },
+            "minTurn": { "type": "integer" },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
         }
       }
     },
+
+    "exitBehavior": {
+      "type": "object",
+      "description": "Probability of generating exit message for each exit type",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+
+    "targetRubricDimensions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Rubric criteria this persona tests"
+    },
+
+    "expectedDialogueActs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Dialogue acts this persona should elicit"
+    },
+
     "testingNotes": {
       "type": "string",
-      "description": "Why this persona exists and what behaviors it validates"
+      "description": "Why this persona exists and what it validates"
     }
   }
 }

@@ -5,10 +5,14 @@
   "scripts": {
     "test:e2e": "node test/run.mjs",
     "test:e2e:manual": "MOCK_MODE=true node test/e2e.test.mjs",
-    "test:playwright": "npx playwright test"
+    "test:playwright": "npx playwright test",
+    "personas:run": "node testing/cli.mjs run-personas --all",
+    "personas:run-sample": "node testing/cli.mjs run-personas --personas philosophical-thinker --runs 1",
+    "personas:status": "node testing/cli.mjs status"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "groq-sdk": "^0.37.0",
     "openai": "^4.77.0",
     "resend": "^4.0.1"
   },

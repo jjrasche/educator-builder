@@ -50,99 +50,214 @@ export const EXIT_TYPES = [
   'max_turns'
 ];
 
-// Default emotional state if persona doesn't specify
-export const DEFAULT_EMOTIONAL_STATE = {
-  questionsAnswered: 0.0,
-  feltHeard: 0.5,
-  trust: 0.5,
-  engagement: 0.7,
-  frustration: 0.0,
-  connection: 0.5,
-  goalProgress: 0.0,
-  novelty: 0.6
-};
+// Required reaction keys that personas must define weights for
+export const REQUIRED_REACTION_KEYS = [
+  'theyAddressedMyQuestion',
+  '!theyAddressedMyQuestion',
+  'theyUnderstoodMe',
+  '!theyUnderstoodMe',
+  'theyFeltGenuine',
+  '!theyFeltGenuine',
+  'theyDeflected',
+  'theyRepeated',
+  'thisWasNewInformation',
+  '!thisWasNewInformation',
+  '!iWantToContinue'
+];
 
-// Default inertia values if persona doesn't specify
-export const DEFAULT_INERTIA = {
-  positive: 0.4,  // Positive emotions shift more easily
-  negative: 0.6   // Negative emotions (frustration) linger
-};
+// ========== STRICT VALIDATION ==========
 
-// Default reaction weights if persona doesn't specify
-export const DEFAULT_REACTION_WEIGHTS = {
-  'theyAddressedMyQuestion': { questionsAnswered: 0.15, goalProgress: 0.1 },
-  '!theyAddressedMyQuestion': { frustration: 0.1 },
-  'theyUnderstoodMe': { feltHeard: 0.12, connection: 0.08 },
-  '!theyUnderstoodMe': { feltHeard: -0.1, connection: -0.08 },
-  'theyFeltGenuine': { trust: 0.1 },
-  '!theyFeltGenuine': { trust: -0.12 },
-  'theyDeflected': { frustration: 0.15, trust: -0.05 },
-  'theyRepeated': { novelty: -0.2, engagement: -0.1, frustration: 0.1 },
-  'thisWasNewInformation': { novelty: 0.1, engagement: 0.08 },
-  '!thisWasNewInformation': { novelty: -0.05 },
-  '!iWantToContinue': { engagement: -0.2 }
-};
+/**
+ * Validate that a persona has all required fields for the engine.
+ * Throws an error if any required field is missing.
+ *
+ * @param {Object} persona - The persona configuration
+ * @throws {Error} If any required field is missing
+ */
+export function validatePersona(persona) {
+  const errors = [];
+  const personaId = persona.id || 'unknown';
 
-// Default decay rates if persona doesn't specify
-export const DEFAULT_DECAY_RATES = {
-  engagement: -0.03,
-  novelty: -0.02
-};
-
-// Default exit thresholds if persona doesn't specify
-export const DEFAULT_EXIT_THRESHOLDS = {
-  satisfied: {
-    conditions: { questionsAnswered: 0.7, feltHeard: 0.6, trust: 0.5 },
-    probability: 0.35
-  },
-  frustrated: {
-    conditions: { frustration: 0.6 },
-    probability: 0.5
-  },
-  bored: {
-    conditions: { engagement: 0.3, novelty: 0.3 },
-    probability: 0.4
-  },
-  disconnected: {
-    conditions: { trust: 0.3 },
-    probability: 0.5
-  },
-  ghosted: {
-    conditions: { engagement: 0.2 },
-    minTurn: 8,
-    probability: 0.3
+  // Required top-level fields
+  if (!persona.emotionalDefaults) {
+    errors.push('emotionalDefaults is required');
+  } else {
+    for (const factor of FACTORS) {
+      if (typeof persona.emotionalDefaults[factor] !== 'number') {
+        errors.push(`emotionalDefaults.${factor} must be a number`);
+      }
+    }
   }
-};
 
-// Default exit behavior if persona doesn't specify
-export const DEFAULT_EXIT_BEHAVIOR = {
-  satisfied: { probability: 0.9 },
-  frustrated: { probability: 0.7 },
-  bored: { probability: 0.2 },
-  disconnected: { probability: 0.5 },
-  ghosted: { probability: 0.0 }
-};
+  if (!persona.emotionalInertia) {
+    errors.push('emotionalInertia is required');
+  } else {
+    if (typeof persona.emotionalInertia.positive !== 'number') {
+      errors.push('emotionalInertia.positive must be a number');
+    }
+    if (typeof persona.emotionalInertia.negative !== 'number') {
+      errors.push('emotionalInertia.negative must be a number');
+    }
+  }
+
+  if (!persona.reactionWeights) {
+    errors.push('reactionWeights is required');
+  } else {
+    for (const key of REQUIRED_REACTION_KEYS) {
+      if (!persona.reactionWeights[key]) {
+        errors.push(`reactionWeights["${key}"] is required`);
+      }
+    }
+  }
+
+  if (!persona.decayRates) {
+    errors.push('decayRates is required');
+  } else {
+    if (typeof persona.decayRates.engagement !== 'number') {
+      errors.push('decayRates.engagement must be a number');
+    }
+    if (typeof persona.decayRates.novelty !== 'number') {
+      errors.push('decayRates.novelty must be a number');
+    }
+  }
+
+  if (!persona.exitThresholds) {
+    errors.push('exitThresholds is required');
+  } else {
+    const requiredExitTypes = ['satisfied', 'frustrated', 'bored', 'disconnected', 'ghosted'];
+    for (const exitType of requiredExitTypes) {
+      if (!persona.exitThresholds[exitType]) {
+        errors.push(`exitThresholds.${exitType} is required`);
+      } else {
+        if (!persona.exitThresholds[exitType].conditions) {
+          errors.push(`exitThresholds.${exitType}.conditions is required`);
+        }
+        if (typeof persona.exitThresholds[exitType].probability !== 'number') {
+          errors.push(`exitThresholds.${exitType}.probability must be a number`);
+        }
+        // ghosted requires minTurn
+        if (exitType === 'ghosted' && typeof persona.exitThresholds[exitType].minTurn !== 'number') {
+          errors.push('exitThresholds.ghosted.minTurn must be a number');
+        }
+      }
+    }
+  }
+
+  if (!persona.exitBehavior) {
+    errors.push('exitBehavior is required');
+  } else {
+    const requiredExitBehaviors = ['satisfied', 'frustrated', 'bored', 'disconnected', 'ghosted'];
+    for (const exitType of requiredExitBehaviors) {
+      if (!persona.exitBehavior[exitType]) {
+        errors.push(`exitBehavior.${exitType} is required`);
+      } else if (typeof persona.exitBehavior[exitType].probability !== 'number') {
+        errors.push(`exitBehavior.${exitType}.probability must be a number`);
+      }
+    }
+  }
+
+  if (!persona.termination) {
+    errors.push('termination is required');
+  } else {
+    if (typeof persona.termination.minTurns !== 'number') {
+      errors.push('termination.minTurns must be a number');
+    }
+    if (typeof persona.termination.maxTurns !== 'number') {
+      errors.push('termination.maxTurns must be a number');
+    }
+  }
+
+  if (!persona.conversationStyle?.promptGuidance) {
+    errors.push('conversationStyle.promptGuidance is required');
+  }
+
+  if (!persona.objectives?.mustAnswer || persona.objectives.mustAnswer.length === 0) {
+    errors.push('objectives.mustAnswer is required and must have at least one item');
+  }
+
+  if (!persona.opening?.firstMessage) {
+    errors.push('opening.firstMessage is required');
+  }
+
+  // Demographics - required for rich persona context
+  if (!persona.demographics) {
+    errors.push('demographics is required');
+  } else {
+    const requiredDemographics = ['age', 'location', 'occupation', 'familySituation', 'livingContext'];
+    for (const field of requiredDemographics) {
+      if (persona.demographics[field] === undefined || persona.demographics[field] === null) {
+        errors.push(`demographics.${field} is required`);
+      }
+    }
+  }
+
+  // Values - required for decision-making context
+  if (!persona.values) {
+    errors.push('values is required');
+  } else {
+    if (!Array.isArray(persona.values.ranked) || persona.values.ranked.length === 0) {
+      errors.push('values.ranked must be a non-empty array');
+    }
+    if (!Array.isArray(persona.values.dealbreakers) || persona.values.dealbreakers.length === 0) {
+      errors.push('values.dealbreakers must be a non-empty array');
+    }
+  }
+
+  // Behavioral - required for communication style
+  if (!persona.behavioral) {
+    errors.push('behavioral is required');
+  } else {
+    const requiredBehavioral = ['communicationStyle', 'reasoningStyle', 'authenticityLevel', 'questioningDepth'];
+    for (const field of requiredBehavioral) {
+      if (persona.behavioral[field] === undefined || persona.behavioral[field] === null) {
+        errors.push(`behavioral.${field} is required`);
+      }
+    }
+  }
+
+  // Constraints - required for limits
+  if (!persona.constraints) {
+    errors.push('constraints is required');
+  } else {
+    if (!Array.isArray(persona.constraints.avoidancePatterns)) {
+      errors.push('constraints.avoidancePatterns must be an array');
+    }
+    if (!Array.isArray(persona.constraints.conversationalLimits)) {
+      errors.push('constraints.conversationalLimits must be an array');
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Persona "${personaId}" validation failed:\n  - ${errors.join('\n  - ')}`);
+  }
+}
 
 // ========== STATE MANAGEMENT ==========
 
 /**
- * Initialize emotional state from persona defaults
+ * Initialize emotional state from persona defaults.
+ * STRICT MODE: Throws if persona lacks required emotionalDefaults.
+ *
  * @param {Object} persona - The persona configuration
  * @returns {Object} Initial emotional state with history tracking
+ * @throws {Error} If emotionalDefaults is missing or incomplete
  */
 export function initEmotionalState(persona) {
-  const defaults = persona.emotionalDefaults || DEFAULT_EMOTIONAL_STATE;
+  // Validate persona first (will throw if incomplete)
+  validatePersona(persona);
+
+  const defaults = persona.emotionalDefaults;
 
   return {
-    // The 8 factors
-    questionsAnswered: defaults.questionsAnswered ?? 0.0,
-    feltHeard: defaults.feltHeard ?? 0.5,
-    trust: defaults.trust ?? 0.5,
-    engagement: defaults.engagement ?? 0.7,
-    frustration: defaults.frustration ?? 0.0,
-    connection: defaults.connection ?? 0.5,
-    goalProgress: defaults.goalProgress ?? 0.0,
-    novelty: defaults.novelty ?? 0.6,
+    // The 8 factors - all required, no fallbacks
+    questionsAnswered: defaults.questionsAnswered,
+    feltHeard: defaults.feltHeard,
+    trust: defaults.trust,
+    engagement: defaults.engagement,
+    frustration: defaults.frustration,
+    connection: defaults.connection,
+    goalProgress: defaults.goalProgress,
+    novelty: defaults.novelty,
 
     // Tracking
     mustAnswerCovered: [],
@@ -154,8 +269,9 @@ export function initEmotionalState(persona) {
 }
 
 /**
- * Update emotional state based on LLM reaction
- * Applies reaction weights with inertia blending
+ * Update emotional state based on LLM reaction.
+ * Applies reaction weights with inertia blending.
+ * STRICT MODE: Requires all persona fields, no fallbacks.
  *
  * @param {Object} state - Current emotional state
  * @param {Object} reaction - Binary reaction flags from LLM
@@ -164,9 +280,10 @@ export function initEmotionalState(persona) {
  * @returns {Object} New emotional state
  */
 export function updateState(state, reaction, persona, turn) {
-  const reactionWeights = persona.reactionWeights || DEFAULT_REACTION_WEIGHTS;
-  const decayRates = persona.decayRates || DEFAULT_DECAY_RATES;
-  const inertia = persona.emotionalInertia || DEFAULT_INERTIA;
+  // No fallbacks - persona must have these fields (validated at init)
+  const reactionWeights = persona.reactionWeights;
+  const decayRates = persona.decayRates;
+  const inertia = persona.emotionalInertia;
 
   // Step 1: Calculate raw new values from reaction
   const rawDeltas = {};
@@ -252,7 +369,8 @@ function extractFactors(state) {
 // ========== TERMINATION LOGIC ==========
 
 /**
- * Calculate exit probabilities based on current state
+ * Calculate exit probabilities based on current state.
+ * STRICT MODE: Requires all persona exit thresholds, no fallbacks.
  *
  * @param {Object} state - Current emotional state
  * @param {Object} persona - Persona configuration
@@ -260,70 +378,62 @@ function extractFactors(state) {
  * @returns {Object} Probabilities for each exit type
  */
 export function calculateExitProbabilities(state, persona, turn) {
-  const thresholds = persona.exitThresholds || DEFAULT_EXIT_THRESHOLDS;
+  // No fallbacks - persona must have exitThresholds (validated at init)
+  const thresholds = persona.exitThresholds;
   const probs = {};
 
-  // Satisfied exit
+  // Satisfied exit - conditions must be met (all >= threshold)
   const satisfiedCfg = thresholds.satisfied;
-  if (satisfiedCfg) {
-    const conditionsMet = Object.entries(satisfiedCfg.conditions || {}).every(
-      ([factor, threshold]) => (state[factor] || 0) >= threshold
-    );
-    if (conditionsMet) {
-      probs.satisfied = satisfiedCfg.probability || 0.35;
-    }
+  const satisfiedMet = Object.entries(satisfiedCfg.conditions).every(
+    ([factor, threshold]) => state[factor] >= threshold
+  );
+  if (satisfiedMet) {
+    probs.satisfied = satisfiedCfg.probability;
   }
 
-  // Frustrated exit
+  // Frustrated exit - conditions must be met (all >= threshold)
   const frustratedCfg = thresholds.frustrated;
-  if (frustratedCfg) {
-    const conditionsMet = Object.entries(frustratedCfg.conditions || {}).every(
-      ([factor, threshold]) => (state[factor] || 0) >= threshold
-    );
-    if (conditionsMet) {
-      probs.frustrated = frustratedCfg.probability || 0.5;
-    }
+  const frustratedMet = Object.entries(frustratedCfg.conditions).every(
+    ([factor, threshold]) => state[factor] >= threshold
+  );
+  if (frustratedMet) {
+    probs.frustrated = frustratedCfg.probability;
   }
 
-  // Bored exit (conditions are "below" thresholds)
+  // Bored exit - conditions are "below" thresholds (all < threshold)
   const boredCfg = thresholds.bored;
-  if (boredCfg) {
-    const conditionsMet = Object.entries(boredCfg.conditions || {}).every(
-      ([factor, threshold]) => (state[factor] || 0) < threshold
-    );
-    if (conditionsMet) {
-      probs.bored = boredCfg.probability || 0.4;
-    }
+  const boredMet = Object.entries(boredCfg.conditions).every(
+    ([factor, threshold]) => state[factor] < threshold
+  );
+  if (boredMet) {
+    probs.bored = boredCfg.probability;
   }
 
-  // Disconnected exit (below threshold)
+  // Disconnected exit - below threshold (all < threshold)
   const disconnectedCfg = thresholds.disconnected;
-  if (disconnectedCfg) {
-    const conditionsMet = Object.entries(disconnectedCfg.conditions || {}).every(
-      ([factor, threshold]) => (state[factor] || 0) < threshold
-    );
-    if (conditionsMet) {
-      probs.disconnected = disconnectedCfg.probability || 0.5;
-    }
+  const disconnectedMet = Object.entries(disconnectedCfg.conditions).every(
+    ([factor, threshold]) => state[factor] < threshold
+  );
+  if (disconnectedMet) {
+    probs.disconnected = disconnectedCfg.probability;
   }
 
-  // Ghosted exit
+  // Ghosted exit - below threshold AND past minTurn
   const ghostedCfg = thresholds.ghosted;
-  if (ghostedCfg) {
-    const minTurn = ghostedCfg.minTurn || 8;
-    const conditionsMet = turn >= minTurn && Object.entries(ghostedCfg.conditions || {}).every(
-      ([factor, threshold]) => (state[factor] || 0) < threshold
-    );
-    if (conditionsMet) {
-      probs.ghosted = ghostedCfg.probability || 0.3;
-    }
+  const ghostedMinTurn = ghostedCfg.minTurn;
+  const ghostedMet = turn >= ghostedMinTurn && Object.entries(ghostedCfg.conditions).every(
+    ([factor, threshold]) => state[factor] < threshold
+  );
+  if (ghostedMet) {
+    probs.ghosted = ghostedCfg.probability;
   }
 
   return probs;
 }
 
 /**
- * Determine if persona should exit conversation
+ * Determine if persona should exit conversation.
+ * STRICT MODE: Requires all persona termination fields, no fallbacks.
  *
  * @param {Object} state - Current emotional state
  * @param {number} turn - Current turn number
@@ -331,10 +441,10 @@ export function calculateExitProbabilities(state, persona, turn) {
  * @returns {Object} Exit decision { exit: bool, reason: string, generateMessage: bool, probability: number }
  */
 export function shouldTerminate(state, turn, persona) {
-  const { termination } = persona;
-  const minTurns = termination?.minTurns || 3;
-  const maxTurns = termination?.maxTurns || 25;
-  const exitBehavior = persona.exitBehavior || DEFAULT_EXIT_BEHAVIOR;
+  // No fallbacks - persona must have these fields (validated at init)
+  const minTurns = persona.termination.minTurns;
+  const maxTurns = persona.termination.maxTurns;
+  const exitBehavior = persona.exitBehavior;
 
   // Hard bounds
   if (turn < minTurns) {
@@ -360,9 +470,9 @@ export function shouldTerminate(state, turn, persona) {
   for (const [reason, prob] of Object.entries(probs)) {
     cumulative += prob;
     if (roll < cumulative) {
-      // Determine if we generate a message
-      const behavior = exitBehavior[reason] || {};
-      const msgProb = behavior.probability ?? 0.5;
+      // Determine if we generate a message - no fallbacks
+      const behavior = exitBehavior[reason];
+      const msgProb = behavior.probability;
       const generateMessage = Math.random() < msgProb;
 
       return {
@@ -395,39 +505,54 @@ export function shouldTerminate(state, turn, persona) {
 export function buildPersonaPrompt(persona, messages, state) {
   const emotionalContext = describeEmotionalState(state, persona);
 
-  // Build unanswered questions context
-  const unanswered = (persona.objectives?.mustAnswer || []).filter(
+  // Build unanswered questions context - no fallbacks
+  const unanswered = persona.objectives.mustAnswer.filter(
     q => !(state.mustAnswerCovered || []).includes(q)
   );
 
-  // Build demographics context if available
-  const demographicsContext = persona.demographics
-    ? `
+  // Build demographics context - all fields required (validated at init)
+  const demographicsContext = `
 === YOUR BACKGROUND ===
-Age: ${persona.demographics.age || 'not specified'}
-Location: ${persona.demographics.location || 'not specified'}
-Occupation: ${persona.demographics.occupation || 'not specified'}
-Life situation: ${persona.demographics.familySituation || 'not specified'}
-Living context: ${persona.demographics.livingContext || 'not specified'}
-`
-    : '';
+Age: ${persona.demographics.age}
+Location: ${persona.demographics.location}
+Occupation: ${persona.demographics.occupation}
+Life situation: ${persona.demographics.familySituation}
+Living context: ${persona.demographics.livingContext}
+`;
 
-  // Build values context if available
-  const valuesContext = persona.values
-    ? `
+  // Build values context - required (validated at init)
+  const valuesContext = `
 === YOUR VALUES ===
-What matters most to you: ${(persona.values.ranked || []).join(', ')}
-Dealbreakers: ${(persona.values.dealbreakers || []).join(', ')}
-`
-    : '';
+What matters most to you: ${persona.values.ranked.join(', ')}
+Dealbreakers: ${persona.values.dealbreakers.join(', ')}
+`;
+
+  // Build behavioral context - translating structured data to natural language
+  // Research shows natural language works better for reasoning/roleplay
+  const behavioralContext = `
+=== HOW YOU COMMUNICATE ===
+Communication style: ${describeCommunicationStyle(persona.behavioral.communicationStyle)}
+Reasoning approach: ${describeReasoningStyle(persona.behavioral.reasoningStyle)}
+Question depth: ${describeQuestioningDepth(persona.behavioral.questioningDepth)}
+${persona.behavioral.responsePatterns?.length > 0 ? `Your patterns: ${persona.behavioral.responsePatterns.join('; ')}` : ''}
+`;
+
+  // Build constraints context - required (validated at init)
+  const constraintsContext = `
+=== YOUR LIMITS ===
+${persona.constraints.avoidancePatterns.length > 0 ? `You avoid: ${persona.constraints.avoidancePatterns.join('; ')}` : ''}
+${persona.constraints.conversationalLimits.length > 0 ? `Conversation style: ${persona.constraints.conversationalLimits.join('; ')}` : ''}
+`;
 
   return `You are ${persona.name}, a real person having a conversation about a community/living situation.
 
 ${demographicsContext}
 ${valuesContext}
+${behavioralContext}
+${constraintsContext}
 
 === YOUR PERSONALITY ===
-${persona.conversationStyle?.promptGuidance || 'Be natural and authentic.'}
+${persona.conversationStyle.promptGuidance}
 
 === YOUR CURRENT EMOTIONAL STATE ===
 ${emotionalContext}
@@ -456,6 +581,46 @@ You MUST respond with valid JSON in this exact format:
 }
 
 IMPORTANT: Output ONLY the JSON object, no additional text.`;
+}
+
+/**
+ * Convert communicationStyle enum to natural language
+ */
+function describeCommunicationStyle(style) {
+  const descriptions = {
+    'articulate': 'You express yourself clearly and precisely',
+    'exploratory': 'You think out loud and explore ideas as you talk',
+    'transactional': 'You keep things brief and to the point',
+    'vague': 'You sometimes struggle to express exactly what you mean',
+    'performative': 'You tend to present a polished version of yourself'
+  };
+  return descriptions[style] || style;
+}
+
+/**
+ * Convert reasoningStyle enum to natural language
+ */
+function describeReasoningStyle(style) {
+  const descriptions = {
+    'philosophical': 'You think about deeper meaning and principles',
+    'practical': 'You focus on what actually works in real life',
+    'systems-oriented': 'You think about how things connect and interact',
+    'surface-level': 'You focus on immediate, concrete concerns'
+  };
+  return descriptions[style] || style;
+}
+
+/**
+ * Convert questioningDepth enum to natural language
+ */
+function describeQuestioningDepth(depth) {
+  const descriptions = {
+    'deep-philosophical': 'You ask probing questions about meaning and purpose',
+    'curious-practical': 'You ask practical questions to understand how things work',
+    'logistics-only': 'You mainly ask about practical details and logistics',
+    'none': 'You rarely ask questions'
+  };
+  return descriptions[depth] || depth;
 }
 
 /**

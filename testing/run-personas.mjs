@@ -81,7 +81,7 @@ Generate your next message. Remember:
 Generate only the message text, no meta-commentary.`;
 
   const response = await groq.chat.completions.create({
-    model: 'llama-3.1-70b-versatile',
+    model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'user',
